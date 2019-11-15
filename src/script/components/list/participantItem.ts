@@ -123,7 +123,7 @@ class ParticipanItem {
 
 ko.components.register('participant-item', {
   template: `
-    <div class="participant-item" data-bind="attr: isInViewport() ? {'data-uie-name': isUser ? 'item-user' : 'item-service', 'data-uie-value': participant.name} : {}">
+    <div class="participant-item" data-bind="attr: {'data-uie-name': isUser ? 'item-user' : 'item-service', 'data-uie-value': participant.name}">
       <!-- ko if: isInViewport() -->
         <div class="participant-item-image">
           <participant-avatar params="participant: participant, size: avatarSize"></participant-avatar>
@@ -143,7 +143,7 @@ ko.components.register('participant-item', {
             <!-- ko if: contentInfo -->
               <span class="participant-item-content-username label-username-notext" data-bind="text: contentInfo, css: {'label-username': hasUsernameInfo}" data-uie-name="status-username"></span>
               <!-- ko if: hasUsernameInfo && badge -->
-                <span class="participant-item-content-badge" data-uie-name="status-partner">Partner</span>
+                <span class="participant-item-content-badge" data-uie-name="status-partner" data-bind="text: badge"></span>
               <!-- /ko -->
             <!-- /ko -->
           </div>
