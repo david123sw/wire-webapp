@@ -2669,7 +2669,7 @@ export class ConversationRepository {
     }
     const sender = this.client_repository.currentClient().id;
     try {
-      await this.conversation_service.post_encrypted_message(conversationEntity.id, {recipients: {}, sender});
+      await this.conversation_service.post_encrypted_message(conversationEntity.id, {recipients: {}, sender}, [false]);
     } catch (error) {
       if (error.missing) {
         const remoteUserClients = error.missing;

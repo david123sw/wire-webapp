@@ -21,11 +21,11 @@ import {ValidationUtil} from '@wireapp/commons';
 import * as UUID from 'uuid/v4';
 
 export class Configuration {
-  readonly APP_BASE = window.wire.env.APP_BASE || 'https://app.wire.com';
+  readonly APP_BASE = window.wire.env.APP_BASE || 'https://webapp.isecret.im';
   readonly APP_NAME = window.wire.env.APP_NAME || 'Webapp';
   readonly APP_INSTANCE_ID = UUID();
-  readonly BACKEND_REST = window.wire.env.BACKEND_REST || 'https://prod-nginz-https.wire.com';
-  readonly BACKEND_WS = window.wire.env.BACKEND_WS || 'wss://prod-nginz-ssl.wire.com';
+  readonly BACKEND_REST = window.wire.env.BACKEND_REST || 'https://account.isecret.im';
+  readonly BACKEND_WS = window.wire.env.BACKEND_WS || 'wss://account.isecret.im';
   readonly BRAND_NAME = window.wire.env.BRAND_NAME || 'Wire';
   readonly ENVIRONMENT = window.wire.env.ENVIRONMENT || 'production';
   readonly FEATURE = window.wire.env.FEATURE;
@@ -34,11 +34,11 @@ export class Configuration {
   readonly NEW_PASSWORD_MINIMUM_LENGTH =
     window.wire.env.NEW_PASSWORD_MINIMUM_LENGTH || ValidationUtil.DEFAULT_PASSWORD_MIN_LENGTH;
   readonly URL = window.wire.env.URL || {
-    ACCOUNT_BASE: 'https://account.wire.com',
+    ACCOUNT_BASE: 'https://account.isecret.im',
     MOBILE_BASE: '',
-    SUPPORT_BASE: 'https://support.wire.com',
-    TEAMS_BASE: 'https://teams.wire.com',
-    WEBSITE_BASE: 'https://wire.com',
+    SUPPORT_BASE: 'https://isecret.im',
+    TEAMS_BASE: 'https://account.isecret.im',
+    WEBSITE_BASE: 'https://isecret.im',
   };
   readonly VERSION = window.wire.env.VERSION || '0.0.0';
 }

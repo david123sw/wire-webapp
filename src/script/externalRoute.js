@@ -29,24 +29,38 @@ export const URL = {
   TERMS_OF_USE_PERSONAL: env.URL && env.URL.TERMS_OF_USE_PERSONAL,
   TERMS_OF_USE_TEAMS: env.URL && env.URL.TERMS_OF_USE_TEAMS,
   WEBAPP: {
-    INTERNAL: 'https://wire-webapp-staging.wire.com',
-    PRODUCTION: env.APP_BASE || 'https://app.wire.com',
-    STAGING: 'https://wire-webapp-staging.zinfra.io',
+    INTERNAL: 'https://webapp.isecret.im',
+    PRODUCTION: env.APP_BASE || 'https://webapp.isecret.im',
+    STAGING: 'https://webapp.isecret.im',
   },
   WEBSITE: env.URL && env.URL.WEBSITE_BASE,
 };
 
+// export const URL_PATH = {
+//   CREATE_TEAM: '/create-team/',
+//   DECRYPT_ERROR_1: '/privacy/error-1/',
+//   DECRYPT_ERROR_2: '/privacy/error-2/',
+//   MANAGE_SERVICES: '/services/',
+//   MANAGE_TEAM: '/login/',
+//   PASSWORD_RESET: '/forgot/',
+//   PRIVACY_HOW: '/privacy/how/',
+//   PRIVACY_WHY: '/privacy/why/',
+//   SUPPORT_CONTACT: '/hc/en-us/requests/new',
+//   SUPPORT_USERNAME: '/support/username/',
+// };
+
+//Secret网站下列links暂未开放
 export const URL_PATH = {
-  CREATE_TEAM: '/create-team/',
-  DECRYPT_ERROR_1: '/privacy/error-1/',
-  DECRYPT_ERROR_2: '/privacy/error-2/',
-  MANAGE_SERVICES: '/services/',
-  MANAGE_TEAM: '/login/',
-  PASSWORD_RESET: '/forgot/',
-  PRIVACY_HOW: '/privacy/how/',
-  PRIVACY_WHY: '/privacy/why/',
-  SUPPORT_CONTACT: '/hc/en-us/requests/new',
-  SUPPORT_USERNAME: '/support/username/',
+  CREATE_TEAM: '',
+  DECRYPT_ERROR_1: '',
+  DECRYPT_ERROR_2: '',
+  MANAGE_SERVICES: '',
+  MANAGE_TEAM: '',
+  PASSWORD_RESET: '',
+  PRIVACY_HOW: '',
+  PRIVACY_WHY: '',
+  SUPPORT_CONTACT: '',
+  SUPPORT_USERNAME: '',
 };
 
 const getTeamSettingsUrl = (path = '', utmSource) => {
