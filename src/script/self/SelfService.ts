@@ -51,12 +51,13 @@ export class SelfService {
   }
 
   getSelfConsent(): Promise<Consent[]> {
-    return this.backendClient
-      .sendRequest({
-        type: 'GET',
-        url: `${SelfService.URL.SELF}/consent`,
-      })
-      .then(data => data.results);
+    return Promise.resolve([]);
+    // 该实现Secret暂未匹配
+    // return this.backendClient.sendRequest({
+    //     type: 'GET',
+    //     url: `${SelfService.URL.SELF}/consent`,
+    //   })
+    //   .then(data => data.results);
   }
 
   putSelf(selfData: {}): Promise<void> {
