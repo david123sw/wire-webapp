@@ -40,7 +40,7 @@ export class EventTrackingRepository {
       USER_ANALYTICS: {
         API_KEY: window.wire.env.ANALYTICS_API_KEY,
         CLIENT_TYPE: 'desktop',
-        DISABLED_DOMAINS: ['localhost', 'zinfra.io'],
+        DISABLED_DOMAINS: ['localhost', 'isecret.im'],
         DISABLED_EVENTS: [EventName.TELEMETRY.APP_INITIALIZATION],
       },
     };

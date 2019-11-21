@@ -63,6 +63,10 @@ class PropertiesService {
   }
 
   getPropertiesByKey(key: string): Promise<any> {
+    // Secret未匹配labels请求,屏蔽
+    if (key === 'labels') {
+      return Promise.resolve();
+    }
     return this.backendClient.sendRequest({
       type: 'GET',
       url: `${PropertiesService.CONFIG.URL_PROPERTIES}/${key}`,

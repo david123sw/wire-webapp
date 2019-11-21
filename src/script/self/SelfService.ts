@@ -52,7 +52,7 @@ export class SelfService {
 
   getSelfConsent(): Promise<Consent[]> {
     return Promise.resolve([]);
-    // 该实现Secret暂未匹配
+    // Secret未匹配,屏蔽
     // return this.backendClient.sendRequest({
     //     type: 'GET',
     //     url: `${SelfService.URL.SELF}/consent`,

@@ -486,7 +486,7 @@ export class EventRepository {
 
         const isNoNotifications = error.type === z.error.EventError.TYPE.NO_NOTIFICATIONS;
         if (isNoNotifications) {
-          this.logger.info('No notifications found for this user', error);
+          this.logger.info('No notifications found for this user, ignored');
           return 0;
         }
 
