@@ -86,7 +86,6 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
             }
             this.userParticipants.push(userEntity);
           });
-
         const userCount = this.userParticipants().length;
         const exceedsMaxUserCount = userCount > ConversationDetailsViewModel.CONFIG.MAX_USERS_VISIBLE;
         if (exceedsMaxUserCount) {

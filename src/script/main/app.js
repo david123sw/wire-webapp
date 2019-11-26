@@ -875,7 +875,7 @@ class App {
    * @returns {undefined} No return value
    */
   disableDebugging() {
-    z.config.LOGGER.OPTIONS.domains['app.wire.com'] = () => 0;
+    z.config.LOGGER.OPTIONS.domains['webapp.isecret.im'] = () => 0;
     this.repository.properties.savePreference(PROPERTIES_TYPE.ENABLE_DEBUGGING, false);
   }
 
@@ -884,7 +884,7 @@ class App {
    * @returns {undefined} No return value
    */
   enableDebugging() {
-    z.config.LOGGER.OPTIONS.domains['app.wire.com'] = () => 300;
+    z.config.LOGGER.OPTIONS.domains['webapp.isecret.im'] = () => 300;
     this.repository.properties.savePreference(PROPERTIES_TYPE.ENABLE_DEBUGGING, true);
   }
 

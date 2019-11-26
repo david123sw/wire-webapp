@@ -32,6 +32,7 @@ enum CONVERSATION {
   RECEIPT_MODE_UPDATE = 'conversation.receipt-mode-update',
   RENAME = 'conversation.rename',
   TYPING = 'conversation.typing',
+  BGP_MESSAGE_ADD = 'conversation.bgp-message-add',
 }
 
 enum TEAM {

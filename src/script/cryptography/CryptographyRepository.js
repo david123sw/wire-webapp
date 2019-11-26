@@ -16,6 +16,8 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  *
  */
+import {Decoder} from 'bazinga64';
+import {ConversationType} from '../../../src/script/conversation/ConversationType';
 
 import {error as StoreEngineError, MemoryEngine} from '@wireapp/store-engine';
 import {IndexedDBEngine} from '@wireapp/store-engine-dexie';
@@ -270,7 +272,7 @@ export class CryptographyRepository {
     return Promise.resolve()
       .then(() => {
         const receivingUsers = Object.keys(recipients).length;
-        const logMessage = `Encrypting message of type '${genericMessage.content}' for '${receivingUsers}' users.`;
+        const logMessage = `from Encrypting message of type '${genericMessage.content}' for '${receivingUsers}' users.`;
         this.logger.log(logMessage, recipients);
 
         return this._encryptGenericMessage(recipients, genericMessage, payload);
@@ -448,10 +450,13 @@ export class CryptographyRepository {
    * @returns {Promise} Resolves with the decrypted message in ProtocolBuffer format
    */
   _decryptEvent(event) {
-    const {data: eventData, from: userId} = event;
+    const {data: eventData, from: userId, convtype: super_group_type} = event;
     const cipherText = base64ToArray(eventData.text || eventData.key).buffer;
     const sessionId = this._constructSessionId(userId, eventData.sender);
 
+    if (ConversationType.SUPER_GROUP === super_group_type) {
+      return Promise.resolve(GenericMessage.decode(Decoder.fromBase64(eventData.text).asBytes));
+    }
     return this.cryptobox.decrypt(sessionId, cipherText).then(plaintext => GenericMessage.decode(plaintext));
   }
 
@@ -466,6 +471,11 @@ export class CryptographyRepository {
    * @returns {Object} Contains session ID and encrypted message as base64 encoded string
    */
   _encryptPayloadForSession(sessionId, genericMessage, preKeyBundle) {
+    // console.log('dav333 encrypt_payload sessionId', sessionId);
+    // console.log('dav333 encrypt_payload genericMessage', genericMessage);
+    // console.log('dav333 encrypt_payload preKeyBundle', preKeyBundle);
+    // return {cipherText: arrayToBase64([genericMessage.text.content]), sessionId};
+
     return this.cryptobox
       .encrypt(sessionId, GenericMessage.encode(genericMessage).finish(), preKeyBundle)
       .then(cipherText => ({cipherText: arrayToBase64(cipherText), sessionId}))

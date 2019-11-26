@@ -18,6 +18,8 @@
  */
 
 export enum ConversationType {
+  SUPER_GROUP = 5,
+  /*4 maybe added*/
   CONNECT = 3,
   GROUP = 0,
   ONE2ONE = 2,

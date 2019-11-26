@@ -96,7 +96,8 @@ export class Conversation {
       return isGroupConversation && hasOneParticipant && this.team_id && !this.name();
     });
     this.isGroup = ko.pureComputed(() => {
-      const isGroupConversation = this.type() === ConversationType.GROUP;
+      const isGroupConversation =
+        this.type() === ConversationType.GROUP || this.type() === ConversationType.SUPER_GROUP;
       return isGroupConversation && !this.isTeam1to1();
     });
     this.is1to1 = ko.pureComputed(() => {

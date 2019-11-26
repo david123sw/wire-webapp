@@ -640,9 +640,11 @@ export class EventRepository {
    */
   processEvent(event, source) {
     const isEncryptedEvent = event.type === BackendEvent.CONVERSATION.OTR_MESSAGE_ADD;
-    const mapEvent = isEncryptedEvent
-      ? this.cryptographyRepository.handleEncryptedEvent(event)
-      : Promise.resolve(event);
+    const isSuperGroupEvent = event.type === BackendEvent.CONVERSATION.BGP_MESSAGE_ADD;
+    const mapEvent =
+      isSuperGroupEvent || isEncryptedEvent
+        ? this.cryptographyRepository.handleEncryptedEvent(event)
+        : Promise.resolve(event);
 
     return mapEvent
       .then(mappedEvent => {
