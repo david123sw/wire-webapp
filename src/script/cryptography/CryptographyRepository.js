@@ -274,7 +274,6 @@ export class CryptographyRepository {
         const receivingUsers = Object.keys(recipients).length;
         const logMessage = `from Encrypting message of type '${genericMessage.content}' for '${receivingUsers}' users.`;
         this.logger.log(logMessage, recipients);
-
         return this._encryptGenericMessage(recipients, genericMessage, payload);
       })
       .then(({messagePayload, missingRecipients}) => {
@@ -366,14 +365,12 @@ export class CryptographyRepository {
     return Promise.resolve()
       .then(() => {
         const cipherPayloadPromises = [];
-
         Object.entries(recipients).forEach(([userId, clientIds]) => {
           if (clientIds && clientIds.length) {
             messagePayload.recipients[userId] = messagePayload.recipients[userId] || {};
             clientIds.forEach(clientId => {
               const sessionId = this._constructSessionId(userId, clientId);
               const encryptionPromise = this._encryptPayloadForSession(sessionId, genericMessage);
-
               cipherPayloadPromises.push(encryptionPromise);
             });
           }
@@ -471,10 +468,22 @@ export class CryptographyRepository {
    * @returns {Object} Contains session ID and encrypted message as base64 encoded string
    */
   _encryptPayloadForSession(sessionId, genericMessage, preKeyBundle) {
-    // console.log('dav333 encrypt_payload sessionId', sessionId);
-    // console.log('dav333 encrypt_payload genericMessage', genericMessage);
-    // console.log('dav333 encrypt_payload preKeyBundle', preKeyBundle);
-    // return {cipherText: arrayToBase64([genericMessage.text.content]), sessionId};
+    if (ConversationType.SUPER_GROUP === genericMessage.convtype) {
+      const liteGenericMessage = {...genericMessage};
+      delete liteGenericMessage.convtype;
+      return Promise.resolve(GenericMessage.encode(liteGenericMessage).finish())
+        .then(cipherText => ({cipherText: arrayToBase64(cipherText), sessionId}))
+        .catch(error => {
+          if (error instanceof StoreEngineError.RecordNotFoundError) {
+            this.logger.log(`Session '${sessionId}' needs to get initialized...`);
+            return {sessionId};
+          }
+
+          const message = `Failed encrypting '${genericMessage.content}' for session '${sessionId}': ${error.message}`;
+          this.logger.warn(message, error);
+          return {cipherText: CryptographyRepository.REMOTE_ENCRYPTION_FAILURE, sessionId};
+        });
+    }
 
     return this.cryptobox
       .encrypt(sessionId, GenericMessage.encode(genericMessage).finish(), preKeyBundle)

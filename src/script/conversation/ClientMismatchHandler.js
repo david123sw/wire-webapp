@@ -16,7 +16,7 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  *
  */
-
+import {ConversationType} from '../../../src/script/conversation/ConversationType';
 import {isEmpty} from 'underscore';
 
 import {getLogger} from 'Util/Logger';
@@ -43,8 +43,12 @@ export class ClientMismatchHandler {
    * @returns {Promise} Resolve when mismatch was handled
    */
   onClientMismatch(eventInfoEntity, clientMismatch, payload) {
-    const {deleted: deletedClients, missing: missingClients, redundant: redundantClients} = clientMismatch;
-
+    let {deleted: deletedClients, missing: missingClients, redundant: redundantClients} = clientMismatch;
+    if (ConversationType.SUPER_GROUP === payload.convtype) {
+      deletedClients = deletedClients || {};
+      missingClients = missingClients || {};
+      redundantClients = redundantClients || {};
+    }
     return Promise.resolve()
       .then(() => this._handleClientMismatchRedundant(redundantClients, payload, eventInfoEntity))
       .then(updatedPayload => this._handleClientMismatchDeleted(deletedClients, updatedPayload))

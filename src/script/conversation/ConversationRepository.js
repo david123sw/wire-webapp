@@ -1819,6 +1819,7 @@ export class ConversationRepository {
       .then(() => {
         const retention = this.asset_service.getAssetRetention(this.selfUser(), conversationEntity);
         const options = {
+          convtype: conversationEntity.type(),
           expectsReadConfirmation: this.expectReadReceipt(conversationEntity),
           legalHoldStatus: conversationEntity.legalHoldStatus(),
           retention,
@@ -1837,7 +1838,10 @@ export class ConversationRepository {
           genericMessage = this._wrap_in_ephemeral_message(genericMessage, conversationEntity.messageTimer());
         }
 
-        const eventInfoEntity = new EventInfoEntity(genericMessage, conversationEntity.id);
+        genericMessage.convtype = conversationEntity.type();
+        const eventInfoEntity = new EventInfoEntity(genericMessage, conversationEntity.id, {
+          convtype: conversationEntity.type(),
+        });
         return this.sendGenericMessageToConversation(eventInfoEntity);
       })
       .then(payload => {
@@ -2100,7 +2104,6 @@ export class ConversationRepository {
   sendLinkPreview(conversationEntity, textMessage, genericMessage, mentionEntities, quoteEntity) {
     const conversationId = conversationEntity.id;
     const messageId = genericMessage.messageId;
-
     return this.link_repository
       .getLinkPreviewFromString(textMessage)
       .then(linkPreview => {
@@ -2445,6 +2448,7 @@ export class ConversationRepository {
     return this.messageSender.queueMessage(() => {
       return this.create_recipients(eventInfoEntity.conversationId).then(recipients => {
         eventInfoEntity.updateOptions({recipients});
+        // console.log('dav333 unique---->eventInfoEntity', eventInfoEntity);
         return this._sendGenericMessage(eventInfoEntity);
       });
     });
@@ -2474,7 +2478,9 @@ export class ConversationRepository {
       })
       .then(mappedEvent => this.eventRepository.injectEvent(mappedEvent))
       .then(injectedEvent => {
-        const eventInfoEntity = new EventInfoEntity(genericMessage, conversationEntity.id);
+        const eventInfoEntity = new EventInfoEntity(genericMessage, conversationEntity.id, {
+          convtype: conversationEntity.type(),
+        });
         eventInfoEntity.setTimestamp(injectedEvent.time);
         return this.sendGenericMessageToConversation(eventInfoEntity).then(sentPayload => ({
           event: injectedEvent,
@@ -2571,6 +2577,7 @@ export class ConversationRepository {
    * @returns {Promise} Resolves when the message was sent
    */
   _sendGenericMessage(eventInfoEntity) {
+    // console.log('dav333 two ways eventInfoEntity', eventInfoEntity);
     return this._grantOutgoingMessage(eventInfoEntity)
       .then(() => this._shouldSendAsExternal(eventInfoEntity))
       .then(sendAsExternal => {
@@ -2579,8 +2586,10 @@ export class ConversationRepository {
         }
 
         const {genericMessage, options} = eventInfoEntity;
+        genericMessage.convtype = options.convtype;
         return this.cryptography_repository.encryptGenericMessage(options.recipients, genericMessage).then(payload => {
           payload.native_push = options.nativePush;
+          payload.convtype = genericMessage.convtype;
           return this._sendEncryptedMessage(eventInfoEntity, payload);
         });
       })
@@ -2669,7 +2678,11 @@ export class ConversationRepository {
     }
     const sender = this.client_repository.currentClient().id;
     try {
-      await this.conversation_service.post_encrypted_message(conversationEntity.id, {recipients: {}, sender}, true);
+      await this.conversation_service.post_encrypted_message(
+        conversationEntity.id,
+        {convtype: conversationEntity.type(), recipients: {}, sender},
+        true,
+      );
     } catch (error) {
       if (error.missing) {
         const remoteUserClients = error.missing;

@@ -904,6 +904,10 @@ export class EventRepository {
         if (error.type === z.error.ConversationError.TYPE.CONVERSATION_NOT_FOUND) {
           return;
         }
+        //Specially for super group
+        if (error.type === z.error.ConversationError.TYPE.CONVERSATION_VALIDATION_FAILED) {
+          return;
+        }
         this.logger.error(`Failed to handle notification '${id}' from '${source}': ${error.message}`, error);
         throw error;
       });

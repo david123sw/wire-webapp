@@ -16,7 +16,7 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  *
  */
-
+import {ConversationType} from '../../../src/script/conversation/ConversationType';
 import {getLogger} from 'Util/Logger';
 
 import {StorageSchemata} from '../storage/StorageSchemata';
@@ -366,19 +366,50 @@ export class ConversationService {
    * @returns {Promise} Promise that resolves when the message was sent
    */
   post_encrypted_message(conversation_id, payload, precondition_option) {
-    let url = `${ConversationService.CONFIG.URL_CONVERSATIONS}/${conversation_id}/otr/messages`;
+    let url = '';
+    let trans_payload = '';
 
-    if (Array.isArray(precondition_option)) {
-      url = `${url}?report_missing=${precondition_option.join(',')}`;
-    } else if (precondition_option === true) {
-      url = `${url}?ignore_missing=true`;
+    if (ConversationType.SUPER_GROUP === payload.convtype) {
+      trans_payload = JSON.parse(JSON.stringify(payload));
+      url = `${ConversationService.CONFIG.URL_CONVERSATIONS}/${conversation_id}/bgp/messages`;
+      if (0 < Object.keys(trans_payload.recipients).length) {
+        const send_to_self = trans_payload.recipients[Object.keys(trans_payload.recipients)[0]];
+        const myself = window.wire.app.repository.user.self();
+        trans_payload.text = send_to_self[Object.keys(send_to_self)[0]];
+        trans_payload.asset = {
+          avatar_key: myself.previewPictureResource().identifier,
+          name: myself.name(),
+        };
+        delete trans_payload.native_push;
+        delete trans_payload.recipients;
+        delete trans_payload.convtype;
+      } else {
+        trans_payload = '';
+      }
+    } else {
+      url = `${ConversationService.CONFIG.URL_CONVERSATIONS}/${conversation_id}/otr/messages`;
+      if (Array.isArray(precondition_option)) {
+        url = `${url}?report_missing=${precondition_option.join(',')}`;
+      } else if (precondition_option === true) {
+        url = `${url}?ignore_missing=true`;
+      }
     }
 
-    return this.backendClient.sendJson({
-      data: payload,
-      type: 'POST',
-      url: url,
-    });
+    if (ConversationType.SUPER_GROUP === payload.convtype) {
+      if (trans_payload) {
+        return this.backendClient.sendJson({
+          data: trans_payload,
+          type: 'POST',
+          url: url,
+        });
+      }
+    } else {
+      return this.backendClient.sendJson({
+        data: payload,
+        type: 'POST',
+        url: url,
+      });
+    }
   }
 
   /**
