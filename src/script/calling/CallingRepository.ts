@@ -552,7 +552,6 @@ export class CallingRepository {
     if (call && call.blockMessages) {
       return 0;
     }
-
     const options = this.targetMessageRecipients(payload, destinationUserId, destinationClientId);
     const eventInfoEntity = new EventInfoEntity(genericMessage, conversationId, options);
     this.conversationRepository.sendCallingMessage(eventInfoEntity, conversationId).catch(() => {

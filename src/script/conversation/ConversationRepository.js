@@ -1205,6 +1205,7 @@ export class ConversationRepository {
    * @returns {undefined} No return value
    */
   markAsRead(conversationEntity) {
+    // console.log('dav333 markAsRead TODO sync error', conversationEntity);
     const conversationId = conversationEntity.id;
     const timestamp = conversationEntity.last_read_timestamp();
     const protoLastRead = new LastRead({
@@ -1212,11 +1213,14 @@ export class ConversationRepository {
       lastReadTimestamp: timestamp,
     });
     const genericMessage = new GenericMessage({
+      convtype: conversationEntity.type(),
       [GENERIC_MESSAGE_TYPE.LAST_READ]: protoLastRead,
       messageId: createRandomUuid(),
     });
 
-    const eventInfoEntity = new EventInfoEntity(genericMessage, this.self_conversation().id);
+    const eventInfoEntity = new EventInfoEntity(genericMessage, this.self_conversation().id, {
+      convtype: conversationEntity.type(),
+    });
     this.sendGenericMessageToConversation(eventInfoEntity)
       .then(() => {
         amplify.publish(WebAppEvents.NOTIFICATION.REMOVE_READ);
@@ -2027,15 +2031,20 @@ export class ConversationRepository {
       type,
     });
     const genericMessage = new GenericMessage({
+      convtype: conversationEntity.type(),
       [GENERIC_MESSAGE_TYPE.CONFIRMATION]: protoConfirmation,
       messageId: createRandomUuid(),
     });
 
     this.messageSender.queueMessage(() => {
       return this.create_recipients(conversationEntity.id, true, [messageEntity.from]).then(recipients => {
-        const options = {nativePush: false, precondition: [messageEntity.from], recipients};
+        const options = {
+          convtype: conversationEntity.type(),
+          nativePush: false,
+          precondition: [messageEntity.from],
+          recipients,
+        };
         const eventInfoEntity = new EventInfoEntity(genericMessage, conversationEntity.id, options);
-
         return this._sendGenericMessage(eventInfoEntity);
       });
     });
@@ -2058,6 +2067,23 @@ export class ConversationRepository {
             eventInfoEntity.updateOptions({recipients});
             return eventInfoEntity;
           });
+
+      // let conversationEntity;
+      // this.get_conversation_by_id(conversationId)
+      //   .then(entity => {
+      //     conversationEntity = entity;
+      //   })
+      //   .catch(error => {
+      //     this.logger.warn(`Get conversation info failed, ${error.message}`);
+      //   });
+      // return recipientsPromise.then((infoEntity) => {
+      //   if(conversationEntity) {
+      //     infoEntity.genericMessage.convtype = conversationEntity.type();
+      //     infoEntity.options.convtype = conversationEntity.type();
+      //   }
+      //   this._sendGenericMessage(infoEntity)
+      // });
+
       return recipientsPromise.then(infoEntity => this._sendGenericMessage(infoEntity));
     });
   }
@@ -2278,7 +2304,6 @@ export class ConversationRepository {
       recipients: {[userId]: [clientId]},
     };
     const eventInfoEntity = new EventInfoEntity(genericMessage, conversationId, options);
-
     return this._sendGenericMessage(eventInfoEntity)
       .then(response => {
         this.logger.info(`Sent info about session reset to client '${clientId}' of user '${userId}'`);
@@ -2448,7 +2473,6 @@ export class ConversationRepository {
     return this.messageSender.queueMessage(() => {
       return this.create_recipients(eventInfoEntity.conversationId).then(recipients => {
         eventInfoEntity.updateOptions({recipients});
-        // console.log('dav333 unique---->eventInfoEntity', eventInfoEntity);
         return this._sendGenericMessage(eventInfoEntity);
       });
     });
@@ -2577,7 +2601,7 @@ export class ConversationRepository {
    * @returns {Promise} Resolves when the message was sent
    */
   _sendGenericMessage(eventInfoEntity) {
-    // console.log('dav333 two ways eventInfoEntity', eventInfoEntity);
+    // console.log('dav333 two ways _sendGenericMessage eventInfoEntity', eventInfoEntity);
     return this._grantOutgoingMessage(eventInfoEntity)
       .then(() => this._shouldSendAsExternal(eventInfoEntity))
       .then(sendAsExternal => {
@@ -3015,7 +3039,8 @@ export class ConversationRepository {
 
         return this.messageSender.queueMessage(() => {
           return this.create_recipients(conversationId, false, precondition).then(recipients => {
-            const options = {precondition, recipients};
+            const options = {convtype: conversationEntity.type(), precondition, recipients};
+            genericMessage.convtype = conversationEntity.type();
             const eventInfoEntity = new EventInfoEntity(genericMessage, conversationId, options);
             this._sendGenericMessage(eventInfoEntity);
           });
@@ -3052,11 +3077,14 @@ export class ConversationRepository {
           messageId: messageEntity.id,
         });
         const genericMessage = new GenericMessage({
+          convtype: conversationEntity.type(),
           [GENERIC_MESSAGE_TYPE.HIDDEN]: protoMessageHide,
           messageId: createRandomUuid(),
         });
 
-        const eventInfoEntity = new EventInfoEntity(genericMessage, this.self_conversation().id);
+        const eventInfoEntity = new EventInfoEntity(genericMessage, this.self_conversation().id, {
+          convtype: conversationEntity.type(),
+        });
         return this.sendGenericMessageToConversation(eventInfoEntity);
       })
       .then(() => {
