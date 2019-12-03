@@ -1,5 +1,5 @@
 {
-  "footer.copy": "© Wire Swiss GmbH",
+  "footer.copy": "© Secret",
   "footer.wireLink": "",
   "cookiePolicyStrings.bannerText": "",
   "index.createAccountForOrganizations": "",
@@ -49,8 +49,8 @@
   "unsupported.headlineCookies": "",
   "unsupported.headlineIndexedDb": "",
   "unsupported.subheadBrowser": "",
-  "unsupported.subheadCookies": "Aktiver cookies for at logge på Wire.",
-  "unsupported.subheadIndexedDb": "Wire skal have adgang til lokal lagring til at vise dine meddelelser. Lokal lagring er ikke tilgængelig i privat tilstand.",
+  "unsupported.subheadCookies": "Aktiver cookies for at logge på Secret.",
+  "unsupported.subheadIndexedDb": "Secret skal have adgang til lokal lagring til at vise dine meddelelser. Lokal lagring er ikke tilgængelig i privat tilstand.",
   "conversationJoin.unsupportedJoinHeadline": "",
   "conversationJoin.headline": "",
   "conversationJoin.unsupportedJoinMobileSubhead": "",
@@ -139,11 +139,11 @@
   "LOGOUT_REASON.SESSION_EXPIRED": "",
   "clientManager.headline": "",
   "clientManager.logout": "Log ud",
-  "clientManager.subhead": "Fjern en af dine andre enheder for at begynde at bruge Wire på denne.",
-  "historyInfo.hasHistoryHeadline": "Du har brugt Wire på denne enhed før.",
+  "clientManager.subhead": "Fjern en af dine andre enheder for at begynde at bruge Secret på denne.",
+  "historyInfo.hasHistoryHeadline": "Du har brugt Secret på denne enhed før.",
   "historyInfo.hasHistoryInfo": "",
   "historyInfo.learnMore": "Lær mere",
-  "historyInfo.noHistoryHeadline": "Det er første gang du bruger Wire på denne enhed.",
+  "historyInfo.noHistoryHeadline": "Det er første gang du bruger Secret på denne enhed.",
   "historyInfo.noHistoryInfo": "",
   "historyInfo.ok": "OK"
 }

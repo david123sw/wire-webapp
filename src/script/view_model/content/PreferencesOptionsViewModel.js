@@ -1,5 +1,5 @@
 /*
- * Wire
+ * Secret
  * Copyright (C) 2018 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
@@ -100,7 +100,7 @@ z.viewModel.content.PreferencesOptionsViewModel = class PreferencesOptionsViewMo
 
       const selfUserId = this.userRepository.self().id;
       const truncatedId = selfUserId.substr(0, PreferencesOptionsViewModel.CONFIG.OBFUSCATION_TRUNCATE_TO);
-      const filename = `Wire-${truncatedId}-Calling_${getCurrentDate()}.log`;
+      const filename = `Secret-${truncatedId}-Calling_${getCurrentDate()}.log`;
 
       return downloadBlob(blob, filename);
     }

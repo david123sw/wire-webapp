@@ -1,5 +1,5 @@
 /*
- * Wire
+ * Secret
  * Copyright (C) 2018 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
@@ -49,7 +49,7 @@ export const URL = {
 //   SUPPORT_USERNAME: '/support/username/',
 // };
 
-//Secret网站下列links暂未开放
+//Secret网站下列暂未开放
 export const URL_PATH = {
   CREATE_TEAM: '',
   DECRYPT_ERROR_1: '',

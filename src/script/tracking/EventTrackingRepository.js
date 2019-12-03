@@ -1,5 +1,5 @@
 /*
- * Wire
+ * Secret
  * Copyright (C) 2018 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
@@ -266,7 +266,7 @@ export class EventTrackingRepository {
     Raygun.disableAutoBreadcrumbs();
 
     /*
-    Adding a version to the Raygun reports to identify which version of the Wire ran into the issue.
+    Adding a version to the Raygun reports to identify which version of the Secret ran into the issue.
     @note We cannot use our own version string as it has to be in a certain format
     @see https://github.com/MindscapeHQ/raygun4js#version-filtering
     */

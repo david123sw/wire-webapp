@@ -1,5 +1,5 @@
 /*
- * Wire
+ * Secret
  * Copyright (C) 2018 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
@@ -44,6 +44,8 @@ import {MentionEntity} from '../../message/MentionEntity';
 import {Shortcut} from '../../ui/Shortcut';
 import {ShortcutType} from '../../ui/ShortcutType';
 import {Config} from '../../auth/config';
+import {ConversationType} from '../../conversation/ConversationType';
+// import {Conversation} from "../../entity/Conversation";
 
 window.z = window.z || {};
 window.z.viewModel = z.viewModel || {};
@@ -252,6 +254,10 @@ z.viewModel.content.InputBarViewModel = class InputBarViewModel {
 
     this.showGiphyButton = ko.pureComputed(() => {
       return this.hasTextInput() && this.input().length <= InputBarViewModel.CONFIG.GIPHY_TEXT_LENGTH;
+    });
+
+    this.showPingButton = ko.pureComputed(() => {
+      return ConversationType.SUPER_GROUP === this.conversationEntity().type();
     });
 
     const pingShortcut = Shortcut.getShortcutTooltip(ShortcutType.PING);

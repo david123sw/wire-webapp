@@ -1,5 +1,5 @@
 /*
- * Wire
+ * Secret
  * Copyright (C) 2018 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
@@ -190,7 +190,7 @@ export class ConnectionRepository {
   /**
    * Retrieve all connections from backend.
    *.
-   * @note Initially called by Wire for Web's app start to retrieve connections.
+   * @note Initially called by Secret for Web's app start to retrieve connections.
    *
    * @param {number} [limit=500] - Query limit for user connections
    * @param {string} [userId] - User ID of the latest connection

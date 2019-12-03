@@ -1,5 +1,5 @@
 /*
- * Wire
+ * Secret
  * Copyright (C) 2018 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,8 +18,6 @@
  */
 
 (global => {
-  'use strict';
-
   function cacheRequest(cache, request, response) {
     return cache
       .put(stripSearchParameters(request.url), response.clone())

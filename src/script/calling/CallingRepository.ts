@@ -1,5 +1,5 @@
 /*
- * Wire
+ * Secret
  * Copyright (C) 2018 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
@@ -926,7 +926,7 @@ export class CallingRepository {
           '/faqLink': '</a>',
           br: '<br>',
           faqLink:
-            '<a href="https://support.wire.com/hc/articles/202935412" data-uie-name="go-no-camera-faq" target="_blank" rel="noopener noreferrer">',
+            '<a href="https://www.isecret.im" data-uie-name="go-no-camera-faq" target="_blank" rel="noopener noreferrer">',
         }),
         title: t('modalNoCameraTitle'),
       },

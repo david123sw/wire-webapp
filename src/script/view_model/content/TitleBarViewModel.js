@@ -1,5 +1,5 @@
 /*
- * Wire
+ * Secret
  * Copyright (C) 2018 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
@@ -80,6 +80,10 @@ z.viewModel.content.TitleBarViewModel = class TitleBarViewModel {
 
     this.showCallControls = ko.pureComputed(() => {
       if (!this.conversationEntity()) {
+        return false;
+      }
+
+      if (this.conversationEntity() && this.conversationEntity().isSuperGroup()) {
         return false;
       }
 

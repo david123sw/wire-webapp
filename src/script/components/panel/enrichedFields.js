@@ -1,5 +1,5 @@
 /*
- * Wire
+ * Secret
  * Copyright (C) 2019 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 
 import ko from 'knockout';
 
-import {t} from 'Util/LocalizerUtil';
+// import {t} from 'Util/LocalizerUtil';
 import {noop} from 'Util/util';
 
 import {resolve, graph} from '../../config/appResolver';
@@ -44,19 +44,20 @@ ko.components.register('enriched-fields', {
       ko.computed(
         () => {
           if (user()) {
-            const fields = user().email() ? [{type: t('userProfileEmail'), value: user().email()}] : [];
-            this.richProfileRepository
-              .getUserRichProfile(ko.unwrap(user).id)
-              .then(richProfile => {
-                if (richProfile.fields) {
-                  fields.push(...richProfile.fields);
-                }
-              })
-              .catch(noop)
-              .finally(() => {
-                this.fields(fields);
-                onFieldsLoaded(this.fields());
-              });
+            // Secret未匹配,屏蔽
+            // const fields = user().email() ? [{type: t('userProfileEmail'), value: user().email()}] : [];
+            // this.richProfileRepository
+            //   .getUserRichProfile(ko.unwrap(user).id)
+            //   .then(richProfile => {
+            //     if (richProfile.fields) {
+            //       fields.push(...richProfile.fields);
+            //     }
+            //   })
+            //   .catch(noop)
+            //   .finally(() => {
+            //     this.fields(fields);
+            //     onFieldsLoaded(this.fields());
+            //   });
           } else {
             this.fields([]);
           }

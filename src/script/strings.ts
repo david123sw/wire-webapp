@@ -1,5 +1,5 @@
 /*
- * Wire
+ * Secret
  * Copyright (C) 2018 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,11 +25,11 @@ import {LOGOUT_REASON} from './auth/route';
 
 export const footerStrings = defineMessages({
   copy: {
-    defaultMessage: '© Wire Swiss GmbH',
+    defaultMessage: '© Secret',
     id: 'footer.copy',
   },
   wireLink: {
-    defaultMessage: 'wire.com',
+    defaultMessage: 'isecret.im',
     id: 'footer.wireLink',
   },
 });
@@ -82,7 +82,7 @@ export const teamNameStrings = defineMessages({
     id: 'teamName.teamNamePlaceholder',
   },
   whatIsWireTeamsLink: {
-    defaultMessage: 'What is Wire Pro?',
+    defaultMessage: 'What is Secret?',
     id: 'teamName.whatIsWireTeamsLink',
   },
 });
@@ -387,7 +387,7 @@ export const errorHandlerStrings = defineMessages({
   },
   [BackendError.LABEL.KEY_EXISTS]: {
     defaultMessage:
-      'This email address has already been registered. <a target="_blank" rel="noopener noreferrer" href="https://support.wire.com/hc/articles/115004082129">Learn more</a>',
+      'This email address has already been registered. <a target="_blank" rel="noopener noreferrer" href="https://www.isecret.im">Learn more</a>',
     id: 'BackendError.LABEL.KEY_EXISTS',
   },
   [BackendError.LABEL.ALREADY_INVITED]: {
@@ -472,7 +472,7 @@ export const errorHandlerStrings = defineMessages({
   },
   [BackendError.LABEL.EMAIL_EXISTS]: {
     defaultMessage:
-      'This email address is already in use. <a target="_blank" rel="noopener noreferrer" href="https://support.wire.com/hc/articles/115004082129">Learn more</a>',
+      'This email address is already in use. <a target="_blank" rel="noopener noreferrer" href="https://www.isecret.im">Learn more</a>',
     id: 'BackendError.LABEL.EMAIL_EXISTS',
   },
   [BackendError.LABEL.SSO_FORBIDDEN]: {

@@ -1,6 +1,6 @@
 /*
- * Wire
- * Copyright (C) 2017 Wire Swiss GmbH
+ * Secret
+ * Copyright (C) 2017 Secret
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

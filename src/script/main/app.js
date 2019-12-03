@@ -1,5 +1,5 @@
 /*
- * Wire
+ * Secret
  * Copyright (C) 2018 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
@@ -411,7 +411,7 @@ class App {
       .then(() => {
         telemetry.time_step(AppInitTimingsStep.UPDATED_CONVERSATIONS);
         if (this.repository.user.isActivatedAccount()) {
-          // start regularly polling the server to check if there is a new version of Wire
+          // start regularly polling the server to check if there is a new version of Secret
           startNewVersionPolling(Environment.version(false, true), this.update.bind(this));
         }
         this.repository.audio.init(true);

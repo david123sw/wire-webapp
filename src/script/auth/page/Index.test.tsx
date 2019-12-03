@@ -1,5 +1,5 @@
 /*
- * Wire
+ * Secret
  * Copyright (C) 2018 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
@@ -65,7 +65,7 @@ describe('when visiting the index page', () => {
 
     afterAll(() => (Config.FEATURE = {}));
 
-    it('shows the Wire logo', () => {
+    it('shows the Secret logo', () => {
       wrapper = mountComponent(
         <Index />,
         mockStoreFactory()({

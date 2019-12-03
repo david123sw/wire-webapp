@@ -1,5 +1,5 @@
 {
-  "footer.copy": "© Wire Swiss GmbH",
+  "footer.copy": "© Secret",
   "footer.wireLink": "",
   "cookiePolicyStrings.bannerText": "",
   "index.createAccountForOrganizations": "",
@@ -50,7 +50,7 @@
   "unsupported.headlineIndexedDb": "",
   "unsupported.subheadBrowser": "",
   "unsupported.subheadCookies": "",
-  "unsupported.subheadIndexedDb": "Wire potrebuje dostop do lokalnega pomnilnika za prikaz sporočil. Lokalni pomnilnik ni na voljo v privatnem načinu.",
+  "unsupported.subheadIndexedDb": "Secret potrebuje dostop do lokalnega pomnilnika za prikaz sporočil. Lokalni pomnilnik ni na voljo v privatnem načinu.",
   "conversationJoin.unsupportedJoinHeadline": "",
   "conversationJoin.headline": "",
   "conversationJoin.unsupportedJoinMobileSubhead": "",
@@ -139,11 +139,11 @@
   "LOGOUT_REASON.SESSION_EXPIRED": "",
   "clientManager.headline": "",
   "clientManager.logout": "Odjava",
-  "clientManager.subhead": "Odstranite eno izmed vaših naprav za začetek uporabe Wire na tej.",
-  "historyInfo.hasHistoryHeadline": "Na tej napravi si že uporabljal(-a) Wire.",
+  "clientManager.subhead": "Odstranite eno izmed vaših naprav za začetek uporabe Secret na tej.",
+  "historyInfo.hasHistoryHeadline": "Na tej napravi si že uporabljal(-a) Secret.",
   "historyInfo.hasHistoryInfo": "",
   "historyInfo.learnMore": "Nauči se več",
-  "historyInfo.noHistoryHeadline": "Prvič uporabljate Wire na tej napravi.",
+  "historyInfo.noHistoryHeadline": "Prvič uporabljate Secret na tej napravi.",
   "historyInfo.noHistoryInfo": "",
   "historyInfo.ok": "V redu"
 }

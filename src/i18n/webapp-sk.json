@@ -1,5 +1,5 @@
 {
-  "footer.copy": "© Wire Swiss GmbH",
+  "footer.copy": "© Secret",
   "footer.wireLink": "",
   "cookiePolicyStrings.bannerText": "",
   "index.createAccountForOrganizations": "",
@@ -49,8 +49,8 @@
   "unsupported.headlineCookies": "",
   "unsupported.headlineIndexedDb": "",
   "unsupported.subheadBrowser": "",
-  "unsupported.subheadCookies": "Povoľte cookies na prihlásenie k Wire.",
-  "unsupported.subheadIndexedDb": "Pre zobrazenie Vašich správ potrebuje Wire prístup k lokálnemu úložisku. Lokálne úložisko nie je dostupné v privátnom režime.",
+  "unsupported.subheadCookies": "Povoľte cookies na prihlásenie k Secret.",
+  "unsupported.subheadIndexedDb": "Pre zobrazenie Vašich správ potrebuje Secret prístup k lokálnemu úložisku. Lokálne úložisko nie je dostupné v privátnom režime.",
   "conversationJoin.unsupportedJoinHeadline": "",
   "conversationJoin.headline": "",
   "conversationJoin.unsupportedJoinMobileSubhead": "",
@@ -139,11 +139,11 @@
   "LOGOUT_REASON.SESSION_EXPIRED": "",
   "clientManager.headline": "",
   "clientManager.logout": "Odhlásenie",
-  "clientManager.subhead": "Odstráňte jedno z Vašich iných zariadení aby ste mohli používať Wire na tomto.",
-  "historyInfo.hasHistoryHeadline": "Použili ste Wire na tomto zariadení.",
+  "clientManager.subhead": "Odstráňte jedno z Vašich iných zariadení aby ste mohli používať Secret na tomto.",
+  "historyInfo.hasHistoryHeadline": "Použili ste Secret na tomto zariadení.",
   "historyInfo.hasHistoryInfo": "",
   "historyInfo.learnMore": "Zistiť viac",
-  "historyInfo.noHistoryHeadline": "Je to prvýkrát čo používate Wire na tomto zariadení.",
+  "historyInfo.noHistoryHeadline": "Je to prvýkrát čo používate Secret na tomto zariadení.",
   "historyInfo.noHistoryInfo": "",
   "historyInfo.ok": "OK"
 }

@@ -1,5 +1,5 @@
 {
-  "footer.copy": "© Wire Swiss GmbH",
+  "footer.copy": "© Secret",
   "footer.wireLink": "",
   "cookiePolicyStrings.bannerText": "",
   "index.createAccountForOrganizations": "",
@@ -49,8 +49,8 @@
   "unsupported.headlineCookies": "",
   "unsupported.headlineIndexedDb": "",
   "unsupported.subheadBrowser": "",
-  "unsupported.subheadCookies": "Włącz ciasteczka do zalogowania się do Wire.",
-  "unsupported.subheadIndexedDb": "Wire potrzebuje dostępu do pamięci lokalnej, by wyświetlać wiadomości. Pamięć lokalna nie jest dostępna w trybie prywatnym.",
+  "unsupported.subheadCookies": "Włącz ciasteczka do zalogowania się do Secret.",
+  "unsupported.subheadIndexedDb": "Secret potrzebuje dostępu do pamięci lokalnej, by wyświetlać wiadomości. Pamięć lokalna nie jest dostępna w trybie prywatnym.",
   "conversationJoin.unsupportedJoinHeadline": "",
   "conversationJoin.headline": "",
   "conversationJoin.unsupportedJoinMobileSubhead": "",
@@ -140,10 +140,10 @@
   "clientManager.headline": "",
   "clientManager.logout": "Wyloguj się",
   "clientManager.subhead": "Żeby dodać to urządzenie, usuń jedno z poprzednich.",
-  "historyInfo.hasHistoryHeadline": "Używałeś wcześniej Wire na tym urządzeniu.",
+  "historyInfo.hasHistoryHeadline": "Używałeś wcześniej Secret na tym urządzeniu.",
   "historyInfo.hasHistoryInfo": "",
   "historyInfo.learnMore": "Więcej informacji",
-  "historyInfo.noHistoryHeadline": "Uruchomiłeś Wire na tym urządzeniu po raz pierwszy.",
+  "historyInfo.noHistoryHeadline": "Uruchomiłeś Secret na tym urządzeniu po raz pierwszy.",
   "historyInfo.noHistoryInfo": "",
   "historyInfo.ok": "OK"
 }

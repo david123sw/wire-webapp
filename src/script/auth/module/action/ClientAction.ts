@@ -1,5 +1,5 @@
 /*
- * Wire
+ * Secret
  * Copyright (C) 2018 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
@@ -75,14 +75,14 @@ export class ClientAction {
     }
     const deviceLabel = `${Runtime.getOsFamily()}${Runtime.getOs().version ? ` ${Runtime.getOs().version}` : ''}`;
     let deviceModel = StringUtil.capitalize(Runtime.getBrowserName());
-
+    //TODO:need to be verified
     if (Runtime.isElectron()) {
       if (Runtime.isMacOS()) {
-        deviceModel = 'Wire macOS';
+        deviceModel = 'Secret macOS';
       } else if (Runtime.isWindows()) {
-        deviceModel = 'Wire Windows';
+        deviceModel = 'Secret Windows';
       } else {
-        deviceModel = 'Wire Linux';
+        deviceModel = 'Secret Linux';
       }
     } else if (clientType === ClientType.TEMPORARY) {
       deviceModel = `${deviceModel} (Temporary)`;

@@ -1,5 +1,5 @@
 /*
- * Wire
+ * Secret
  * Copyright (C) 2019 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,9 +26,9 @@ import {Conversation} from 'src/script/entity/Conversation';
 import 'src/script/components/list/conversationListCallingCell';
 
 function createCall(state) {
-  const call = new Call();
+  const call = new Call(undefined, undefined, undefined, new Participant(), undefined);
   call.state(state);
-  call.selfParticipant = new Participant();
+  // call.selfParticipant = new Participant();
   return call;
 }
 
