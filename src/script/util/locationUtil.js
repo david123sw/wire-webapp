@@ -27,11 +27,15 @@
  * @returns {string} URL to location in Google Maps
  */
 export function getMapsUrl(latitude, longitude, name, zoom) {
-  const baseUrl = 'https://google.com/maps/';
+  // Secret国内屏蔽Google地图，使用高得地图
+  // const baseUrl = 'https://google.com/maps/';
+  // const nameParam = name ? `place/${name}/` : '';
+  // const locationParam = `@${latitude},${longitude}`;
+  // const zoomParam = zoom ? `,${zoom}z` : '';
+  // return `${baseUrl}${nameParam}${locationParam}${zoomParam}`;
 
-  const nameParam = name ? `place/${name}/` : '';
-  const locationParam = `@${latitude},${longitude}`;
-  const zoomParam = zoom ? `,${zoom}z` : '';
-
-  return `${baseUrl}${nameParam}${locationParam}${zoomParam}`;
+  const baseUrl = 'https://uri.amap.com/marker?position=';
+  const locationParam = `${longitude},${latitude}`;
+  const link = `${baseUrl}${locationParam}`;
+  return link;
 }

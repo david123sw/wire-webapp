@@ -70,8 +70,6 @@ export class CryptographyMapper {
 
   async mapExtraMessageReplacedRemind(rawMessage) {
     const availability_details = JSON.parse(rawMessage.availability.content);
-    // console.log('dav333 parse availability_details', availability_details);
-
     switch (availability_details.msgType) {
       case EXTRA_SPECIAL_MESSAGE_TYPE.RED_PACKET: {
         rawMessage.availability.content = t(EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.RED_PACKET);
@@ -79,25 +77,83 @@ export class CryptographyMapper {
       }
 
       case EXTRA_SPECIAL_MESSAGE_TYPE.TRANSFER_MONEY: {
-        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.TRANSFER_MONEY;
+        rawMessage.availability.content =
+          window.wire.app.repository.user.self().id === availability_details.msgData.userId
+            ? t(EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.TRANSFER_MONEY)
+            : t(EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.TRANSFER_MONEY_OUT);
         break;
       }
 
       case EXTRA_SPECIAL_MESSAGE_TYPE.AUTO_REPLY: {
-        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.AUTO_REPLY;
+        rawMessage.availability.content = t(EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.AUTO_REPLY);
         break;
       }
 
       case EXTRA_SPECIAL_MESSAGE_TYPE.OPEN_RED_PACKET: {
+        if (
+          availability_details.msgData.receiveUserId === availability_details.msgData.sendUserId &&
+          window.wire.app.repository.user.self().id === availability_details.msgData.sendUserId
+        ) {
+          rawMessage.availability.content = t(EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.OPEN_RED_PACKET);
+          rawMessage.availability.content = rawMessage.availability.content.replace(
+            '$from',
+            t('extra_special_message_type_4_to_1'),
+          );
+          rawMessage.availability.content = rawMessage.availability.content.replace(
+            '$to',
+            t('extra_special_message_type_4_to_1'),
+          );
+        } else {
+          await window.wire.app.repository.user.user_service
+            .getUsers([availability_details.msgData.receiveUserId, availability_details.msgData.sendUserId])
+            .then(response => {
+              const myself = window.wire.app.repository.user.self();
+              let from = response[0].name;
+              let to = myself.id === response[1].id ? t('extra_special_message_type_4_to_1') : response[1].name;
+              if (availability_details.msgData.sendUserId !== myself.id) {
+                const tmp = to;
+                to = from;
+                from = tmp;
+              }
+              rawMessage.availability.content = t(EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.OPEN_RED_PACKET);
+              rawMessage.availability.content = rawMessage.availability.content.replace('$from', from);
+              rawMessage.availability.content = rawMessage.availability.content.replace('$to', to);
+            })
+            .catch(error => {
+              this.logger.error(`Get users\' info failed: ${error.message}`, error);
+            });
+        }
+        break;
+      }
+
+      case EXTRA_SPECIAL_MESSAGE_TYPE.VIRTUAL_CURRENCIES_OPERATION: {
+        rawMessage.availability.content = availability_details.msgData.fromUserId
+          ? t(EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.VIRTUAL_CURRENCIES_OPERATION)
+          : t(EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.VIRTUAL_CURRENCIES_OPERATION_OUT);
+        break;
+      }
+
+      case EXTRA_SPECIAL_MESSAGE_TYPE.TRANSFER_VIRTUAL_CURRENCIES_OPERATION: {
         await window.wire.app.repository.user.user_service
           .getUsers([availability_details.msgData.receiveUserId, availability_details.msgData.sendUserId])
           .then(response => {
-            const from = response[0].name;
-            const to = response[1].name;
-            rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.OPEN_RED_PACKET;
+            const myself = window.wire.app.repository.user.self();
+            let from = response[0].name;
+            let to = myself.id === response[1].id ? t('extra_special_message_type_4_to_1') : response[1].name;
+            if (availability_details.msgData.sendUserId !== myself.id) {
+              const tmp = to;
+              to = from;
+              from = tmp;
+            }
+            rawMessage.availability.content = t(
+              EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.TRANSFER_VIRTUAL_CURRENCIES_OPERATION,
+            );
             rawMessage.availability.content = rawMessage.availability.content.replace('$from', from);
             rawMessage.availability.content = rawMessage.availability.content.replace('$to', to);
-            // console.log('dav333 1111111 rawMessage', rawMessage.availability);
+            rawMessage.availability.content = rawMessage.availability.content.replace(
+              '$what',
+              availability_details.msgData.orgCurrency,
+            );
           })
           .catch(error => {
             this.logger.error(`Get users\' info failed: ${error.message}`, error);
@@ -105,80 +161,78 @@ export class CryptographyMapper {
         break;
       }
 
-      case EXTRA_SPECIAL_MESSAGE_TYPE.VIRTUAL_CURRENCIES_OPERATION: {
-        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.VIRTUAL_CURRENCIES_OPERATION;
-        break;
-      }
-
-      case EXTRA_SPECIAL_MESSAGE_TYPE.TRANSFER_VIRTUAL_CURRENCIES_OPERATION: {
-        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.TRANSFER_VIRTUAL_CURRENCIES_OPERATION;
-        break;
-      }
-
       case EXTRA_SPECIAL_MESSAGE_TYPE.SOCIAL_FRIEND_INVITE: {
-        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.SOCIAL_FRIEND_INVITE;
+        rawMessage.availability.content = t(EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.SOCIAL_FRIEND_INVITE);
         break;
       }
 
       case EXTRA_SPECIAL_MESSAGE_TYPE.OTC_MINI_PROGRAM_INVITE: {
-        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.OTC_MINI_PROGRAM_INVITE;
+        rawMessage.availability.content = t(EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.OTC_MINI_PROGRAM_INVITE);
         break;
       }
 
       case EXTRA_SPECIAL_MESSAGE_TYPE.OTC_MINI_PROGRAM_SHARE: {
-        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.OTC_MINI_PROGRAM_SHARE;
+        rawMessage.availability.content = t(EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.OTC_MINI_PROGRAM_SHARE);
         break;
       }
 
       case EXTRA_SPECIAL_MESSAGE_TYPE.JOIN_GROUP_FAST_LINK_ONLY_IOS: {
-        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.JOIN_GROUP_FAST_LINK_ONLY_IOS;
+        rawMessage.availability.content = t(EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.JOIN_GROUP_FAST_LINK_ONLY_IOS);
         break;
       }
 
       case EXTRA_SPECIAL_MESSAGE_TYPE.INVITE_PERSONS_JOIN_GROUP_FAST_LINK_ONLY_IOS: {
-        rawMessage.availability.content =
-          EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.INVITE_PERSONS_JOIN_GROUP_FAST_LINK_ONLY_IOS;
+        rawMessage.availability.content = t(
+          EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.INVITE_PERSONS_JOIN_GROUP_FAST_LINK_ONLY_IOS,
+        );
         break;
       }
 
       case EXTRA_SPECIAL_MESSAGE_TYPE.INVITE_FRIENDS_JOIN_GROUP: {
-        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.INVITE_FRIENDS_JOIN_GROUP;
+        rawMessage.availability.content = t(EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.INVITE_FRIENDS_JOIN_GROUP);
         break;
       }
 
       case EXTRA_SPECIAL_MESSAGE_TYPE.SHARE_OPERATION_FOR_RECORD_TEMPLATE: {
-        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.SHARE_OPERATION_FOR_RECORD_TEMPLATE;
+        rawMessage.availability.content = t(EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.SHARE_OPERATION_FOR_RECORD_TEMPLATE);
         break;
       }
 
       case EXTRA_SPECIAL_MESSAGE_TYPE.SHARE_OPERATION_FOR_NEWS_TEMPLATE: {
-        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.SHARE_OPERATION_FOR_NEWS_TEMPLATE;
+        rawMessage.availability.content = t(EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.SHARE_OPERATION_FOR_NEWS_TEMPLATE);
         break;
       }
 
       case EXTRA_SPECIAL_MESSAGE_TYPE.SHARE_OPERATION_FOR_SOCIAL_PICTURE_TEMPLATE: {
-        rawMessage.availability.content =
-          EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.SHARE_OPERATION_FOR_SOCIAL_PICTURE_TEMPLATE;
+        rawMessage.availability.content = t(
+          EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.SHARE_OPERATION_FOR_SOCIAL_PICTURE_TEMPLATE,
+        );
         break;
       }
 
       case EXTRA_SPECIAL_MESSAGE_TYPE.SHARE_OPERATION_FOR_SOCIAL_VIDEO_TEMPLATE: {
-        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.SHARE_OPERATION_FOR_SOCIAL_VIDEO_TEMPLATE;
+        rawMessage.availability.content = t(
+          EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.SHARE_OPERATION_FOR_SOCIAL_VIDEO_TEMPLATE,
+        );
         break;
       }
 
       case EXTRA_SPECIAL_MESSAGE_TYPE.SHARE_OPERATION_FOR_SOCIAL_AUDIO_TEMPLATE: {
-        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.SHARE_OPERATION_FOR_SOCIAL_AUDIO_TEMPLATE;
+        rawMessage.availability.content = t(
+          EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.SHARE_OPERATION_FOR_SOCIAL_AUDIO_TEMPLATE,
+        );
         break;
       }
 
       case EXTRA_SPECIAL_MESSAGE_TYPE.SHARE_OPERATION_FOR_SOCIAL_TEXT_TEMPLATE: {
-        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.SHARE_OPERATION_FOR_SOCIAL_TEXT_TEMPLATE;
+        rawMessage.availability.content = t(
+          EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.SHARE_OPERATION_FOR_SOCIAL_TEXT_TEMPLATE,
+        );
         break;
       }
 
       default: {
-        rawMessage.availability.content = '';
+        rawMessage.availability.content = t(EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.UNKNOWN);
       }
     }
 
@@ -186,7 +240,6 @@ export class CryptographyMapper {
   }
 
   async _mapGenericMessage(genericMessage, event) {
-    // console.log('dav333 _mapGenericMessage', JSON.parse(JSON.stringify(genericMessage)));
     let specificContent;
 
     switch (genericMessage.content) {

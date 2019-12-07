@@ -60,11 +60,14 @@ export enum EXTRA_SPECIAL_MESSAGE_TYPE {
 }
 
 export enum EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER {
+  UNKNOWN = 'extra_special_message_type_0',
   RED_PACKET = 'extra_special_message_type_1',
   TRANSFER_MONEY = 'extra_special_message_type_2',
+  TRANSFER_MONEY_OUT = 'extra_special_message_type_2_1',
   AUTO_REPLY = 'extra_special_message_type_3',
   OPEN_RED_PACKET = 'extra_special_message_type_4',
   VIRTUAL_CURRENCIES_OPERATION = 'extra_special_message_type_5',
+  VIRTUAL_CURRENCIES_OPERATION_OUT = 'extra_special_message_type_5_1',
   TRANSFER_VIRTUAL_CURRENCIES_OPERATION = 'extra_special_message_type_6',
   SOCIAL_FRIEND_INVITE = 'extra_special_message_type_7',
   OTC_MINI_PROGRAM_INVITE = 'extra_special_message_type_8',
