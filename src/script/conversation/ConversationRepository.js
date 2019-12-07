@@ -1205,7 +1205,7 @@ export class ConversationRepository {
    * @returns {undefined} No return value
    */
   markAsRead(conversationEntity) {
-    // console.log('dav333 markAsRead TODO sync error', conversationEntity);
+    // console.log('dav333 markAsRead sync error', conversationEntity);
     const conversationId = conversationEntity.id;
     const timestamp = conversationEntity.last_read_timestamp();
     const protoLastRead = new LastRead({
@@ -2601,7 +2601,6 @@ export class ConversationRepository {
    * @returns {Promise} Resolves when the message was sent
    */
   _sendGenericMessage(eventInfoEntity) {
-    // console.log('dav333 two ways _sendGenericMessage eventInfoEntity', eventInfoEntity);
     return this._grantOutgoingMessage(eventInfoEntity)
       .then(() => this._shouldSendAsExternal(eventInfoEntity))
       .then(sendAsExternal => {

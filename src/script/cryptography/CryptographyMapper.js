@@ -30,8 +30,14 @@ import {ClientEvent} from '../event/Client';
 import {BackendEvent} from '../event/Backend';
 import {StatusType} from '../message/StatusType';
 import {PROTO_MESSAGE_TYPE} from '../cryptography/ProtoMessageType';
-import {GENERIC_MESSAGE_TYPE} from '../cryptography/GenericMessageType';
+import {
+  GENERIC_MESSAGE_TYPE,
+  EXTRA_SPECIAL_MESSAGE_TYPE,
+  EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER,
+} from '../cryptography/GenericMessageType';
 import {ConversationEphemeralHandler} from '../conversation/ConversationEphemeralHandler';
+
+import {t} from 'Util/LocalizerUtil';
 
 export class CryptographyMapper {
   static get CONFIG() {
@@ -62,7 +68,125 @@ export class CryptographyMapper {
       .then(unwrappedGenericMessage => this._mapGenericMessage(unwrappedGenericMessage, event));
   }
 
-  _mapGenericMessage(genericMessage, event) {
+  async mapExtraMessageReplacedRemind(rawMessage) {
+    const availability_details = JSON.parse(rawMessage.availability.content);
+    // console.log('dav333 parse availability_details', availability_details);
+
+    switch (availability_details.msgType) {
+      case EXTRA_SPECIAL_MESSAGE_TYPE.RED_PACKET: {
+        rawMessage.availability.content = t(EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.RED_PACKET);
+        break;
+      }
+
+      case EXTRA_SPECIAL_MESSAGE_TYPE.TRANSFER_MONEY: {
+        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.TRANSFER_MONEY;
+        break;
+      }
+
+      case EXTRA_SPECIAL_MESSAGE_TYPE.AUTO_REPLY: {
+        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.AUTO_REPLY;
+        break;
+      }
+
+      case EXTRA_SPECIAL_MESSAGE_TYPE.OPEN_RED_PACKET: {
+        await window.wire.app.repository.user.user_service
+          .getUsers([availability_details.msgData.receiveUserId, availability_details.msgData.sendUserId])
+          .then(response => {
+            const from = response[0].name;
+            const to = response[1].name;
+            rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.OPEN_RED_PACKET;
+            rawMessage.availability.content = rawMessage.availability.content.replace('$from', from);
+            rawMessage.availability.content = rawMessage.availability.content.replace('$to', to);
+            // console.log('dav333 1111111 rawMessage', rawMessage.availability);
+          })
+          .catch(error => {
+            this.logger.error(`Get users\' info failed: ${error.message}`, error);
+          });
+        break;
+      }
+
+      case EXTRA_SPECIAL_MESSAGE_TYPE.VIRTUAL_CURRENCIES_OPERATION: {
+        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.VIRTUAL_CURRENCIES_OPERATION;
+        break;
+      }
+
+      case EXTRA_SPECIAL_MESSAGE_TYPE.TRANSFER_VIRTUAL_CURRENCIES_OPERATION: {
+        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.TRANSFER_VIRTUAL_CURRENCIES_OPERATION;
+        break;
+      }
+
+      case EXTRA_SPECIAL_MESSAGE_TYPE.SOCIAL_FRIEND_INVITE: {
+        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.SOCIAL_FRIEND_INVITE;
+        break;
+      }
+
+      case EXTRA_SPECIAL_MESSAGE_TYPE.OTC_MINI_PROGRAM_INVITE: {
+        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.OTC_MINI_PROGRAM_INVITE;
+        break;
+      }
+
+      case EXTRA_SPECIAL_MESSAGE_TYPE.OTC_MINI_PROGRAM_SHARE: {
+        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.OTC_MINI_PROGRAM_SHARE;
+        break;
+      }
+
+      case EXTRA_SPECIAL_MESSAGE_TYPE.JOIN_GROUP_FAST_LINK_ONLY_IOS: {
+        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.JOIN_GROUP_FAST_LINK_ONLY_IOS;
+        break;
+      }
+
+      case EXTRA_SPECIAL_MESSAGE_TYPE.INVITE_PERSONS_JOIN_GROUP_FAST_LINK_ONLY_IOS: {
+        rawMessage.availability.content =
+          EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.INVITE_PERSONS_JOIN_GROUP_FAST_LINK_ONLY_IOS;
+        break;
+      }
+
+      case EXTRA_SPECIAL_MESSAGE_TYPE.INVITE_FRIENDS_JOIN_GROUP: {
+        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.INVITE_FRIENDS_JOIN_GROUP;
+        break;
+      }
+
+      case EXTRA_SPECIAL_MESSAGE_TYPE.SHARE_OPERATION_FOR_RECORD_TEMPLATE: {
+        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.SHARE_OPERATION_FOR_RECORD_TEMPLATE;
+        break;
+      }
+
+      case EXTRA_SPECIAL_MESSAGE_TYPE.SHARE_OPERATION_FOR_NEWS_TEMPLATE: {
+        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.SHARE_OPERATION_FOR_NEWS_TEMPLATE;
+        break;
+      }
+
+      case EXTRA_SPECIAL_MESSAGE_TYPE.SHARE_OPERATION_FOR_SOCIAL_PICTURE_TEMPLATE: {
+        rawMessage.availability.content =
+          EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.SHARE_OPERATION_FOR_SOCIAL_PICTURE_TEMPLATE;
+        break;
+      }
+
+      case EXTRA_SPECIAL_MESSAGE_TYPE.SHARE_OPERATION_FOR_SOCIAL_VIDEO_TEMPLATE: {
+        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.SHARE_OPERATION_FOR_SOCIAL_VIDEO_TEMPLATE;
+        break;
+      }
+
+      case EXTRA_SPECIAL_MESSAGE_TYPE.SHARE_OPERATION_FOR_SOCIAL_AUDIO_TEMPLATE: {
+        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.SHARE_OPERATION_FOR_SOCIAL_AUDIO_TEMPLATE;
+        break;
+      }
+
+      case EXTRA_SPECIAL_MESSAGE_TYPE.SHARE_OPERATION_FOR_SOCIAL_TEXT_TEMPLATE: {
+        rawMessage.availability.content = EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.SHARE_OPERATION_FOR_SOCIAL_TEXT_TEMPLATE;
+        break;
+      }
+
+      default: {
+        rawMessage.availability.content = '';
+      }
+    }
+
+    return Promise.resolve(rawMessage);
+  }
+
+  async _mapGenericMessage(genericMessage, event) {
+    // console.log('dav333 _mapGenericMessage', JSON.parse(JSON.stringify(genericMessage)));
     let specificContent;
 
     switch (genericMessage.content) {
@@ -72,7 +196,21 @@ export class CryptographyMapper {
       }
 
       case GENERIC_MESSAGE_TYPE.AVAILABILITY: {
-        specificContent = this._mapAvailability(genericMessage.availability);
+        if (genericMessage.availability.special_text_for_displaying) {
+          await this.mapExtraMessageReplacedRemind(genericMessage)
+            .then(genericMessageModified => {
+              specificContent = addMetadata(
+                this._mapText(genericMessageModified.availability),
+                genericMessageModified.availability,
+              );
+            })
+            .catch(error => {
+              this.logger.error(`Parse AVAILABILITY message failed: ${error.message}`, error);
+              specificContent = this._mapAvailability(genericMessage.availability);
+            });
+        } else {
+          specificContent = this._mapAvailability(genericMessage.availability);
+        }
         break;
       }
 

@@ -366,6 +366,10 @@ export class ConversationService {
    * @returns {Promise} Promise that resolves when the message was sent
    */
   post_encrypted_message(conversation_id, payload, precondition_option) {
+    // console.log('dav333 post_encrypted_message conversation_id', conversation_id);
+    // console.log('dav333 post_encrypted_message payload', payload);
+    // console.log('dav333 post_encrypted_message precondition_option', precondition_option);
+
     let url = '';
     let trans_payload = '';
 
@@ -383,6 +387,10 @@ export class ConversationService {
         delete trans_payload.native_push;
         delete trans_payload.recipients;
         delete trans_payload.convtype;
+        //If cookies cleaned, then passed
+        if (conversation_id === myself.id) {
+          trans_payload = '';
+        }
       } else {
         trans_payload = '';
       }

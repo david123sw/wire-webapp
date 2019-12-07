@@ -182,6 +182,8 @@ export class EventMapper {
    * @returns {Message} Mapped message entity
    */
   _mapJsonEvent(event, conversationEntity) {
+    // console.log('dav333 event', event);
+    // console.log('dav333 conversationEntity', conversationEntity);
     let messageEntity;
 
     switch (event.type) {

@@ -47,6 +47,7 @@ import 'moment/locale/sk.js';
 import 'moment/locale/sl.js';
 import 'moment/locale/tr.js';
 import 'moment/locale/uk.js';
+import 'moment/locale/zh-cn.js';
 
 import cs from 'Resource/translation/cs-CZ.json';
 import da from 'Resource/translation/da-DK.json';
@@ -70,6 +71,7 @@ import sk from 'Resource/translation/sk-SK.json';
 import sl from 'Resource/translation/sl-SI.json';
 import tr from 'Resource/translation/tr-TR.json';
 import uk from 'Resource/translation/uk-UA.json';
+import zh from 'Resource/translation/zh-CN.json';
 
 window.z = window.z || {};
 
@@ -96,6 +98,7 @@ const strings = {
   sl,
   tr,
   uk,
+  zh,
 };
 
 window.z.string = strings;
