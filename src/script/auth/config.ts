@@ -26,10 +26,10 @@ export class Configuration {
   readonly APP_INSTANCE_ID = UUID();
   readonly BACKEND_REST = window.wire.env.BACKEND_REST || 'https://account.isecret.im';
   readonly BACKEND_WS = window.wire.env.BACKEND_WS || 'wss://account.isecret.im';
-  readonly BRAND_NAME = window.wire.env.BRAND_NAME || 'Wire';
+  readonly BRAND_NAME = window.wire.env.BRAND_NAME || 'Secret';
   readonly ENVIRONMENT = window.wire.env.ENVIRONMENT || 'production';
   readonly FEATURE = window.wire.env.FEATURE;
-  readonly MAX_GROUP_PARTICIPANTS = window.wire.env.MAX_GROUP_PARTICIPANTS || 500;
+  readonly MAX_GROUP_PARTICIPANTS = window.wire.env.MAX_GROUP_PARTICIPANTS || 10000;
   readonly MAX_VIDEO_PARTICIPANTS = window.wire.env.MAX_VIDEO_PARTICIPANTS || 4;
   readonly NEW_PASSWORD_MINIMUM_LENGTH =
     window.wire.env.NEW_PASSWORD_MINIMUM_LENGTH || ValidationUtil.DEFAULT_PASSWORD_MIN_LENGTH;
@@ -40,7 +40,7 @@ export class Configuration {
     TEAMS_BASE: 'https://account.isecret.im',
     WEBSITE_BASE: 'https://isecret.im',
   };
-  readonly VERSION = window.wire.env.VERSION || '0.0.0';
+  readonly VERSION = window.wire.env.VERSION || '1.0.0';
 }
 
 const Config = new Configuration();

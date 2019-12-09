@@ -22,8 +22,8 @@ import {BackendEnvironment} from '../service/BackendEnvironment';
 
 const APP_ENV = {
   LOCALHOST: 'localhost',
-  PRODUCTION: 'wire.com',
-  VIRTUAL_HOST: 'wire.ms', // The domain "wire.ms" is our virtual host for testing contact uploads
+  PRODUCTION: 'account.isecret.im',
+  VIRTUAL_HOST: 'testaccount.isecret.im', // The domain "wire.ms" is our virtual host for testing contact uploads
 };
 
 const BROWSER_NAME = {

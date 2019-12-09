@@ -16,8 +16,6 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  *
  */
-// require(`Resource/translation/${navigator.language.substr(0, 5)}.json`);
-
 export enum GENERIC_MESSAGE_TYPE {
   ASSET = 'asset',
   AVAILABILITY = 'availability',

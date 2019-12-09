@@ -139,6 +139,7 @@ const config: ServerConfig = {
       CHECK_CONSENT: process.env.FEATURE_CHECK_CONSENT == 'false' ? false : true,
       DEFAULT_LOGIN_TEMPORARY_CLIENT: process.env.FEATURE_DEFAULT_LOGIN_TEMPORARY_CLIENT == 'true' ? true : false,
       ENABLE_ACCOUNT_REGISTRATION: process.env.FEATURE_ENABLE_ACCOUNT_REGISTRATION == 'false' ? false : true,
+      ENABLE_COMPANY_LOGIN: process.env.FEATURE_ENABLE_COMPANY_LOGIN == 'false' ? false : true,
       ENABLE_DEBUG: process.env.FEATURE_ENABLE_DEBUG == 'true' ? true : false,
       ENABLE_PHONE_LOGIN: process.env.FEATURE_ENABLE_PHONE_LOGIN == 'false' ? false : true,
       ENABLE_SSO: process.env.FEATURE_ENABLE_SSO == 'true' ? true : false,

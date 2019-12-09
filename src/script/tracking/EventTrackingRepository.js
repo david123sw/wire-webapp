@@ -254,7 +254,7 @@ export class EventTrackingRepository {
 
     const options = {
       disableErrorTracking: false,
-      excludedHostnames: ['localhost', 'wire.ms'],
+      excludedHostnames: ['localhost', 'wire.ms', 'wire.com'],
       ignore3rdPartyErrors: true,
       ignoreAjaxAbort: true,
       ignoreAjaxError: true,

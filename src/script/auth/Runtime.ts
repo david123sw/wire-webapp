@@ -31,7 +31,7 @@ const BROWSER = {
 
 const ELECTRON_APP = {
   FRANZ: 'franz',
-  WIRE: 'wire',
+  WIRE: 'secret',
 };
 
 export const OS = {

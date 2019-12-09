@@ -222,7 +222,7 @@ const Login = ({
                   ) : (
                     <div style={{marginTop: '4px'}}>&nbsp;</div>
                   )}
-                  {!isDesktopApp() && (
+                  {/*!isDesktopApp()*/ false && (
                     <Checkbox
                       tabIndex={3}
                       onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPersist(!event.target.checked)}
@@ -241,11 +241,13 @@ const Login = ({
                     {_(loginStrings.forgotPassword)}
                   </Link>
                   <Columns style={{marginTop: '36px'}}>
-                    <Column>
-                      <RouterLink to="/sso" data-uie-name="go-sign-in-sso">
-                        {_(loginStrings.ssoLogin)}
-                      </RouterLink>
-                    </Column>
+                    {Config.FEATURE.ENABLE_COMPANY_LOGIN && (
+                      <Column>
+                        <RouterLink to="/sso" data-uie-name="go-sign-in-sso">
+                          {_(loginStrings.ssoLogin)}
+                        </RouterLink>
+                      </Column>
+                    )}
                     {Config.FEATURE.ENABLE_PHONE_LOGIN && (
                       <Column>
                         <Link
