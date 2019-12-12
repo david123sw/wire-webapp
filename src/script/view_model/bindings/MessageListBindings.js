@@ -177,7 +177,14 @@ ko.bindingHandlers.relative_timestamp = (function() {
     }
 
     if (moment().diff(date, 'minutes') < 60) {
-      return date.fromNow();
+      let format = date.fromNow();
+      if (t('conversationAgo') !== 'conversationAgo') {
+        format = format.replace('minutes', t('ephemeralUnitsMinute'));
+        format = format.replace('ago', t('conversationAgo'));
+        format = format.replace('an', '1');
+        format = format.replace('hour', t('ephemeralUnitsHour'));
+      }
+      return format;
     }
 
     if (current_day === today) {
@@ -206,7 +213,14 @@ ko.bindingHandlers.relative_timestamp = (function() {
     }
 
     if (moment().diff(date, 'minutes') < 60) {
-      return date.fromNow();
+      let format = date.fromNow();
+      if (t('conversationAgo') !== 'conversationAgo') {
+        format = format.replace('minutes', t('ephemeralUnitsMinute'));
+        format = format.replace('ago', t('conversationAgo'));
+        format = format.replace('an', '1');
+        format = format.replace('hour', t('ephemeralUnitsHour'));
+      }
+      return format;
     }
 
     if (current_day === today) {

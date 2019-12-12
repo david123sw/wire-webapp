@@ -71,7 +71,7 @@ class ConversationListCell {
   ) {
     this.conversation = conversation;
     this.isSelected = ko.computed(() => is_selected(conversation));
-    // TODO: "click" should be renamed to "right_click"
+    // "click" should be renamed to "right_click"
     this.on_click = click;
     this.ParticipantAvatar = ParticipantAvatar;
     this.showJoinButton = showJoinButton;

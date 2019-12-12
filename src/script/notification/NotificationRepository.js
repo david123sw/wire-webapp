@@ -185,7 +185,6 @@ export class NotificationRepository {
   removeReadNotifications() {
     this.notifications.forEach(notification => {
       const {conversationId, messageId, messageType} = notification.data || {};
-
       if (messageId) {
         this.conversationRepository.is_message_read(conversationId, messageId).then(isRead => {
           if (isRead) {

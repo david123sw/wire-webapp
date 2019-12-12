@@ -344,9 +344,56 @@ const _getStateUnreadMessage = {
 
 const _getStateUserName = {
   description: conversationEntity => {
-    const [userEntity] = conversationEntity.participating_user_ets();
-    const hasUsername = userEntity && userEntity.username();
-    return hasUsername ? `@${userEntity.username()}` : '';
+    // console.log('dav333 conversationEntity', conversationEntity);
+    // console.log('dav333 last msg', conversationEntity.messages());
+    const readMessages = conversationEntity.messages();
+    if (0 === readMessages.length) {
+      return 'n/a';
+    }
+    const messageEntity = readMessages[readMessages.length - 1];
+    {
+      // console.log('dav333 messageEntity', messageEntity);
+      let string;
+
+      if (messageEntity.is_ping()) {
+        string = t('notificationPing');
+      } else if (messageEntity.has_asset_text()) {
+        string = true;
+      } else if (messageEntity.has_asset()) {
+        const assetEntity = messageEntity.get_first_asset();
+        const isUploaded = assetEntity.status() === AssetTransferState.UPLOADED;
+
+        if (isUploaded) {
+          if (assetEntity.is_audio()) {
+            string = t('notificationSharedAudio');
+          } else if (assetEntity.is_video()) {
+            string = t('notificationSharedVideo');
+          } else {
+            string = t('notificationSharedFile');
+          }
+        }
+      } else if (messageEntity.has_asset_location()) {
+        string = t('notificationSharedLocation');
+      } else if (messageEntity.has_asset_image()) {
+        string = t('notificationAssetAdd');
+      }
+
+      if (!!string) {
+        if (messageEntity.is_ephemeral()) {
+          return conversationEntity.isGroup()
+            ? t('conversationsSecondaryLineEphemeralMessageGroup')
+            : t('conversationsSecondaryLineEphemeralMessage');
+        }
+
+        const hasString = string && string !== true;
+        const stateText = hasString ? string : messageEntity.get_first_asset().text;
+        return conversationEntity.isGroup() ? `${messageEntity.unsafeSenderName()}: ${stateText}` : stateText;
+      }
+    }
+
+    // const [userEntity] = conversationEntity.participating_user_ets();
+    // const hasUsername = userEntity && userEntity.username();
+    // return hasUsername ? `@${userEntity.username()}` : '';
   },
   icon: conversationEntity => {
     if (conversationEntity.isRequest()) {
@@ -354,11 +401,12 @@ const _getStateUserName = {
     }
   },
   match: conversationEntity => {
-    const lastMessageEntity = conversationEntity.getLastMessage();
-    const isMemberJoin = lastMessageEntity && lastMessageEntity.is_member() && lastMessageEntity.isMemberJoin();
-    const isEmpty1to1Conversation = conversationEntity.is1to1() && isMemberJoin;
-
-    return conversationEntity.isRequest() || isEmpty1to1Conversation;
+    return true;
+    // const lastMessageEntity = conversationEntity.getLastMessage();
+    // const isMemberJoin = lastMessageEntity && lastMessageEntity.is_member() && lastMessageEntity.isMemberJoin();
+    // const isEmpty1to1Conversation = conversationEntity.is1to1() && isMemberJoin;
+    //
+    // return conversationEntity.isRequest() || isEmpty1to1Conversation;
   },
 };
 
@@ -371,8 +419,15 @@ export const generateCellState = conversationEntity => {
     _getStateUnreadMessage,
     _getStateUserName,
   ];
-  const matchingState = states.find(state => state.match(conversationEntity)) || _getStateDefault;
 
+  // console.log('dav333 _getStateRemoved', states[0].match(conversationEntity));
+  // console.log('dav333 _getStateMuted', states[1].match(conversationEntity));
+  // console.log('dav333 _getStateAlert', states[2].match(conversationEntity));
+  // console.log('dav333 _getStateGroupActivity', states[3].match(conversationEntity));
+  // console.log('dav333 _getStateUnreadMessage', states[4].match(conversationEntity));
+  // console.log('dav333 _getStateUserName', states[5].match(conversationEntity));
+
+  const matchingState = states.find(state => state.match(conversationEntity)) || _getStateDefault;
   return {
     description: matchingState.description(conversationEntity),
     icon: matchingState.icon(conversationEntity),

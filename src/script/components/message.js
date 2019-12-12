@@ -70,8 +70,7 @@ class Message {
   ) {
     this.message = message;
     this.conversation = conversation;
-
-    this.shouldShowAvatar = shouldShowAvatar;
+    this.shouldShowAvatar = selfId() !== this.message.from;
     this.shouldShowInvitePeople = shouldShowInvitePeople;
     this.selfId = selfId;
     this.isSelfTemporaryGuest = isSelfTemporaryGuest;
@@ -293,7 +292,7 @@ const normalTemplate = `
       "></message-quote>
   <!-- /ko -->
 
-  <div class="message-body" data-bind="attr: {'title': message.ephemeral_caption()}">
+  <div class="message-body" data-bind="attr: {'title': message.ephemeral_caption()}, css: {'message-body-self-special': !shouldShowAvatar}">
     <!-- ko if: message.ephemeral_status() === EphemeralStatusType.ACTIVE -->
       <ephemeral-timer class="message-ephemeral-timer" params="message: message"></ephemeral-timer>
     <!-- /ko -->
@@ -304,7 +303,19 @@ const normalTemplate = `
       <!-- /ko -->
       <!-- ko if: asset.is_text() -->
         <!-- ko if: asset.should_render_text -->
-          <div class="text" data-bind="html: asset.render(selfId(), accentColor()), event: {click: (data, event) => onClickMessage(asset, event)}, css: {'text-large': includesOnlyEmojis(asset.text), 'text-foreground': message.status() === StatusType.SENDING, 'ephemeral-message-obfuscated': message.isObfuscated()}" dir="auto"></div>
+        
+          <!-- ko if: shouldShowAvatar -->
+            <div class="text_content_background text_content_background_left">
+              <div class="text" data-bind="html: asset.render(selfId(), accentColor()), event: {click: (data, event) => onClickMessage(asset, event)}, css: {'text-large': includesOnlyEmojis(asset.text), 'text-foreground': message.status() === StatusType.SENDING, 'ephemeral-message-obfuscated': message.isObfuscated()}" dir="auto"></div>
+            </div>
+          <!-- /ko -->
+          
+          <!-- ko ifnot: shouldShowAvatar -->
+            <div class="text_content_background text_content_background_right">
+              <div class="text2nd" data-bind="html: asset.render(selfId(), accentColor()), event: {click: (data, event) => onClickMessage(asset, event)}, css: {'text-large': includesOnlyEmojis(asset.text), 'text-foreground': message.status() === StatusType.SENDING, 'ephemeral-message-obfuscated': message.isObfuscated()}" dir="auto"></div>
+            </div>
+          <!-- /ko -->
+          
         <!-- /ko -->
         <!-- ko foreach: asset.previews() -->
           <link-preview-asset class="message-asset" data-bind="css: {'ephemeral-asset-expired': $parent.message.isObfuscated()}" params="message: $parent.message"></link-preview-asset>
@@ -325,7 +336,7 @@ const normalTemplate = `
     <!-- /ko -->
 
     <!-- ko if: !message.other_likes().length && message.isReactable() -->
-      <div class="message-body-like">
+      <div class="message-body-like" data-bind="css: {'message-body-like-self-special': !shouldShowAvatar}">
         <span class="message-body-like-icon like-button message-show-on-hover" data-bind="attr: {'data-ui-value': message.is_liked()}, css: {'like-button-liked': message.is_liked()}, style: {opacity: message.is_liked() ? 1 : ''}, click: () => onLike(message)">
           <span class="icon-like-small"></span>
           <span class="icon-liked-small"></span>
@@ -333,7 +344,7 @@ const normalTemplate = `
       </div>
     <!-- /ko -->
 
-    <div class="message-body-actions">
+    <div class="message-body-actions" data-bind="css: {'message-body-actions-self-special': !shouldShowAvatar}">
       <span class="context-menu icon-more font-size-xs" data-bind="click: (data, event) => showContextMenu(message, event)"></span>
       <!-- ko if: message.ephemeral_status() === EphemeralStatusType.ACTIVE -->
         <time class="time" data-bind="text: message.display_timestamp_short(), attr: {'data-timestamp': message.timestamp, 'data-uie-uid': message.id, 'title': message.ephemeral_caption()}, showAllTimestamps"></time>

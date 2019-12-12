@@ -24,14 +24,14 @@
 }
 
 .messages {
-  max-width: @conversation-max-width;
+  //max-width: @conversation-max-width;
   transform: translateZ(0);
 }
 
 // MESSAGE
 .message {
   position: relative;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 
   & a {
     text-decoration: none;
@@ -167,6 +167,10 @@
   }
 }
 
+.message-header-icon-self-special {
+  //border-bottom: 1px dotted var(--foreground-fade-24);
+}
+
 .message-header-label {
   display: flex;
   min-width: 0; // fixes ellipsis not working with flexbox (FF)
@@ -266,6 +270,8 @@
   height: 48px;
   padding-top: 8px; // TODO margin top is not working because of collapsing margins
   border-bottom: 1px solid @separator-color;
+
+  margin-right: 0px !important;
   margin-bottom: 16px;
   line-height: 40px;
   user-select: none;
@@ -333,6 +339,39 @@
     word-wrap: break-word;
   }
 
+  .text2nd {
+    .text-selection;
+    .accent-selection;
+
+    display: inline-block;
+    width: 100%;
+    line-height: @line-height-lg;
+
+    text-align: right;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .text_content_background {
+    display: flex;
+    min-width: fit-content;
+    max-width: fit-content;
+    padding: 8px 10px;
+    border-radius: 5px;
+    box-shadow: 1px 1px 1px 1px rgba(140, 140, 140, 0.25);
+    line-height: @line-height-lg - 4px;
+    word-break: break-all;
+    word-wrap: break-word;
+  }
+
+  .text_content_background_left {
+    background-color: #fafafa;
+  }
+
+  .text_content_background_right {
+    background-color: #e2f7cc;
+  }
+
   .text-large {
     font-size: 40px;
     line-height: 40px;
@@ -362,6 +401,12 @@
   }
 }
 
+.message-body-self-special {
+  padding-right: @conversation-message-sender-width;
+  padding-left: @conversation-message-timestamp-width;
+  direction: rtl;
+}
+
 .message-body-like {
   .flex-center;
 
@@ -369,6 +414,13 @@
   bottom: 0;
   left: 0;
   width: @conversation-message-sender-width;
+}
+
+.message-body-like-self-special {
+  top: 0;
+  right: 0;
+  bottom: unset;
+  left: unset;
 }
 
 image-asset {
@@ -542,6 +594,13 @@ image-asset {
   .message-status-read--visible {
     opacity: 1;
   }
+}
+
+.message-body-actions-self-special {
+  top: unset;
+  right: unset;
+  bottom: 0;
+  left: 0;
 }
 
 .time {
