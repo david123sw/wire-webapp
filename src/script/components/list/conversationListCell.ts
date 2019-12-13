@@ -22,7 +22,7 @@ import ko from 'knockout';
 import {noop} from 'Util/util';
 
 import {ParticipantAvatar} from 'Components/participantAvatar';
-import {generateCellState} from '../../conversation/ConversationCellState';
+import {generateCellStateEx} from '../../conversation/ConversationCellState';
 import {ConversationStatusIcon} from '../../conversation/ConversationStatusIcon';
 import {Conversation} from '../../entity/Conversation';
 import {MediaType} from '../../media/MediaType';
@@ -52,7 +52,7 @@ class ConversationListCell {
   isInTeam: boolean;
   isInViewport: ko.Observable<boolean>;
   users: any;
-  cell_state: ko.Observable<ReturnType<typeof generateCellState>>;
+  cell_state: ko.Observable<ReturnType<typeof generateCellStateEx>>;
   ConversationStatusIcon: typeof ConversationStatusIcon;
   onClickJoinCall: (viewModel: ConversationListCell, event: MouseEvent) => void;
   dispose: () => void;
@@ -117,8 +117,15 @@ class ConversationListCell {
       onJoinCall(conversation, MediaType.AUDIO);
     };
 
+    // const cellStateObservable = ko
+    //   .computed(() => this.cell_state(generateCellState(this.conversation)))
+    //   .extend({rateLimit: 500});
+
     const cellStateObservable = ko
-      .computed(() => this.cell_state(generateCellState(this.conversation)))
+      .computed(() => {
+        // this.cell_state(generateCellState(this.conversation))
+        this.cell_state(generateCellStateEx(this.conversation));
+      })
       .extend({rateLimit: 500});
 
     this.dispose = () => {

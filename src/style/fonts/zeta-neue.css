@@ -152,6 +152,7 @@
 }
 .icon-like-small:before {
   content: "\e1830";
+  color: red;
 }
 .icon-liked:before {
   content: "\e184";
