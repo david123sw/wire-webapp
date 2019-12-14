@@ -610,8 +610,8 @@ export class Conversation {
     if (messageEntity) {
       const existingMessageEntity = this._findDuplicate(messageEntity.id, messageEntity.from);
       if (existingMessageEntity) {
-        const logData = {additionalMessage: messageEntity, existingMessage: existingMessageEntity};
-        this.logger.warn(`Filtered message '${messageEntity.id}' as duplicate in view`, logData);
+        // const logData = {additionalMessage: messageEntity, existingMessage: existingMessageEntity};
+        // this.logger.warn(`Filtered message '${messageEntity.id}' as duplicate in view`, logData);
         return undefined;
       }
       return messageEntity;

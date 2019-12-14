@@ -572,7 +572,6 @@ export class ConversationRepository {
     const upperBound = firstMessageEntity
       ? new Date(firstMessageEntity.timestamp())
       : new Date(conversationEntity.get_latest_timestamp(this.serverTimeHandler.toServerTimestamp()) + 1);
-
     return this.eventService
       .loadPrecedingEvents(conversationEntity.id, new Date(0), upperBound, z.config.MESSAGES_FETCH_LIMIT)
       .then(events => this._addPrecedingEventsToConversation(events, conversationEntity))
@@ -585,7 +584,7 @@ export class ConversationRepository {
   _addPrecedingEventsToConversation(events, conversationEntity) {
     const hasAdditionalMessages = events.length === z.config.MESSAGES_FETCH_LIMIT;
 
-    return this._addEventsToConversation(events, conversationEntity).then(mappedMessageEntities => {
+    return this._addEventsToConversation(events, conversationEntity, true).then(mappedMessageEntities => {
       conversationEntity.hasAdditionalMessages(hasAdditionalMessages);
 
       if (!hasAdditionalMessages) {
@@ -1205,7 +1204,6 @@ export class ConversationRepository {
    * @returns {undefined} No return value
    */
   markAsRead(conversationEntity) {
-    // console.log('dav333 markAsRead sync error', conversationEntity);
     const conversationId = conversationEntity.id;
     const timestamp = conversationEntity.last_read_timestamp();
     const protoLastRead = new LastRead({
@@ -2067,7 +2065,7 @@ export class ConversationRepository {
             eventInfoEntity.updateOptions({recipients});
             return eventInfoEntity;
           });
-
+      // TODODAV
       // let conversationEntity;
       // this.get_conversation_by_id(conversationId)
       //   .then(entity => {
@@ -2083,7 +2081,6 @@ export class ConversationRepository {
       //   }
       //   this._sendGenericMessage(infoEntity)
       // });
-
       return recipientsPromise.then(infoEntity => this._sendGenericMessage(infoEntity));
     });
   }

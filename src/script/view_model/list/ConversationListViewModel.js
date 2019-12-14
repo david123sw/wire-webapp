@@ -167,7 +167,7 @@ export class ConversationListViewModel {
       .extend({notify: 'always', rateLimit: 500});
 
     /*
-     *  We generate a helper function to determine wether a <conversation-list-cell> is
+     *  We generate a helper function to determine weather a <conversation-list-cell> is
      *  initially visible or not.
      *  We need this as we use an IntersectionObserver to improve rendering performance
      *  and only render cells as they become visible.
