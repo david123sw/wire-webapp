@@ -299,7 +299,9 @@ const normalTemplate = `
 
     <!-- ko foreach: {data: message.assets, as: 'asset', noChildContext: true} -->
       <!-- ko if: asset.is_image() -->
-        <image-asset params="asset: asset, message: message, onClick: onClickImage"></image-asset>
+        <div class="text_content_background" data-bind="css: {'text_content_background_right':!shouldShowAvatar, 'text_content_background_left':shouldShowAvatar}">
+          <image-asset params="asset: asset, message: message, onClick: onClickImage"></image-asset>
+        </div>
       <!-- /ko -->
       <!-- ko if: asset.is_text() -->
         <!-- ko if: asset.should_render_text -->
@@ -319,16 +321,24 @@ const normalTemplate = `
         <!-- /ko -->
       <!-- /ko -->
       <!-- ko if: asset.is_video() -->
-        <video-asset class="message-asset" data-bind="css: {'ephemeral-asset-expired icon-movie': message.isObfuscated()}" params="message: message"></video-asset>
+        <div class="video_content_background" data-bind="css: {'text_content_background_right':!shouldShowAvatar, 'text_content_background_left':shouldShowAvatar}">
+          <video-asset data-bind="css: {'ephemeral-asset-expired icon-movie': message.isObfuscated()}" params="message: message"></video-asset>
+        </div>
       <!-- /ko -->
       <!-- ko if: asset.is_audio() -->
-        <audio-asset class="message-asset" data-bind="css: {'ephemeral-asset-expired icon-microphone': message.isObfuscated()}" params="message: message"></audio-asset>
+        <div class="audio_content_background" data-bind="css: {'text_content_background_right':!shouldShowAvatar, 'text_content_background_left':shouldShowAvatar}">
+          <audio-asset data-bind="css: {'ephemeral-asset-expired icon-microphone': message.isObfuscated()}" params="message: message"></audio-asset>
+        </div>
       <!-- /ko -->
       <!-- ko if: asset.is_file() -->
-        <file-asset class="message-asset" data-bind="css: {'ephemeral-asset-expired icon-file': message.isObfuscated(), 'file-asset-left': shouldShowAvatar, 'file-asset-right': !shouldShowAvatar}" params="message: message"></file-asset>
+        <div class="text_content_background file_content_background" data-bind="css: {'text_content_background_right':!shouldShowAvatar, 'text_content_background_left':shouldShowAvatar}">
+          <file-asset data-bind="css: {'ephemeral-asset-expired icon-file': message.isObfuscated(), 'file-asset-left': shouldShowAvatar, 'file-asset-right': !shouldShowAvatar}" params="message: message"></file-asset>
+        </div>
       <!-- /ko -->
       <!-- ko if: asset.is_location() -->
-        <location-asset params="asset: asset"></location-asset>
+        <div class="text_content_background" data-bind="css: {'text_content_background_right':!shouldShowAvatar, 'text_content_background_left':shouldShowAvatar}">
+          <location-asset params="asset: asset"></location-asset>
+        </div>
       <!-- /ko -->
       
       <!-- ko if: !message.other_likes().length && message.isReactable() -->
@@ -344,30 +354,31 @@ const normalTemplate = `
           <!-- /ko -->
           <!-- ko ifnot: shouldShowAvatar -->
             <div class="text_content_bubble_right">
-              <img class="text_content_bubble_right" data-bind="css:{'file-asset-right-pos':asset.is_file()}" width="12px" height="18px" src="data:img/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAeCAMAAACVFoclAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAABwlBMVEWMjIzm9tCMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIzg78zl9M+MjIyMjIyMjIzk9M/h8MyMjIyMjIyMjIzl9c/m9tDa6MeMjIyMjIyMjIyMjIzl9c/W48SMjIyMjIyMjIyMjIzl9c/W48SNjo2MjIyMjIyMjIzm9tDa6MeVlpOMjIyMjIyMjIyMjIyMjIzm9tDe7MqfopqMjIyMjIyMjIyMjIzm9tDi8c2xuKiMjIyMjIyMjIyMjIyMjIzm9tDm9tDl9M/H0bmMjIyMjIyMjIzi8c3V4sOTlJGMjIyMjIzk9M7f7suts6WMjIyMjIzl9M/l9M/L1ryNjo3l9c/e7Mqus6WMjIzl9c/S38GXmZSMjIzl9M/i8c3H0bmNjo2MjIzl9c/g78zEzraMjIzl9c/h8MzN2b2WmJPl9c/k9M/b6cjDzLWMjIzl9c/m9tDi8s3c68nW48TM17y1vKvl9c/m9tDh8c3b6sjT4MLDzbafoprj887c68nT38HByrSanZeMjIyMjIzl9c/l9c/g78zY5sbM17ywtqeMjIzl9c/h8c3X5cXCy7WYmpXi8s3m9tDl9M/b6sivtabR3cDm9tAAAAB3Zje+AAAAlHRSTlMAAAECAwQHCQgFEH0NERAwdxYdF07+figqJRtukjYzKRyOpUA3Egqsvkg4Kx8UC8zTUDotIQbm42M7MCMYDwH694U9MicWr0QVDC3WXDkuRfaNPl7NWRn3nkIgf+WAOh6N2ncOl9yDNpruokoapv3eto9iNZ7727OJXjTouotbMyQTf/rSpXVEJlzUnGM1GfXJcC8NPlJ8fwAAAAFiS0dElQhgeoMAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAAHdElNRQfiCQ8QJQuhLMgRAAABw0lEQVQoz3WT51fTYBjFs5NCEmmKpGW1QFtA2jpoQWkrIivsPUQBpSqgZToAF6CAAwSF5w/mTZpDafrmfr2/Z55zCQKJoijCXiRJ0QzD0BSZEY6gWY4XHAxlSxQUCqIki4KJYIgbUORUFJdsIhiiGG6WqG5PqSywFJ4oA4DyikqvT+J1BENUIQKqa/xuJRB00DiiViegrv5WQygccdD5nyFvGwTcuXuvMeoUY0weQjZlCGi+/6AlnkiifS3Ew1aTgEdtj9s7SqWgdVInZNXVXeEOaT1c7qTeawT09Q8MxhMyn9Nm6DoBwyOj7aoSFjk2y4xBrsYn/I3xSSmSParMQsDU9JNK74wrGUSMAT2FPD2bnWvpmHcixpj1HDB6seAf9Chaylj5JWD16vWiOq+l9MOXwEbLb96m9fcRK1h7dW19Y/OdK8mzNPHean74uLW980mNh9KabNycs8fnL1+/7ap7M75J576civDGMd9N88fB4dFP96+oktbNnqAQc7C08djf+tQ/xyd/vag0oUkZE+Xn6uunZ//+n+95or5EWO/LoUpLAskLTgxo4UAqIsRYhsbkk6SYmMCjWjOYdrlFtXa5vQQm18+Kam2pUgAAAABJRU5ErkJggg==">
+              <img class="text_content_bubble_right" width="12px" height="18px" src="data:img/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAeCAMAAACVFoclAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAABwlBMVEWMjIzm9tCMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIzg78zl9M+MjIyMjIyMjIzk9M/h8MyMjIyMjIyMjIzl9c/m9tDa6MeMjIyMjIyMjIyMjIzl9c/W48SMjIyMjIyMjIyMjIzl9c/W48SNjo2MjIyMjIyMjIzm9tDa6MeVlpOMjIyMjIyMjIyMjIyMjIzm9tDe7MqfopqMjIyMjIyMjIyMjIzm9tDi8c2xuKiMjIyMjIyMjIyMjIyMjIzm9tDm9tDl9M/H0bmMjIyMjIyMjIzi8c3V4sOTlJGMjIyMjIzk9M7f7suts6WMjIyMjIzl9M/l9M/L1ryNjo3l9c/e7Mqus6WMjIzl9c/S38GXmZSMjIzl9M/i8c3H0bmNjo2MjIzl9c/g78zEzraMjIzl9c/h8MzN2b2WmJPl9c/k9M/b6cjDzLWMjIzl9c/m9tDi8s3c68nW48TM17y1vKvl9c/m9tDh8c3b6sjT4MLDzbafoprj887c68nT38HByrSanZeMjIyMjIzl9c/l9c/g78zY5sbM17ywtqeMjIzl9c/h8c3X5cXCy7WYmpXi8s3m9tDl9M/b6sivtabR3cDm9tAAAAB3Zje+AAAAlHRSTlMAAAECAwQHCQgFEH0NERAwdxYdF07+figqJRtukjYzKRyOpUA3Egqsvkg4Kx8UC8zTUDotIQbm42M7MCMYDwH694U9MicWr0QVDC3WXDkuRfaNPl7NWRn3nkIgf+WAOh6N2ncOl9yDNpruokoapv3eto9iNZ7727OJXjTouotbMyQTf/rSpXVEJlzUnGM1GfXJcC8NPlJ8fwAAAAFiS0dElQhgeoMAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAAHdElNRQfiCQ8QJQuhLMgRAAABw0lEQVQoz3WT51fTYBjFs5NCEmmKpGW1QFtA2jpoQWkrIivsPUQBpSqgZToAF6CAAwSF5w/mTZpDafrmfr2/Z55zCQKJoijCXiRJ0QzD0BSZEY6gWY4XHAxlSxQUCqIki4KJYIgbUORUFJdsIhiiGG6WqG5PqSywFJ4oA4DyikqvT+J1BENUIQKqa/xuJRB00DiiViegrv5WQygccdD5nyFvGwTcuXuvMeoUY0weQjZlCGi+/6AlnkiifS3Ew1aTgEdtj9s7SqWgdVInZNXVXeEOaT1c7qTeawT09Q8MxhMyn9Nm6DoBwyOj7aoSFjk2y4xBrsYn/I3xSSmSParMQsDU9JNK74wrGUSMAT2FPD2bnWvpmHcixpj1HDB6seAf9Chaylj5JWD16vWiOq+l9MOXwEbLb96m9fcRK1h7dW19Y/OdK8mzNPHean74uLW980mNh9KabNycs8fnL1+/7ap7M75J576civDGMd9N88fB4dFP96+oktbNnqAQc7C08djf+tQ/xyd/vag0oUkZE+Xn6uunZ//+n+95or5EWO/LoUpLAskLTgxo4UAqIsRYhsbkk6SYmMCjWjOYdrlFtXa5vQQm18+Kam2pUgAAAABJRU5ErkJggg==">
             </div>
           <!-- /ko -->
         </div>
       <!-- /ko -->
-      
     <!-- /ko -->
     
-    <div id='message-body-like-preview' class="message-body-like" data-bind="css: {'message-body-like-self-special': !shouldShowAvatar}">
-      <span class="message-body-like-icon like-button message-show-on-hover" data-bind="attr: {'data-ui-value': message.is_liked()}, css: {'like-button-liked': message.is_liked()}, style: {opacity: message.is_liked() ? 1 : ''}, click: () => onLike(message)">
-        <span class="icon-like-small"></span>
-        <span class="icon-liked-small"></span>
-      </span>
-      <!-- ko if: shouldShowAvatar -->
-        <div class="text_content_bubble_left">
-          <img class="text_content_bubble_left" width="12px" height="18px" src="data:img/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAeCAQAAAAIwb+cAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAAHdElNRQfiCQ8QKQcEL8s2AAACVElEQVQ4y52VS2vUUBTHfye5ed0k9mEfjE5fKm2tMNbC2IJ1obSdoogoFYuKogiuDAgiiH6EWc3aD+HGbyL4BVwIiuBWOxMXuZmO7TTNeC6BkJzzO4+b3L80+S8TIM1uVbFncuhJS5AuIiU9FtEXYGMhQJsOHVJrYIDCxUfj4bxYe7kDAyAMwCMkJkLvXvY+cXGARlqChcJDE+IiNxYnPjDEbGmEAfhoImKczZWzTTRIWURLsA0gJkY3rs+/FRegVBVmDxwDiAjvPqo+Q8zrSuKqEgCFQ0BIROTG91+PNHocrPZUMSIfYYAmJpypbr7XtQMup1RBeDaBbA8iwvV67Z06echtUh0JsLDNRxQSWuGdx6efYPfx7FtFnt8lyABz1WtvovoRySZUn/Asv2cAenv7XGLFRzb8TxUCWNg4uPgEhOiF2SuvotXCiXeryLJbKJM/QA8NNx5O7kpAsY2qnuIVDl4GUGHjxsxzNcHxNqy6w3Pw8AkI3HBja/qpO10i3CDy/n0Cgsr4+s74PVUpGQ6g1X4bt6+O7wYb4g0QDoC9hRmk/eO7/7X9pfNN/lix+Q/LmCfN/VFmy0ahVmaqS/F5veDO25PHIH5JU7qt9F42KoOdGVtcHqnpmnfBCvsifkoTMMd6DsuBOUqhUI5bX6jUTlzyl5y57mkB8FkOSFEvrBdlasLBmRpdXh1b03U72/aPUqBmvai8wQyjENo3p6duuQ/SRIoFMQFaeWUWgm2WkLLHb/Zolzh+k5RMP9stYc/MSoBOpmYDCWKSktJp5ZpqhPkvjptXLfZHihwAAAAASUVORK5CYII=">
-        </div>
-      <!-- /ko -->
-      <!-- ko ifnot: shouldShowAvatar -->
-        <div class="text_content_bubble_right">
-          <img class="text_content_bubble_right" width="12px" height="18px" src="data:img/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAeCAMAAACVFoclAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAABwlBMVEWMjIzm9tCMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIzg78zl9M+MjIyMjIyMjIzk9M/h8MyMjIyMjIyMjIzl9c/m9tDa6MeMjIyMjIyMjIyMjIzl9c/W48SMjIyMjIyMjIyMjIzl9c/W48SNjo2MjIyMjIyMjIzm9tDa6MeVlpOMjIyMjIyMjIyMjIyMjIzm9tDe7MqfopqMjIyMjIyMjIyMjIzm9tDi8c2xuKiMjIyMjIyMjIyMjIyMjIzm9tDm9tDl9M/H0bmMjIyMjIyMjIzi8c3V4sOTlJGMjIyMjIzk9M7f7suts6WMjIyMjIzl9M/l9M/L1ryNjo3l9c/e7Mqus6WMjIzl9c/S38GXmZSMjIzl9M/i8c3H0bmNjo2MjIzl9c/g78zEzraMjIzl9c/h8MzN2b2WmJPl9c/k9M/b6cjDzLWMjIzl9c/m9tDi8s3c68nW48TM17y1vKvl9c/m9tDh8c3b6sjT4MLDzbafoprj887c68nT38HByrSanZeMjIyMjIzl9c/l9c/g78zY5sbM17ywtqeMjIzl9c/h8c3X5cXCy7WYmpXi8s3m9tDl9M/b6sivtabR3cDm9tAAAAB3Zje+AAAAlHRSTlMAAAECAwQHCQgFEH0NERAwdxYdF07+figqJRtukjYzKRyOpUA3Egqsvkg4Kx8UC8zTUDotIQbm42M7MCMYDwH694U9MicWr0QVDC3WXDkuRfaNPl7NWRn3nkIgf+WAOh6N2ncOl9yDNpruokoapv3eto9iNZ7727OJXjTouotbMyQTf/rSpXVEJlzUnGM1GfXJcC8NPlJ8fwAAAAFiS0dElQhgeoMAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAAHdElNRQfiCQ8QJQuhLMgRAAABw0lEQVQoz3WT51fTYBjFs5NCEmmKpGW1QFtA2jpoQWkrIivsPUQBpSqgZToAF6CAAwSF5w/mTZpDafrmfr2/Z55zCQKJoijCXiRJ0QzD0BSZEY6gWY4XHAxlSxQUCqIki4KJYIgbUORUFJdsIhiiGG6WqG5PqSywFJ4oA4DyikqvT+J1BENUIQKqa/xuJRB00DiiViegrv5WQygccdD5nyFvGwTcuXuvMeoUY0weQjZlCGi+/6AlnkiifS3Ew1aTgEdtj9s7SqWgdVInZNXVXeEOaT1c7qTeawT09Q8MxhMyn9Nm6DoBwyOj7aoSFjk2y4xBrsYn/I3xSSmSParMQsDU9JNK74wrGUSMAT2FPD2bnWvpmHcixpj1HDB6seAf9Chaylj5JWD16vWiOq+l9MOXwEbLb96m9fcRK1h7dW19Y/OdK8mzNPHean74uLW980mNh9KabNycs8fnL1+/7ap7M75J576civDGMd9N88fB4dFP96+oktbNnqAQc7C08djf+tQ/xyd/vag0oUkZE+Xn6uunZ//+n+95or5EWO/LoUpLAskLTgxo4UAqIsRYhsbkk6SYmMCjWjOYdrlFtXa5vQQm18+Kam2pUgAAAABJRU5ErkJggg==">
-        </div>
-      <!-- /ko -->
-    </div>
+    <!-- ko if: true -->
+      <div id="message-body-like-preview" class="message-body-like" data-bind="css: {'message-body-like-self-special': !shouldShowAvatar}">
+        <span class="message-body-like-icon like-button message-show-on-hover" data-bind="attr: {'data-ui-value': message.is_liked()}, css: {'like-button-liked': message.is_liked()}, style: {opacity: message.is_liked() ? 1 : ''}, click: () => onLike(message)">
+          <span class="icon-like-small"></span>
+          <span class="icon-liked-small"></span>
+        </span>
+        <!-- ko if: shouldShowAvatar -->
+          <div class="text_content_bubble_left">
+            <img class="text_content_bubble_left" width="12px" height="18px" src="data:img/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAeCAQAAAAIwb+cAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAAHdElNRQfiCQ8QKQcEL8s2AAACVElEQVQ4y52VS2vUUBTHfye5ed0k9mEfjE5fKm2tMNbC2IJ1obSdoogoFYuKogiuDAgiiH6EWc3aD+HGbyL4BVwIiuBWOxMXuZmO7TTNeC6BkJzzO4+b3L80+S8TIM1uVbFncuhJS5AuIiU9FtEXYGMhQJsOHVJrYIDCxUfj4bxYe7kDAyAMwCMkJkLvXvY+cXGARlqChcJDE+IiNxYnPjDEbGmEAfhoImKczZWzTTRIWURLsA0gJkY3rs+/FRegVBVmDxwDiAjvPqo+Q8zrSuKqEgCFQ0BIROTG91+PNHocrPZUMSIfYYAmJpypbr7XtQMup1RBeDaBbA8iwvV67Z06echtUh0JsLDNRxQSWuGdx6efYPfx7FtFnt8lyABz1WtvovoRySZUn/Asv2cAenv7XGLFRzb8TxUCWNg4uPgEhOiF2SuvotXCiXeryLJbKJM/QA8NNx5O7kpAsY2qnuIVDl4GUGHjxsxzNcHxNqy6w3Pw8AkI3HBja/qpO10i3CDy/n0Cgsr4+s74PVUpGQ6g1X4bt6+O7wYb4g0QDoC9hRmk/eO7/7X9pfNN/lix+Q/LmCfN/VFmy0ahVmaqS/F5veDO25PHIH5JU7qt9F42KoOdGVtcHqnpmnfBCvsifkoTMMd6DsuBOUqhUI5bX6jUTlzyl5y57mkB8FkOSFEvrBdlasLBmRpdXh1b03U72/aPUqBmvai8wQyjENo3p6duuQ/SRIoFMQFaeWUWgm2WkLLHb/Zolzh+k5RMP9stYc/MSoBOpmYDCWKSktJp5ZpqhPkvjptXLfZHihwAAAAASUVORK5CYII=">
+          </div>
+        <!-- /ko -->
+        <!-- ko ifnot: shouldShowAvatar -->
+          <div class="text_content_bubble_right">
+            <img class="text_content_bubble_right" width="12px" height="18px" src="data:img/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAeCAMAAACVFoclAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAABwlBMVEWMjIzm9tCMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIzg78zl9M+MjIyMjIyMjIzk9M/h8MyMjIyMjIyMjIzl9c/m9tDa6MeMjIyMjIyMjIyMjIzl9c/W48SMjIyMjIyMjIyMjIzl9c/W48SNjo2MjIyMjIyMjIzm9tDa6MeVlpOMjIyMjIyMjIyMjIyMjIzm9tDe7MqfopqMjIyMjIyMjIyMjIzm9tDi8c2xuKiMjIyMjIyMjIyMjIyMjIzm9tDm9tDl9M/H0bmMjIyMjIyMjIzi8c3V4sOTlJGMjIyMjIzk9M7f7suts6WMjIyMjIzl9M/l9M/L1ryNjo3l9c/e7Mqus6WMjIzl9c/S38GXmZSMjIzl9M/i8c3H0bmNjo2MjIzl9c/g78zEzraMjIzl9c/h8MzN2b2WmJPl9c/k9M/b6cjDzLWMjIzl9c/m9tDi8s3c68nW48TM17y1vKvl9c/m9tDh8c3b6sjT4MLDzbafoprj887c68nT38HByrSanZeMjIyMjIzl9c/l9c/g78zY5sbM17ywtqeMjIzl9c/h8c3X5cXCy7WYmpXi8s3m9tDl9M/b6sivtabR3cDm9tAAAAB3Zje+AAAAlHRSTlMAAAECAwQHCQgFEH0NERAwdxYdF07+figqJRtukjYzKRyOpUA3Egqsvkg4Kx8UC8zTUDotIQbm42M7MCMYDwH694U9MicWr0QVDC3WXDkuRfaNPl7NWRn3nkIgf+WAOh6N2ncOl9yDNpruokoapv3eto9iNZ7727OJXjTouotbMyQTf/rSpXVEJlzUnGM1GfXJcC8NPlJ8fwAAAAFiS0dElQhgeoMAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAAHdElNRQfiCQ8QJQuhLMgRAAABw0lEQVQoz3WT51fTYBjFs5NCEmmKpGW1QFtA2jpoQWkrIivsPUQBpSqgZToAF6CAAwSF5w/mTZpDafrmfr2/Z55zCQKJoijCXiRJ0QzD0BSZEY6gWY4XHAxlSxQUCqIki4KJYIgbUORUFJdsIhiiGG6WqG5PqSywFJ4oA4DyikqvT+J1BENUIQKqa/xuJRB00DiiViegrv5WQygccdD5nyFvGwTcuXuvMeoUY0weQjZlCGi+/6AlnkiifS3Ew1aTgEdtj9s7SqWgdVInZNXVXeEOaT1c7qTeawT09Q8MxhMyn9Nm6DoBwyOj7aoSFjk2y4xBrsYn/I3xSSmSParMQsDU9JNK74wrGUSMAT2FPD2bnWvpmHcixpj1HDB6seAf9Chaylj5JWD16vWiOq+l9MOXwEbLb96m9fcRK1h7dW19Y/OdK8mzNPHean74uLW980mNh9KabNycs8fnL1+/7ap7M75J576civDGMd9N88fB4dFP96+oktbNnqAQc7C08djf+tQ/xyd/vag0oUkZE+Xn6uunZ//+n+95or5EWO/LoUpLAskLTgxo4UAqIsRYhsbkk6SYmMCjWjOYdrlFtXa5vQQm18+Kam2pUgAAAABJRU5ErkJggg==">
+          </div>
+        <!-- /ko -->
+      </div>
+    <!-- /ko -->
 
     <div class="message-body-actions" data-bind="css: {'message-body-actions-self-special': !shouldShowAvatar}">
       <span class="context-menu icon-more font-size-xs" data-bind="click: (data, event) => showContextMenu(message, event)"></span>

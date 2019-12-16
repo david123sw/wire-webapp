@@ -32,7 +32,8 @@ video-asset {
 
   .video-asset-container__sizer {
     display: block;
-    padding-bottom: 75%; // video ratio 4:3
+    padding-bottom: 0px;
+    //padding-bottom: 75%; // video ratio 4:3 //ignored:fill_content
     content: '';
   }
 }
@@ -55,7 +56,7 @@ video-asset {
 }
 
 .video-asset-container {
-  .full-screen;
+  .full-screen-for-video;
 
   video {
     width: 100%;
@@ -74,7 +75,8 @@ video-asset {
     }
 
     & + .video-asset-container__sizer {
-      padding-bottom: 88px;
+      padding-bottom: 0px;
+      //padding-bottom: 88px; //ignored:fill_content
     }
   }
 }
@@ -93,12 +95,10 @@ video-asset {
   width: 100%;
   height: 56px;
   align-items: center;
-  padding-right: 24px;
-  padding-left: 24px;
   color: #fff;
 
   &::before {
-    .full-screen;
+    .full-screen-for-video;
 
     z-index: -1;
     background: linear-gradient(to bottom, fade(#fff, 0), fade(#000, 40%));
