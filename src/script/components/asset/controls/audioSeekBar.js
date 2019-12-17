@@ -35,6 +35,8 @@ class AudioSeekBarComponent {
   constructor(params, componentInfo) {
     this.dispose = this.dispose.bind(this);
     this.audioElement = params.src;
+    this.audio_from_myself = params.audio_from_myself;
+    this.audio_color = `${params.audio_color}-fill`;
 
     this.element = componentInfo.element;
     this.loudness = [];
@@ -43,7 +45,7 @@ class AudioSeekBarComponent {
     this.disabled = ko.computed(
       () => {
         if (typeof params.disabled === 'function') {
-          this.element.classList.toggle('element-disabled', params.disabled());
+          this.element.classList.toggle('element-disabled', false);
         }
       },
       {disposeWhenNodeIsRemoved: componentInfo.element},
@@ -74,9 +76,9 @@ class AudioSeekBarComponent {
     const numberOfLevelsFitOnScreen = Math.floor(this.element.clientWidth / 3); // 2px + 1px
     const scaledLoudness = interpolate(this.loudness, numberOfLevelsFitOnScreen);
     this.element.innerHTML = '';
-
     this.levels = scaledLoudness.map(loudness => {
       const level = document.createElement('span');
+      level.className = this.audio_color;
       level.style.height = `${loudness}px`;
       this.element.appendChild(level);
       return level;
@@ -94,17 +96,27 @@ class AudioSeekBarComponent {
     const calculatedTime = (this.audioElement.duration * mouse_x) / event.currentTarget.clientWidth;
     const currentTime = isNaN(calculatedTime) ? 0 : calculatedTime;
 
+    if (isNaN(this.audioElement.duration)) {
+      return;
+    }
     this.audioElement.currentTime = clamp(currentTime, 0, this.audioElement.duration);
     this._onTimeUpdate();
   }
 
   _onTimeUpdate() {
     const index = Math.floor((this.audioElement.currentTime / this.audioElement.duration) * this.levels.length);
-    this.levels.forEach((level, levelIndex) => level.classList.toggle('active', levelIndex <= index));
+    if (isNaN(this.audioElement.duration)) {
+      this.levels.forEach((level, levelIndex) => (level.className = this.audio_color));
+    } else {
+      this.levels.forEach(
+        (level, levelIndex) =>
+          (level.className = levelIndex >= index ? this.audio_color : "{'background-color':'#8d989f'}"),
+      );
+    }
   }
 
   _onAudioEnded() {
-    this.levels.forEach(level => level.classList.remove('active'));
+    this.levels.forEach((level, levelIndex) => (level.className = this.audio_color));
   }
 
   dispose() {

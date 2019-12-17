@@ -44,6 +44,8 @@ class AudioAssetComponent extends AbstractAssetTransferStateTracker {
     this.audio_element = $(component_info.element).find('audio')[0];
     this.audio_time = ko.observable(0);
     this.audio_is_loaded = ko.observable(false);
+    this.audio_from_myself = ko.unwrap(params.is_myself);
+    this.audio_color = ko.unwrap(params.message).accent_color();
 
     this.show_loudness_preview = ko.pureComputed(() => {
       if (this.asset.meta && this.asset.meta.loudness) {
@@ -112,7 +114,10 @@ ko.components.register('audio-asset', {
                                 pause: on_pause_button_clicked,
                                 cancel: () => cancelUpload(message),
                                 transferState: transferState,
-                                uploadProgress: uploadProgress
+                                uploadProgress: uploadProgress,
+                                audio_from_myself: audio_from_myself,
+                                is_audio: true,
+                                audio_color: audio_color
                                 ">
           </media-button>
           <!-- ko if: transferState() !== AssetTransferState.UPLOADING -->
@@ -122,7 +127,7 @@ ko.components.register('audio-asset', {
             </span>
             <!-- ko if: show_loudness_preview -->
               <audio-seek-bar data-uie-name="status-audio-seekbar"
-                              params="src: audio_element, asset: asset, disabled: !audio_src()"></audio-seek-bar>
+                              params="audio_color: audio_color, audio_from_myself: audio_from_myself, src: audio_element, asset: asset, disabled: !audio_src()"></audio-seek-bar>
             <!-- /ko -->
             <!-- ko ifnot: show_loudness_preview -->
               <seek-bar data-uie-name="status-audio-seekbar"

@@ -327,7 +327,7 @@ const normalTemplate = `
       <!-- /ko -->
       <!-- ko if: asset.is_audio() -->
         <div class="audio_content_background" data-bind="css: {'text_content_background_right':!shouldShowAvatar, 'text_content_background_left':shouldShowAvatar}">
-          <audio-asset data-bind="css: {'ephemeral-asset-expired icon-microphone': message.isObfuscated()}" params="message: message"></audio-asset>
+          <audio-asset data-bind="css: {'ephemeral-asset-expired icon-microphone': message.isObfuscated()}" params="message: message, is_myself: !shouldShowAvatar"></audio-asset>
         </div>
       <!-- /ko -->
       <!-- ko if: asset.is_file() -->

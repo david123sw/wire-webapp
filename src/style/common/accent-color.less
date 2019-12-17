@@ -36,6 +36,7 @@
 @accent_colors-4: @w-red;
 @accent_colors-5: @w-orange;
 @accent_colors-6: @w-pink;
+//@accent_colors-7: @w-orange;
 @accent_colors-7: @w-purple;
 
 body {
@@ -51,6 +52,10 @@ body {
 
   .accent-color-@{accent_id} {
     color: @@accent-color;
+  }
+
+  .accent-color-@{accent_id}-fill {
+    background-color: @@accent-color;
   }
 
   .main-accent-color-@{accent_id} {

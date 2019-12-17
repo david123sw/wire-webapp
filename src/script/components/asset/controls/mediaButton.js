@@ -42,6 +42,9 @@ class MediaButtonComponent extends AbstractAssetTransferStateTracker {
     this.asset = params.asset;
     this.uploadProgress = params.uploadProgress;
     this.transferState = params.transferState;
+    this.audio_from_myself = params.audio_from_myself;
+    this.is_audio = params.is_audio;
+    this.is_video = params.is_video;
 
     this.dispose = this.dispose.bind(this);
     this.onPlay = this.onPlay.bind(this);
@@ -78,14 +81,14 @@ class MediaButtonComponent extends AbstractAssetTransferStateTracker {
 ko.components.register('media-button', {
   template: `
     <!-- ko if: isUploaded(transferState()) -->
-      <div class='media-button media-button-play icon-play' data-bind="click: onClickPlay, visible: !isPlaying()" data-uie-name="do-play-media"></div>
-      <div class='media-button media-button-pause icon-pause' data-bind="click: onClickPause, visible: isPlaying()" data-uie-name="do-pause-media"></div>
+      <div class='media-button media-button-play icon-play' data-bind="click: onClickPlay, visible: !isPlaying(), style: {'background-color': audio_from_myself ? 'rgba(56,168,45,1.0)' : 'rgba(0,0,0,0.4)'}" data-uie-name="do-play-media"></div>
+      <div class='media-button media-button-pause icon-pause' data-bind="click: onClickPause, visible: isPlaying(), style: {'background-color': audio_from_myself ? 'rgba(56,168,45,1.0)' : 'rgba(0,0,0,0.4)'}" data-uie-name="do-pause-media"></div>
     <!-- /ko -->
     <!-- ko if: isDownloading(transferState()) -->
-      <asset-loader params="large: large, loadProgress: asset.downloadProgress, onCancel: asset.cancel_download"></asset-loader>
+      <asset-loader data-bind="style: {'background-color': audio_from_myself ? 'rgba(56,168,45,1.0)' : 'rgba(0,0,0,0.4)'}" params="audio_from_myself: audio_from_myself, is_audio: is_audio, large: large, loadProgress: asset.downloadProgress, onCancel: asset.cancel_download"></asset-loader>
     <!-- /ko -->
     <!-- ko if: isUploading(transferState()) -->
-      <asset-loader params="large: large, loadProgress: uploadProgress, onCancel: onClickCancel"></asset-loader>
+      <asset-loader data-bind="style: {'background-color': audio_from_myself ? 'rgba(56,168,45,1.0)' : 'rgba(0,0,0,0.4)'}" params="audio_from_myself: audio_from_myself, is_audio: is_audio, large: large, loadProgress: uploadProgress, onCancel: onClickCancel"></asset-loader>
     <!-- /ko -->
 `,
   viewModel: {

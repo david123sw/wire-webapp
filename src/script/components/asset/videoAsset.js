@@ -149,7 +149,8 @@ ko.components.register('video-asset', {
                                       asset: asset,
                                       play: onPlayButtonClicked,
                                       transferState: transferState,
-                                      uploadProgress: uploadProgress
+                                      uploadProgress: uploadProgress,
+                                      is_video: true
                                       ">
                 </media-button>
               <!-- /ko -->
@@ -161,7 +162,8 @@ ko.components.register('video-asset', {
                                       pause: on_pause_button_clicked,
                                       cancel: () => cancelUpload(message),
                                       transferState: transferState,
-                                      uploadProgress: uploadProgress
+                                      uploadProgress: uploadProgress,
+                                      is_video: true
                                       ">
                 </media-button>
               <!-- /ko -->
