@@ -19,12 +19,12 @@
 
 // MEMBER LIST
 .message-list {
-  overflow: auto;
   flex: 1 1;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .messages {
-  //max-width: @conversation-max-width;
   transform: translateZ(0);
 }
 
@@ -641,6 +641,20 @@ image-asset {
   right: unset;
   bottom: 0;
   left: 0;
+}
+
+.location-icon-display-left {
+  position: absolute;
+  top: 0px;
+  left: 27.8px;
+  content: '\e148';
+}
+
+.location-icon-display-right {
+  position: absolute;
+  top: 2px;
+  right: 10px;
+  content: '\e148';
 }
 
 .time {

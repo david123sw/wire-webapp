@@ -57,7 +57,7 @@
     </div>
   <!-- /ko -->
 
-  <div class="conversation-input-bar__input" data-bind="template: {afterRender: triggerInputChangeEvent}, css: {'conversation-input-bar__input--editing': isEditing()}">
+  <div class="conversation-input-bar__input" data-bind="template: {afterRender: triggerInputChangeEvent}, css: {'conversation-input-bar__input--editing': isEditing()}, style: {'position': 'relative', 'min-height': '100px', 'box-sizing': 'content-box', 'flex-direction': 'column-reverse'}">
     <!-- ko if: conversationEntity() && !conversationEntity().connection().isOutgoingRequest() -->
       <div class="controls-left">
         <!-- ko if: input().length -->

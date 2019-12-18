@@ -339,6 +339,8 @@ const normalTemplate = `
         <div class="text_content_background" data-bind="css: {'text_content_background_right':!shouldShowAvatar, 'text_content_background_left':shouldShowAvatar}">
           <location-asset params="asset: asset"></location-asset>
         </div>
+        <div class="icon-location" data-bind="css: {'location-icon-display-right':!shouldShowAvatar, 'location-icon-display-left':shouldShowAvatar}">
+        </div>
       <!-- /ko -->
       
       <!-- ko if: !message.other_likes().length && message.isReactable() -->
