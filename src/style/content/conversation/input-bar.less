@@ -43,13 +43,10 @@
   .reset-textarea;
 
   width: 100%;
-  max-width: @conversation-max-width - @conversation-message-sender-width - @conversation-message-timestamp-width;
-  height: @conversation-input-line-height;
-  min-height: @conversation-input-line-height;
-  max-height: @conversation-input-max-height;
+  height: 100% !important; //@conversation-input-line-height;
+  min-height: 100px; //@conversation-input-line-height;
+  max-height: 100%; //@conversation-input-max-height;
   flex: 1 1;
-  margin-top: (@conversation-input-min-height - @conversation-input-line-height) / 2;
-  margin-bottom: (@conversation-input-min-height - @conversation-input-line-height) / 2;
   background-color: transparent;
   font-weight: inherit;
   line-height: @conversation-input-line-height;
@@ -59,7 +56,7 @@
   &::placeholder {
     .label-xs;
 
-    padding-left: 8px;
+    padding-left: 0px;
     color: var(--foreground-fade-48);
   }
 
@@ -91,10 +88,9 @@
 .controls-center {
   position: relative;
   display: flex;
-  //width: 100%;
-  //flex: 1 1;
   height: 100%;
-  align-items: center;
+  flex: 1 1;
+  align-items: flex-start;
   margin: 0 20px;
 
   .shadow-input {
@@ -113,11 +109,27 @@
   }
 }
 
+.controls-center-pasted {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  align-items: center;
+  margin: 0 20px 0 72px;
+}
+
+.controls-right-pasted {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
 .controls-right {
   display: flex;
-  min-width: @conversation-message-timestamp-width;
-  align-items: center;
-  justify-content: flex-end;
+  width: 100%;
+  height: 32px;
+  align-items: flex-start;
 }
 
 .controls-right-button {
@@ -135,6 +147,18 @@
   svg path {
     fill: var(--background);
   }
+}
+
+.controls-right-call-dock {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+
+.controls-right-video-dock {
+  position: absolute;
+  top: 0px;
+  right: 56px;
 }
 
 // paste modal
@@ -169,7 +193,7 @@
 }
 
 .conversation-input-bar-paste-image {
-  .square(16px);
+  .square(128px);
 
   object-fit: contain;
 }

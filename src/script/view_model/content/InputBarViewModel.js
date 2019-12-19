@@ -69,7 +69,7 @@ z.viewModel.content.InputBarViewModel = class InputBarViewModel {
     };
   }
 
-  constructor(mainViewModel, contentViewModel, repositories) {
+  constructor(callingViewModel, mainViewModel, contentViewModel, repositories) {
     this.addedToView = this.addedToView.bind(this);
     this.addMention = this.addMention.bind(this);
     this.clickToPing = this.clickToPing.bind(this);
@@ -79,6 +79,8 @@ z.viewModel.content.InputBarViewModel = class InputBarViewModel {
     this.onWindowClick = this.onWindowClick.bind(this);
     this.setElements = this.setElements.bind(this);
     this.updateSelectionState = this.updateSelectionState.bind(this);
+    this.callingViewModel = callingViewModel;
+
     this.assetUploader = resolve(graph.AssetUploader);
 
     this.shadowInput = null;
@@ -100,6 +102,7 @@ z.viewModel.content.InputBarViewModel = class InputBarViewModel {
     this.conversationEntity = this.conversationRepository.active_conversation;
     this.selfUser = this.userRepository.self;
 
+    this.joinedCall = repositories.calling.joinedCall;
     this.conversationHasFocus = ko.observable(true).extend({notify: 'always'});
 
     this.editMessageEntity = ko.observable();
@@ -259,6 +262,32 @@ z.viewModel.content.InputBarViewModel = class InputBarViewModel {
     this.showPingButton = ko.pureComputed(() => {
       return ConversationType.SUPER_GROUP === this.conversationEntity().type();
     });
+
+    ///added
+    this.hasCall = ko.pureComputed(() => {
+      const hasEntities = this.conversationEntity() && this.joinedCall();
+      return hasEntities ? this.conversationEntity().id === this.joinedCall().conversationId : false;
+    });
+
+    this.showCallControls = ko.pureComputed(() => {
+      if (!this.conversationEntity()) {
+        return false;
+      }
+
+      if (this.conversationEntity() && this.conversationEntity().isSuperGroup()) {
+        return false;
+      }
+
+      const isSupportedConversation = this.conversationEntity().isGroup() || this.conversationEntity().is1to1();
+      const hasParticipants = !!this.conversationEntity().participating_user_ids().length;
+      const isActiveConversation = hasParticipants && !this.conversationEntity().removed_from_conversation();
+      return !this.hasCall() && isSupportedConversation && isActiveConversation;
+    });
+
+    this.supportsVideoCall = ko.pureComputed(() => {
+      return this.conversationEntity() && this.conversationEntity().supportsVideoCall(true);
+    });
+    //added
 
     const pingShortcut = Shortcut.getShortcutTooltip(ShortcutType.PING);
     this.pingTooltip = t('tooltipConversationPing', pingShortcut);
