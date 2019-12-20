@@ -1960,7 +1960,9 @@ export class ConversationRepository {
               [GENERIC_MESSAGE_TYPE.ASSET]: protoAsset,
               messageId,
             });
-
+            genericMessage[GENERIC_MESSAGE_TYPE.ASSET].preview =
+              genericMessage[GENERIC_MESSAGE_TYPE.ASSET].preview || {};
+            genericMessage[GENERIC_MESSAGE_TYPE.ASSET].preview.remote = {...uploadedImageAsset.uploaded};
             return this._send_and_inject_generic_message(conversationEntity, genericMessage, false);
           });
         });

@@ -299,7 +299,7 @@ const normalTemplate = `
 
     <!-- ko foreach: {data: message.assets, as: 'asset', noChildContext: true} -->
       <!-- ko if: asset.is_image() -->
-        <div class="text_content_background" data-bind="css: {'text_content_background_right':!shouldShowAvatar, 'text_content_background_left':shouldShowAvatar}">
+        <div class="text_content_background image_content_background" data-bind="css: {'text_content_background_right':!shouldShowAvatar, 'text_content_background_left':shouldShowAvatar}">
           <image-asset params="asset: asset, message: message, onClick: onClickImage"></image-asset>
         </div>
       <!-- /ko -->

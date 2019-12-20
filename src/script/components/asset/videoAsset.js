@@ -136,12 +136,12 @@ ko.components.register('video-asset', {
           <div class="video-playback-error label-xs" data-bind="text: t('conversationPlaybackError')"></div>
         <!-- /ko -->
         <!-- ko ifnot: video_playback_error -->
-          <!-- ko if: transferState() === AssetTransferState.UPLOAD_PENDING -->
+          <!-- ko if: transferState() === AssetTransferState.UPLOAD_PENDING || transferState() === AssetTransferState.UPLOADING -->
             <div class="asset-placeholder loading-dots">
             </div>
           <!-- /ko -->
 
-          <!-- ko if: transferState() !== AssetTransferState.UPLOAD_PENDING -->
+          <!-- ko if: transferState() === AssetTransferState.UPLOADED || transferState() === AssetTransferState.DOWNLOADING -->
             <div class="video-controls-center">
               <!-- ko if: displaySmall() -->
                 <media-button params="src: video_element,
