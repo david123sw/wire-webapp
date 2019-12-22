@@ -581,6 +581,19 @@ export class ConversationRepository {
       });
   }
 
+  getPrecedingMessagesAsLast(conversationEntity) {
+    conversationEntity.is_pending(true);
+
+    const firstMessageEntity = conversationEntity.getFirstMessage();
+    const upperBound = firstMessageEntity
+      ? new Date(firstMessageEntity.timestamp())
+      : new Date(conversationEntity.get_latest_timestamp(this.serverTimeHandler.toServerTimestamp()) + 1);
+    return this.eventService.loadPrecedingEvents(conversationEntity.id, new Date(0), upperBound, 1).then(events => {
+      conversationEntity.is_pending(false);
+      return events;
+    });
+  }
+
   _addPrecedingEventsToConversation(events, conversationEntity) {
     const hasAdditionalMessages = events.length === z.config.MESSAGES_FETCH_LIMIT;
 

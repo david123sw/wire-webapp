@@ -317,7 +317,9 @@ const normalTemplate = `
           <!-- /ko -->
         <!-- /ko -->
         <!-- ko foreach: asset.previews() -->
-          <link-preview-asset class="message-asset" data-bind="css: {'ephemeral-asset-expired': $parent.message.isObfuscated()}" params="message: $parent.message"></link-preview-asset>
+          <div class="text_content_background file_content_background" data-bind="css: {'text_content_background_right':!$parent.shouldShowAvatar, 'text_content_background_left':$parent.shouldShowAvatar}">
+            <link-preview-asset data-bind="css: {'ephemeral-asset-expired': $parent.message.isObfuscated()}" params="message: $parent.message"></link-preview-asset>
+          </div>
         <!-- /ko -->
       <!-- /ko -->
       <!-- ko if: asset.is_video() -->

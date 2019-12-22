@@ -426,3 +426,7 @@ export const generateCellStateEx = conversationEntity => {
 
   return '';
 };
+
+export const transDesc = (desc, name) => {
+  return t(desc, name);
+};

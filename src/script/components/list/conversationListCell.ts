@@ -22,13 +22,17 @@ import ko from 'knockout';
 import {noop} from 'Util/util';
 
 import {ParticipantAvatar} from 'Components/participantAvatar';
-import {generateCellState} from '../../conversation/ConversationCellState';
+import {generateCellState, transDesc} from '../../conversation/ConversationCellState';
 import {ConversationStatusIcon} from '../../conversation/ConversationStatusIcon';
 import {Conversation} from '../../entity/Conversation';
 import {MediaType} from '../../media/MediaType';
 import {viewportObserver} from '../../ui/viewportObserver';
 
 import 'Components/availabilityState';
+import {BackendEvent} from '../../event/Backend';
+import {ClientEvent} from '../../event/Client';
+
+const lastMessagesFromConversation: {[index: string]: boolean} = {};
 
 interface ConversationListCellProps {
   showJoinButton: boolean;
@@ -118,7 +122,13 @@ class ConversationListCell {
     };
 
     const cellStateObservable = ko
-      .computed(() => this.cell_state(generateCellState(this.conversation)))
+      .computed(() => {
+        const current = this.cell_state().description;
+        const next = generateCellState(this.conversation);
+        if (next.description !== '' && next.description !== current) {
+          this.cell_state(next);
+        }
+      })
       .extend({rateLimit: 500});
 
     this.dispose = () => {
@@ -127,7 +137,27 @@ class ConversationListCell {
       this.isSelected.dispose();
     };
 
-    window.wire.app.repository.conversation.getPrecedingMessages(conversation);
+    if (!lastMessagesFromConversation[this.conversation.id]) {
+      window.wire.app.repository.conversation.getPrecedingMessagesAsLast(conversation).then(events => {
+        const last = events[0];
+        if (last) {
+          if (ClientEvent.CONVERSATION.MESSAGE_ADD === last.type) {
+            this.cell_state({icon: this.cell_state().icon, description: last.data.content ? last.data.content : ''});
+          } else if (BackendEvent.CONVERSATION.MEMBER_LEAVE === last.type) {
+            const desc = last.data.user_names
+              ? transDesc('conversationsSecondaryLinePersonLeft', last.data.user_names.join(','))
+              : '';
+            this.cell_state({icon: this.cell_state().icon, description: desc});
+          } else if (BackendEvent.CONVERSATION.MEMBER_JOIN === last.type) {
+            const desc = last.data.user_names
+              ? transDesc('conversationsSecondaryLinePersonAddedSelf', last.data.user_names.join(','))
+              : '';
+            this.cell_state({icon: this.cell_state().icon, description: desc});
+          }
+          lastMessagesFromConversation[this.conversation.id] = true;
+        }
+      });
+    }
   }
 }
 
