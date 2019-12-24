@@ -20,20 +20,20 @@
 import {ValidationUtil} from '@wireapp/commons';
 //TODODAV
 import * as dotenv from 'dotenv-extended';
-import * as fs from 'fs-extra';
+// import * as fs from 'fs-extra';
 import {IHelmetContentSecurityPolicyDirectives as HelmetCSP} from 'helmet';
 import * as logdown from 'logdown';
-import * as path from 'path';
+// import * as path from 'path';
 import * as UUID from 'uuid/v4';
 import {ServerConfig} from './../../../server/ServerConfig';
 
 const nodeEnvironment = process.env.NODE_ENV || 'production';
 
-const COMMIT_FILE = path.join(__dirname, 'commit');
-const ROBOTS_DIR = path.join(__dirname, 'robots');
-const ROBOTS_ALLOW_FILE = path.join(ROBOTS_DIR, 'robots.txt');
-const ROBOTS_DISALLOW_FILE = path.join(ROBOTS_DIR, 'robots-disallow.txt');
-const VERSION_FILE = path.join(__dirname, 'version');
+const COMMIT_FILE = ''; //path.join(__dirname, 'commit');
+// const ROBOTS_DIR = ''; //path.join(__dirname, 'robots');
+const ROBOTS_ALLOW_FILE = 'User-agent: *\nDisallow: /'; //path.join(ROBOTS_DIR, 'robots.txt');
+const ROBOTS_DISALLOW_FILE = 'User-agent: *\nDisallow: /'; //path.join(ROBOTS_DIR, 'robots-disallow.txt');
+const VERSION_FILE = '1.0.0'; //path.join(__dirname, 'version');
 
 dotenv.load();
 
