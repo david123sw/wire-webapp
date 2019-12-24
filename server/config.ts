@@ -39,7 +39,7 @@ const defaultCSP: HelmetCSP = {
     "'self'",
     'blob:',
     'data:',
-    'https://wire.com',
+    'https://isecret.com',
     'https://www.google.com',
     'https://*.giphy.com',
     'https://*.unsplash.com',
@@ -146,7 +146,7 @@ const config: ServerConfig = {
       PERSIST_TEMPORARY_CLIENTS: process.env.FEATURE_PERSIST_TEMPORARY_CLIENTS == 'false' ? false : true,
       SHOW_LOADING_INFORMATION: process.env.FEATURE_SHOW_LOADING_INFORMATION == 'true' ? true : false,
     },
-    MAX_GROUP_PARTICIPANTS: (process.env.MAX_GROUP_PARTICIPANTS && Number(process.env.MAX_GROUP_PARTICIPANTS)) || 500,
+    MAX_GROUP_PARTICIPANTS: (process.env.MAX_GROUP_PARTICIPANTS && Number(process.env.MAX_GROUP_PARTICIPANTS)) || 10000,
     MAX_VIDEO_PARTICIPANTS: (process.env.MAX_VIDEO_PARTICIPANTS && Number(process.env.MAX_VIDEO_PARTICIPANTS)) || 4,
     NEW_PASSWORD_MINIMUM_LENGTH:
       (process.env.NEW_PASSWORD_MINIMUM_LENGTH && Number(process.env.NEW_PASSWORD_MINIMUM_LENGTH)) || 8,
