@@ -174,7 +174,9 @@ const configurations = {
   },
 };
 window.wire = window.wire || {};
-window.wire.env = Object.assign(Object.assign({}, configurations.CLIENT), {APP_BASE: configurations.SERVER.APP_BASE});
+window.wire.env =
+  window.wire.env ||
+  Object.assign(Object.assign({}, configurations.CLIENT), {APP_BASE: configurations.SERVER.APP_BASE});
 //TODODAV
 const env = window.wire.env;
 
