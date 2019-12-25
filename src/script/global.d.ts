@@ -28,49 +28,50 @@ declare global {
     jQuery: any;
     platform: any;
     Raygun: any;
-    wire: {
-      app: {
-        service: {
-          asset: AssetService;
-        };
-      };
-      env: {
-        APP_BASE: string;
-        APP_NAME: string;
-        BACKEND_REST: string;
-        BACKEND_WS: string;
-        BRAND_NAME: string;
-        ENVIRONMENT: string;
-        FEATURE: {
-          ALLOWED_FILE_UPLOAD_EXTENSIONS: string[];
-          APPLOCK_SCHEDULED_TIMEOUT: number;
-          APPLOCK_UNFOCUS_TIMEOUT: number;
-          CHECK_CONSENT: boolean;
-          DEFAULT_LOGIN_TEMPORARY_CLIENT: boolean;
-          ENABLE_ACCOUNT_REGISTRATION: boolean;
-          ENABLE_COMPANY_LOGIN: boolean;
-          ENABLE_DEBUG: boolean;
-          ENABLE_PHONE_LOGIN: boolean;
-          ENABLE_SSO: boolean;
-          PERSIST_TEMPORARY_CLIENTS: boolean;
-          SHOW_LOADING_INFORMATION: boolean;
-        };
-        MAX_GROUP_PARTICIPANTS: number;
-        MAX_VIDEO_PARTICIPANTS: number;
-        NEW_PASSWORD_MINIMUM_LENGTH: number;
-        URL: {
-          ACCOUNT_BASE: string;
-          MOBILE_BASE: string;
-          TEAMS_BASE: string;
-          WEBSITE_BASE: string;
-          SUPPORT_BASE: string;
-          PRIVACY_POLICY: string;
-          TERMS_OF_USE_PERSONAL: string;
-          TERMS_OF_USE_TEAMS: string;
-        };
-        VERSION: string;
-      };
-    };
+    wire: any;
+    // wire: {
+    //   app: {
+    //     service: {
+    //       asset: AssetService;
+    //     };
+    //   };
+    //   env: {
+    //     APP_BASE: string;
+    //     APP_NAME: string;
+    //     BACKEND_REST: string;
+    //     BACKEND_WS: string;
+    //     BRAND_NAME: string;
+    //     ENVIRONMENT: string;
+    //     FEATURE: {
+    //       ALLOWED_FILE_UPLOAD_EXTENSIONS: string[];
+    //       APPLOCK_SCHEDULED_TIMEOUT: number;
+    //       APPLOCK_UNFOCUS_TIMEOUT: number;
+    //       CHECK_CONSENT: boolean;
+    //       DEFAULT_LOGIN_TEMPORARY_CLIENT: boolean;
+    //       ENABLE_ACCOUNT_REGISTRATION: boolean;
+    //       ENABLE_COMPANY_LOGIN: boolean;
+    //       ENABLE_DEBUG: boolean;
+    //       ENABLE_PHONE_LOGIN: boolean;
+    //       ENABLE_SSO: boolean;
+    //       PERSIST_TEMPORARY_CLIENTS: boolean;
+    //       SHOW_LOADING_INFORMATION: boolean;
+    //     };
+    //     MAX_GROUP_PARTICIPANTS: number;
+    //     MAX_VIDEO_PARTICIPANTS: number;
+    //     NEW_PASSWORD_MINIMUM_LENGTH: number;
+    //     URL: {
+    //       ACCOUNT_BASE: string;
+    //       MOBILE_BASE: string;
+    //       TEAMS_BASE: string;
+    //       WEBSITE_BASE: string;
+    //       SUPPORT_BASE: string;
+    //       PRIVACY_POLICY: string;
+    //       TERMS_OF_USE_PERSONAL: string;
+    //       TERMS_OF_USE_TEAMS: string;
+    //     };
+    //     VERSION: string;
+    //   };
+    // };
     wSSOCapable: boolean;
     z: any;
   }
