@@ -18,7 +18,7 @@
  */
 
 window.z = window.z || {};
-// TODODAV
+//PROD_SPEC
 const dotenv = require('dotenv-extended');
 // const fs = require('fs-extra');
 const logdown = require('logdown');
@@ -144,34 +144,32 @@ function client_preview_init() {
         PERSIST_TEMPORARY_CLIENTS: true,
         SHOW_LOADING_INFORMATION: true,
       },
-      MAX_GROUP_PARTICIPANTS:
-        (process.env.MAX_GROUP_PARTICIPANTS && Number(process.env.MAX_GROUP_PARTICIPANTS)) || 10000,
-      MAX_VIDEO_PARTICIPANTS: (process.env.MAX_VIDEO_PARTICIPANTS && Number(process.env.MAX_VIDEO_PARTICIPANTS)) || 4,
-      NEW_PASSWORD_MINIMUM_LENGTH:
-        (process.env.NEW_PASSWORD_MINIMUM_LENGTH && Number(process.env.NEW_PASSWORD_MINIMUM_LENGTH)) || 8,
-      RAYGUN_API_KEY: process.env.RAYGUN_API_KEY,
+      MAX_GROUP_PARTICIPANTS: 10000,
+      MAX_VIDEO_PARTICIPANTS: 4,
+      NEW_PASSWORD_MINIMUM_LENGTH: 8,
+      RAYGUN_API_KEY: '',
       URL: {
         ACCOUNT_BASE: process.env.URL_ACCOUNT_BASE,
         MOBILE_BASE: process.env.URL_MOBILE_BASE,
-        PRIVACY_POLICY: process.env.URL_PRIVACY_POLICY,
-        SUPPORT_BASE: process.env.URL_SUPPORT_BASE,
+        PRIVACY_POLICY: 'https://isecret.im',
+        SUPPORT_BASE: 'https://isecret.im',
         TEAMS_BASE: process.env.URL_TEAMS_BASE,
-        TERMS_OF_USE_PERSONAL: process.env.URL_TERMS_OF_USE_PERSONAL,
-        TERMS_OF_USE_TEAMS: process.env.URL_TERMS_OF_USE_TEAMS,
-        WEBSITE_BASE: process.env.URL_WEBSITE_BASE,
+        TERMS_OF_USE_PERSONAL: 'https://isecret.im',
+        TERMS_OF_USE_TEAMS: 'https://isecret.im',
+        WEBSITE_BASE: 'https://isecret.im',
       },
-      VERSION: readFile(VERSION_FILE, '0.0.0'),
+      VERSION: readFile(VERSION_FILE, '1.0.0'),
     },
     COMMIT: readFile(COMMIT_FILE, ''),
     SERVER: {
       APP_BASE: process.env.APP_BASE,
       CACHE_DURATION_SECONDS: 300,
       CSP: mergedCSP(),
-      DEVELOPMENT: nodeEnvironment === 'development',
-      ENFORCE_HTTPS: process.env.ENFORCE_HTTPS != 'false',
-      ENVIRONMENT: nodeEnvironment,
-      GOOGLE_WEBMASTER_ID: process.env.GOOGLE_WEBMASTER_ID,
-      PORT_HTTP: Number(process.env.PORT) || 21080,
+      DEVELOPMENT: false,
+      ENFORCE_HTTPS: true,
+      ENVIRONMENT: 'production',
+      GOOGLE_WEBMASTER_ID: '',
+      PORT_HTTP: 21080,
       ROBOTS: {
         ALLOW: readFile(ROBOTS_ALLOW_FILE, 'User-agent: *\r\nDisallow: /'),
         ALLOWED_HOSTS: ['webapp.isecret.im'],
@@ -187,7 +185,7 @@ function client_preview_init() {
 if ('production' === process.env.NODE_ENV) {
   client_preview_init();
 }
-//TODODAV
+//PROD_SPEC
 
 const env = window.wire.env;
 
