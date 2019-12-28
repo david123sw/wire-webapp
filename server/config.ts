@@ -175,7 +175,7 @@ const config: ServerConfig = {
     PORT_HTTP: Number(process.env.PORT) || 21080,
     ROBOTS: {
       ALLOW: readFile(ROBOTS_ALLOW_FILE, 'User-agent: *\r\nDisallow: /'),
-      ALLOWED_HOSTS: ['webapp.isecret.im'],
+      ALLOWED_HOSTS: ['webapp-new2.isecret.im'],
       DISALLOW: readFile(ROBOTS_DISALLOW_FILE, 'User-agent: *\r\nDisallow: /'),
     },
   },
