@@ -116,7 +116,7 @@ function client_preview_init() {
       .reduce((accumulator, [key, value]) => Object.assign(Object.assign({}, accumulator), {[key]: value}), {});
   }
 
-  const configurations = {
+  const config = {
     CLIENT: {
       ANALYTICS_API_KEY: process.env.ANALYTICS_API_KEY,
       APP_NAME: process.env.APP_NAME,
@@ -138,8 +138,10 @@ function client_preview_init() {
         DEFAULT_LOGIN_TEMPORARY_CLIENT: false,
         ENABLE_ACCOUNT_REGISTRATION: false,
         ENABLE_COMPANY_LOGIN: false,
+        ENABLE_COMPLEX_ACCOUNT_LOGIN: true,
         ENABLE_DEBUG: false,
         ENABLE_PHONE_LOGIN: false,
+        ENABLE_SIMPLE_ACCOUNT_LOGIN: false,
         ENABLE_SSO: true,
         PERSIST_TEMPORARY_CLIENTS: true,
         SHOW_LOADING_INFORMATION: true,
@@ -179,8 +181,7 @@ function client_preview_init() {
   };
   window.wire = window.wire || {};
   window.wire.env =
-    window.wire.env ||
-    Object.assign(Object.assign({}, configurations.CLIENT), {APP_BASE: configurations.SERVER.APP_BASE});
+    window.wire.env || Object.assign(Object.assign({}, config.CLIENT), {APP_BASE: config.SERVER.APP_BASE});
 }
 if ('production' === process.env.NODE_ENV) {
   client_preview_init();

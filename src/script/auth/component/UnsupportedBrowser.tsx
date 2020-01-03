@@ -35,7 +35,7 @@ interface UnsupportedProps extends React.HTMLProps<HTMLDivElement> {
 
 const UnsupportedMessage: React.SFC<UnsupportedProps> = ({headline, subhead}) => (
   <ContainerXS verticalCenter centerText>
-    <Logo height={20} />
+    <Logo style={{margin: '0px 0px 0px 10px'}} width={80} height={96} />
     <H1 center style={{marginBottom: '48px', marginTop: '24px'}}>
       <FormattedMessage {...headline} values={{brandName: Config.BRAND_NAME}} />
     </H1>

@@ -83,6 +83,41 @@ export class AuthAction {
     };
   };
 
+  doLoginByQR = (
+    loginData: LoginData,
+    accessTokenStore: any,
+    onBeforeLogin: LoginLifecycleFunction = noop,
+    onAfterLogin: LoginLifecycleFunction = noop,
+  ): ThunkAction => {
+    return async (dispatch, getState, global) => {
+      const {
+        core,
+        actions: {clientAction, cookieAction, selfAction, localStorageAction},
+      } = global;
+      dispatch(AuthActionCreator.startLogin());
+      try {
+        onBeforeLogin(dispatch, getState, global);
+        await core.login(loginData, false, clientAction.generateClientPayload(loginData.clientType), accessTokenStore);
+        await this.persistAuthData(loginData.clientType, core, dispatch, localStorageAction);
+        await dispatch(cookieAction.setCookie(COOKIE_NAME_APP_OPENED, {appInstanceId: global.config.APP_INSTANCE_ID}));
+        await dispatch(selfAction.fetchSelf());
+        onAfterLogin(dispatch, getState, global);
+        await dispatch(clientAction.doInitializeClient(loginData.clientType, String(loginData.password)));
+        dispatch(AuthActionCreator.successfulLogin());
+      } catch (error) {
+        if (error.label === BackendError.LABEL.TOO_MANY_CLIENTS) {
+          dispatch(AuthActionCreator.successfulLogin());
+        } else {
+          if (error instanceof LowDiskSpaceError) {
+            error = new LabeledError(LabeledError.GENERAL_ERRORS.LOW_DISK_SPACE, error);
+          }
+          dispatch(AuthActionCreator.failedLogin(error));
+        }
+        throw error;
+      }
+    };
+  };
+
   doSendPhoneLoginCode = (loginRequest: Omit<SendLoginCode, 'voice_call'>): ThunkAction => {
     return async (dispatch, getState, {apiClient}) => {
       dispatch(AuthActionCreator.startSendPhoneLoginCode());

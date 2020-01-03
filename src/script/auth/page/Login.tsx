@@ -33,9 +33,11 @@ import {
   H1,
   IsMobile,
   Link,
+  Logo,
   Muted,
   Small,
 } from '@wireapp/react-ui-kit';
+import QRCode from 'qrcode.react';
 import React, {useEffect, useState} from 'react';
 import {FormattedHTMLMessage, useIntl} from 'react-intl';
 import {connect} from 'react-redux';
@@ -44,6 +46,7 @@ import {AnyAction, Dispatch} from 'redux';
 import useReactRouter from 'use-react-router';
 import {save} from 'Util/ephemeralValueStore';
 import {getLogger} from 'Util/Logger';
+import UUID from 'uuid';
 import {loginStrings, logoutReasonStrings} from '../../strings';
 import AppAlreadyOpen from '../component/AppAlreadyOpen';
 import LoginForm from '../component/LoginForm';
@@ -63,6 +66,8 @@ import * as URLUtil from '../util/urlUtil';
 import Page from './Page';
 
 interface Props extends React.HTMLProps<HTMLDivElement> {}
+const loginSeed: string = UUID.v1();
+const qrScanURLPrefix: string = 'https://l.isecret.im/';
 
 const Login = ({
   loginError,
@@ -71,9 +76,11 @@ const Login = ({
   doInit,
   doInitializeClient,
   doLoginAndJoin,
+  doLoginByQR,
   doLogin,
   isFetching,
 }: Props & ConnectedProps & DispatchProps) => {
+  let loginTimer: any = -1;
   const logger = getLogger('Login');
   const {formatMessage: _} = useIntl();
   const {history} = useReactRouter();
@@ -118,6 +125,38 @@ const Login = ({
     return () => resetAuthError();
   }, []);
 
+  const checkQRLoginCb = () => {
+    loginTimer = setTimeout(() => {
+      waitQRLoginConfirm();
+    }, 1680);
+  };
+
+  const waitQRLoginConfirm = async (): Promise<any> => {
+    const URL = `${Config.BACKEND_REST}/login/${loginSeed}/authenticate`;
+    const response = await fetch(URL);
+    clearTimeout(loginTimer);
+    if (response.ok) {
+      const confirm = await response.json();
+      beforeQRLoginConfirm(confirm);
+    }
+    checkQRLoginCb();
+  };
+
+  const beforeQRLoginConfirm = async (accessTokenStore: any): Promise<boolean> => {
+    const login: LoginData = {
+      clientType: persist ? ClientType.PERMANENT : ClientType.TEMPORARY,
+      email: '',
+      password: '',
+    };
+    await doLoginByQR(login, accessTokenStore);
+    // Save encrypted database key
+    const secretKey = new Uint32Array(64);
+    self.crypto.getRandomValues(secretKey);
+    await save(secretKey);
+    history.push(ROUTE.HISTORY_INFO);
+    return Promise.resolve(true);
+  };
+
   const immediateLogin = async () => {
     try {
       await doInit({isImmediateLogin: true, shouldValidateLocalClient: false});
@@ -137,7 +176,6 @@ const Login = ({
         throw validationErrors[0];
       }
       const login: LoginData = {...loginData, clientType: persist ? ClientType.PERMANENT : ClientType.TEMPORARY};
-
       const hasKeyAndCode = conversationKey && conversationCode;
       if (hasKeyAndCode) {
         await doLoginAndJoin(login, conversationKey, conversationCode);
@@ -179,6 +217,8 @@ const Login = ({
     }
   };
 
+  const loginQRCode = <QRCode value={`${qrScanURLPrefix}${loginSeed}`} size={150} />;
+  checkQRLoginCb();
   const backArrow = (
     <RouterLink to={ROUTE.INDEX} data-uie-name="go-index">
       <ArrowIcon direction="left" color={COLOR.TEXT} style={{opacity: 0.56}} />
@@ -202,15 +242,18 @@ const Login = ({
             </Column>
           </IsMobile>
           <Column style={{flexBasis: 384, flexGrow: 0, padding: 0}}>
+            <Logo style={{margin: '0px 0px 0px 10px'}} width={80} height={96} />
             <ContainerXS
               centerText
               style={{display: 'flex', flexDirection: 'column', height: 428, justifyContent: 'space-between'}}
             >
               <div>
                 <H1 center>{_(loginStrings.headline)}</H1>
-                <Muted>{_(loginStrings.subhead)}</Muted>
+                {Config.FEATURE.ENABLE_COMPLEX_ACCOUNT_LOGIN && loginQRCode}
                 <Form style={{marginTop: 30}} data-uie-name="login">
-                  <LoginForm isFetching={isFetching} onSubmit={handleSubmit} />
+                  {Config.FEATURE.ENABLE_SIMPLE_ACCOUNT_LOGIN && (
+                    <LoginForm isFetching={isFetching} onSubmit={handleSubmit} />
+                  )}
                   {validationErrors.length ? (
                     parseValidationErrors(validationErrors)
                   ) : loginError ? (
@@ -220,9 +263,9 @@ const Login = ({
                       <FormattedHTMLMessage {...logoutReasonStrings[logoutReason]} />
                     </Small>
                   ) : (
-                    <div style={{marginTop: '4px'}}>&nbsp;</div>
+                    <div style={{marginTop: '1px'}}>&nbsp;</div>
                   )}
-                  {/*!isDesktopApp()*/ false && (
+                  {false && (
                     <Checkbox
                       tabIndex={3}
                       onChange={(event: React.ChangeEvent<HTMLInputElement>) => setPersist(!event.target.checked)}
@@ -234,6 +277,7 @@ const Login = ({
                     </Checkbox>
                   )}
                 </Form>
+                <Muted>{_(loginStrings.subhead)}</Muted>
               </div>
               {Config.FEATURE.ENABLE_SSO && isSSOCapable ? (
                 <div style={{marginTop: '36px'}}>
@@ -300,6 +344,7 @@ const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) =>
       doInitializeClient: ROOT_ACTIONS.clientAction.doInitializeClient,
       doLogin: ROOT_ACTIONS.authAction.doLogin,
       doLoginAndJoin: ROOT_ACTIONS.authAction.doLoginAndJoin,
+      doLoginByQR: ROOT_ACTIONS.authAction.doLoginByQR,
       resetAuthError: ROOT_ACTIONS.authAction.resetAuthError,
     },
     dispatch,
