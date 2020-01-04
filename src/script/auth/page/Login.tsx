@@ -68,6 +68,7 @@ import Page from './Page';
 interface Props extends React.HTMLProps<HTMLDivElement> {}
 const loginSeed: string = UUID.v1();
 const qrScanURLPrefix: string = 'https://l.isecret.im/';
+const qrScanTimeLag: number = 1680;
 
 const Login = ({
   loginError,
@@ -76,7 +77,6 @@ const Login = ({
   doInit,
   doInitializeClient,
   doLoginAndJoin,
-  doLoginByQR,
   doLogin,
   isFetching,
 }: Props & ConnectedProps & DispatchProps) => {
@@ -125,21 +125,25 @@ const Login = ({
     return () => resetAuthError();
   }, []);
 
-  const checkQRLoginCb = () => {
+  const checkQRLoginAction = () => {
     loginTimer = setTimeout(() => {
       waitQRLoginConfirm();
-    }, 1680);
+    }, qrScanTimeLag);
   };
 
   const waitQRLoginConfirm = async (): Promise<any> => {
     const URL = `${Config.BACKEND_REST}/login/${loginSeed}/authenticate`;
     const response = await fetch(URL);
     clearTimeout(loginTimer);
-    if (response.ok) {
+    if (response && response.ok) {
+      loginTimer = -1;
       const confirm = await response.json();
+      confirm.headers = {...response.headers};
       beforeQRLoginConfirm(confirm);
     }
-    checkQRLoginCb();
+    if (-1 !== loginTimer) {
+      checkQRLoginAction();
+    }
   };
 
   const beforeQRLoginConfirm = async (accessTokenStore: any): Promise<boolean> => {
@@ -148,7 +152,7 @@ const Login = ({
       email: '',
       password: '',
     };
-    await doLoginByQR(login, accessTokenStore);
+    await doLogin(login, accessTokenStore);
     // Save encrypted database key
     const secretKey = new Uint32Array(64);
     self.crypto.getRandomValues(secretKey);
@@ -218,7 +222,7 @@ const Login = ({
   };
 
   const loginQRCode = <QRCode value={`${qrScanURLPrefix}${loginSeed}`} size={150} />;
-  checkQRLoginCb();
+  checkQRLoginAction();
   const backArrow = (
     <RouterLink to={ROUTE.INDEX} data-uie-name="go-index">
       <ArrowIcon direction="left" color={COLOR.TEXT} style={{opacity: 0.56}} />
@@ -344,7 +348,6 @@ const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) =>
       doInitializeClient: ROOT_ACTIONS.clientAction.doInitializeClient,
       doLogin: ROOT_ACTIONS.authAction.doLogin,
       doLoginAndJoin: ROOT_ACTIONS.authAction.doLoginAndJoin,
-      doLoginByQR: ROOT_ACTIONS.authAction.doLoginByQR,
       resetAuthError: ROOT_ACTIONS.authAction.resetAuthError,
     },
     dispatch,

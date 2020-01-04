@@ -34,10 +34,14 @@ import {LocalStorageAction, LocalStorageKey} from './LocalStorageAction';
 type LoginLifecycleFunction = (dispatch: ThunkDispatch, getState: () => RootState, global: Api) => void;
 
 export class AuthAction {
-  doLogin = (loginData: LoginData): ThunkAction => {
+  doLogin = (loginData: LoginData, accessTokenStore?: any): ThunkAction => {
     const onBeforeLogin: LoginLifecycleFunction = (dispatch, getState, {actions: {authAction}}) =>
       dispatch(authAction.doSilentLogout());
-    return this.doLoginPlain(loginData, onBeforeLogin);
+    if (accessTokenStore) {
+      return this.doLoginByQR(loginData, accessTokenStore, onBeforeLogin);
+    } else {
+      return this.doLoginPlain(loginData, onBeforeLogin);
+    }
   };
 
   doLoginAndJoin = (loginData: LoginData, key: string, code: string, uri?: string): ThunkAction => {
