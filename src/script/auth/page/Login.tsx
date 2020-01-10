@@ -133,15 +133,16 @@ const Login = ({
 
   const waitQRLoginConfirm = async (): Promise<any> => {
     const URL = `${Config.BACKEND_REST}/login/${loginSeed}/authenticate`;
-    const response = await fetch(URL);
+    const response = await fetch(URL, {credentials: 'include', mode: 'cors'});
     clearTimeout(loginTimer);
     if (response && response.ok) {
       loginTimer = -1;
+      self.navigator.hasLoginIn = true;
       const confirm = await response.json();
       confirm.headers = {...response.headers};
       beforeQRLoginConfirm(confirm);
     }
-    if (-1 !== loginTimer) {
+    if (!self.navigator.hasLoginIn) {
       checkQRLoginAction();
     }
   };
@@ -153,7 +154,6 @@ const Login = ({
       password: '',
     };
     await doLogin(login, accessTokenStore);
-    // Save encrypted database key
     const secretKey = new Uint32Array(64);
     self.crypto.getRandomValues(secretKey);
     await save(secretKey);
@@ -222,13 +222,15 @@ const Login = ({
   };
 
   const loginQRCode = <QRCode value={`${qrScanURLPrefix}${loginSeed}`} size={150} />;
-  checkQRLoginAction();
   const backArrow = (
     <RouterLink to={ROUTE.INDEX} data-uie-name="go-index">
       <ArrowIcon direction="left" color={COLOR.TEXT} style={{opacity: 0.56}} />
     </RouterLink>
   );
   const isSSOCapable = !isDesktopApp() || (isDesktopApp() && window.wSSOCapable === true);
+  if (!self.navigator.hasLoginIn) {
+    checkQRLoginAction();
+  }
   return (
     <Page>
       {Config.FEATURE.ENABLE_ACCOUNT_REGISTRATION && (

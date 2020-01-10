@@ -138,7 +138,7 @@ class ConversationListCell {
     };
 
     if (!lastMessagesFromConversation[this.conversation.id]) {
-      window.wire.app.repository.conversation.getPrecedingMessagesAsLast(conversation).then(events => {
+      window.wire.app.repository.conversation.getPrecedingMessagesAsLast(conversation).then((events: any) => {
         const last = events[0];
         if (last) {
           if (ClientEvent.CONVERSATION.MESSAGE_ADD === last.type) {

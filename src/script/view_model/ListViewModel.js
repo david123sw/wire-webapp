@@ -33,11 +33,11 @@ import {TemporaryGuestViewModel} from './list/TemporaryGuestViewModel';
 import {WebAppEvents} from '../event/WebApp';
 
 import {Context} from '../ui/ContextMenu';
-import {showLabelContextMenu} from '../ui/LabelContextMenu';
+// import {showLabelContextMenu} from '../ui/LabelContextMenu';
 import {Shortcut} from '../ui/Shortcut';
 import {ShortcutType} from '../ui/ShortcutType';
 import {ContentViewModel} from './ContentViewModel';
-import {DefaultLabelIds} from '../conversation/ConversationLabelRepository';
+// import {DefaultLabelIds} from '../conversation/ConversationLabelRepository';
 
 window.z = window.z || {};
 window.z.viewModel = z.viewModel || {};
@@ -358,20 +358,21 @@ z.viewModel.ListViewModel = class ListViewModel {
 
     if (!conversationEntity.is_archived()) {
       const {conversationLabelRepository} = this.conversationRepository;
-      if (!conversationLabelRepository.isFavorite(conversationEntity)) {
-        entries.push({
-          click: () => {
-            conversationLabelRepository.addConversationToFavorites(conversationEntity);
-            this.conversations.expandFolder(DefaultLabelIds.Favorites);
-          },
-          label: t('conversationPopoverFavorite'),
-        });
-      } else {
-        entries.push({
-          click: () => conversationLabelRepository.removeConversationFromFavorites(conversationEntity),
-          label: t('conversationPopoverUnfavorite'),
-        });
-      }
+      // Secret未匹配,屏蔽
+      // if (!conversationLabelRepository.isFavorite(conversationEntity)) {
+      //   entries.push({
+      //     click: () => {
+      //       conversationLabelRepository.addConversationToFavorites(conversationEntity);
+      //       this.conversations.expandFolder(DefaultLabelIds.Favorites);
+      //     },
+      //     label: t('conversationPopoverFavorite'),
+      //   });
+      // } else {
+      //   entries.push({
+      //     click: () => conversationLabelRepository.removeConversationFromFavorites(conversationEntity),
+      //     label: t('conversationPopoverUnfavorite'),
+      //   });
+      // }
 
       const customLabel = conversationLabelRepository.getConversationCustomLabel(conversationEntity);
       if (customLabel) {
@@ -381,26 +382,28 @@ z.viewModel.ListViewModel = class ListViewModel {
         });
       }
 
-      entries.push({
-        click: () => showLabelContextMenu(event, conversationEntity, conversationLabelRepository),
-        label: t('conversationsPopoverMoveTo'),
-      });
+      // Secret未匹配,屏蔽
+      // entries.push({
+      //   click: () => showLabelContextMenu(event, conversationEntity, conversationLabelRepository),
+      //   label: t('conversationsPopoverMoveTo'),
+      // });
     }
 
-    if (conversationEntity.is_archived()) {
-      entries.push({
-        click: () => this.clickToUnarchive(conversationEntity),
-        label: t('conversationsPopoverUnarchive'),
-      });
-    } else {
-      const shortcut = Shortcut.getShortcutTooltip(ShortcutType.ARCHIVE);
-
-      entries.push({
-        click: () => this.clickToArchive(conversationEntity),
-        label: t('conversationsPopoverArchive'),
-        title: t('tooltipConversationsArchive', shortcut),
-      });
-    }
+    // Secret未匹配,屏蔽
+    // if (conversationEntity.is_archived()) {
+    //   entries.push({
+    //     click: () => this.clickToUnarchive(conversationEntity),
+    //     label: t('conversationsPopoverUnarchive'),
+    //   });
+    // } else {
+    //   const shortcut = Shortcut.getShortcutTooltip(ShortcutType.ARCHIVE);
+    //
+    //   entries.push({
+    //     click: () => this.clickToArchive(conversationEntity),
+    //     label: t('conversationsPopoverArchive'),
+    //     title: t('tooltipConversationsArchive', shortcut),
+    //   });
+    // }
 
     if (conversationEntity.isRequest()) {
       entries.push({

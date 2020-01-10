@@ -862,6 +862,7 @@ class App {
         url = `${url}#login`;
       }
 
+      window.navigator.hasLoginIn = false;
       window.location.replace(url);
     });
   }

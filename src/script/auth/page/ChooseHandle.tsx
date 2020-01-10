@@ -75,7 +75,9 @@ const ChooseHandle = ({
       try {
         const suggestions = createSuggestions(name);
         const handle = await checkHandles(suggestions);
-        setHandle(handle);
+        if (handle) {
+          setHandle(handle);
+        }
       } catch (error) {
         setError(error);
       }

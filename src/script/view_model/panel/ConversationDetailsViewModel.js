@@ -233,15 +233,16 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
           label: t('conversationDetailsActionCreateGroup'),
         },
       },
-      {
-        condition: () => true,
-        item: {
-          click: () => this.clickToArchive(),
-          icon: 'archive-icon',
-          identifier: 'do-archive',
-          label: t('conversationDetailsActionArchive'),
-        },
-      },
+      // Secret未匹配,屏蔽
+      // {
+      //   condition: () => true,
+      //   item: {
+      //     click: () => this.clickToArchive(),
+      //     icon: 'archive-icon',
+      //     identifier: 'do-archive',
+      //     label: t('conversationDetailsActionArchive'),
+      //   },
+      // },
       {
         condition: () => conversationEntity.isRequest(),
         item: {
