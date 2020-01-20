@@ -109,6 +109,13 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
         : false;
     });
 
+    this.isSuperGroup = ko.pureComputed(() => {
+      if (!this.activeConversation().isActiveParticipant() || !this.activeConversation()) {
+        return false;
+      }
+      return !this.activeConversation().isSuperGroup();
+    });
+
     this.isVerified = ko.pureComputed(() => {
       return this.activeConversation()
         ? this.activeConversation().verification_state() === ConversationVerificationState.VERIFIED
@@ -161,7 +168,7 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
       return this.hasAdvancedNotifications() && !this.activeConversation().isGroup();
     });
 
-    this.showOptionTimedMessages = this.isActiveGroupParticipant;
+    this.showOptionTimedMessages = this.isSuperGroup; //this.isActiveGroupParticipant;
 
     this.showSectionOptions = ko.pureComputed(() => {
       return this.showOptionGuests() || this.showOptionNotificationsGroup() || this.showOptionTimedMessages();
