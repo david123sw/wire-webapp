@@ -330,6 +330,14 @@ z.viewModel.ListViewModel = class ListViewModel {
 
   onContextMenu(conversationEntity, event) {
     const entries = [];
+    if (true) {
+      const sticky = conversationEntity.stickyOnTop();
+      entries.push({
+        click: () => this.clickToStickOnTopOrNot(conversationEntity),
+        label: sticky ? t('conversationsPopoverUnstickyOnTop') : t('conversationsPopoverStickyOnTop'),
+        title: sticky ? t('conversationsPopoverUnstickyOnTop') : t('conversationsPopoverStickyOnTop'),
+      });
+    }
 
     if (conversationEntity.isMutable()) {
       const notificationsShortcut = Shortcut.getShortcutTooltip(ShortcutType.NOTIFICATIONS);
@@ -476,6 +484,10 @@ z.viewModel.ListViewModel = class ListViewModel {
 
   clickToOpenNotificationSettings(conversationEntity = this.conversationRepository.active_conversation()) {
     amplify.publish(WebAppEvents.CONVERSATION.SHOW, conversationEntity, {openNotificationSettings: true});
+  }
+
+  clickToStickOnTopOrNot(conversationEntity) {
+    this.actionsViewModel.stickConversationOnTopOrNot(conversationEntity);
   }
 
   clickToUnarchive(conversationEntity) {

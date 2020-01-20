@@ -134,6 +134,7 @@ export class Conversation {
     this.last_read_timestamp = ko.observable(0);
     this.last_server_timestamp = ko.observable(0);
     this.mutedTimestamp = ko.observable(0);
+    this.stickyOnTop = ko.observable(false);
 
     // Conversation states for view
     this.notificationState = ko.pureComputed(() => {
@@ -375,6 +376,7 @@ export class Conversation {
       this.last_server_timestamp,
       this.mutedState,
       this.mutedTimestamp,
+      this.stickyOnTop,
       this.name,
       this.participating_user_ids,
       this.receiptMode,
@@ -799,6 +801,7 @@ export class Conversation {
       others: this.participating_user_ids(),
       receipt_mode: this.receiptMode(),
       status: this.status(),
+      sticky_on_top: this.stickyOnTop(),
       team_id: this.team_id,
       type: this.type(),
       verification_state: this.verification_state(),

@@ -82,6 +82,7 @@ import {BaseError} from '../error/BaseError';
  * @property {boolean=} otr_muted
  * @property {string=} otr_muted_ref
  * @property {boolean=} muted_state
+ * @property {boolean=} sticky_on_top
  * @property {number=} status
  * @property {number=} verification_state
  */
@@ -164,6 +165,7 @@ export class ConversationMapper {
         last_server_timestamp,
         legal_hold_status,
         muted_timestamp,
+        sticky_on_top,
         receipt_mode,
         status,
         verification_state,
@@ -172,6 +174,10 @@ export class ConversationMapper {
       if (archived_timestamp) {
         conversationEntity.setTimestamp(archived_timestamp, Conversation.TIMESTAMP_TYPE.ARCHIVED);
         conversationEntity.archivedState(selfState.archived_state);
+      }
+
+      if (sticky_on_top !== undefined) {
+        conversationEntity.stickyOnTop(sticky_on_top);
       }
 
       if (cleared_timestamp !== undefined) {

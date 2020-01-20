@@ -113,6 +113,7 @@ export const WebAppEvents = {
     },
     PERSIST_STATE: 'wire.webapp.conversation.persist_state',
     SHOW: 'wire.webapp.conversation.show',
+    STICK_ON_TOP: 'wire.webapp.conversation.stick_on_top',
   },
   DEBUG: {
     UPDATE_LAST_CALL_STATUS: 'wire.webapp.debug.update_last_call_status',

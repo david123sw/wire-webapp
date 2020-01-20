@@ -283,6 +283,16 @@ export class ConversationService {
     });
   }
 
+  stickConversation(conversationId, sticky) {
+    return this.backendClient.sendJson({
+      data: {
+        place_top: sticky,
+      },
+      type: 'PUT',
+      url: `${ConversationService.CONFIG.URL_CONVERSATIONS}/${conversationId}/self`,
+    });
+  }
+
   //##############################################################################
   // Send events
   //##############################################################################

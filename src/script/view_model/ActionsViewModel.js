@@ -113,6 +113,12 @@ export class ActionsViewModel {
     }
   }
 
+  stickConversationOnTopOrNot(conversationEntity) {
+    if (conversationEntity) {
+      return this.conversationRepository.stickConversation(conversationEntity);
+    }
+  }
+
   deleteClient(clientEntity) {
     const isSSO = this.userRepository.self().isSingleSignOn;
     const isTemporary = clientEntity.isTemporary();

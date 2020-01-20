@@ -54,6 +54,7 @@ class ConversationListCell {
   isGroup: boolean;
   is1To1: boolean;
   isInTeam: boolean;
+  stickyOnTop: ko.Computed<boolean>;
   isInViewport: ko.Observable<boolean>;
   users: any;
   cell_state: ko.Observable<ReturnType<typeof generateCellState>>;
@@ -82,6 +83,7 @@ class ConversationListCell {
     this.isGroup = conversation.isGroup();
     this.is1To1 = conversation.is1to1();
     this.isInTeam = conversation.selfUser().inTeam();
+    this.stickyOnTop = ko.computed(() => conversation.stickyOnTop());
 
     const cellHeight = 56;
     const cellTop = index() * cellHeight + offsetTop();
@@ -188,6 +190,9 @@ ko.components.register('conversation-list-cell', {
         <span class="conversation-list-cell-description" data-bind="text: cell_state().description" data-uie-name="secondary-line"></span>
       </div>
       <div class="conversation-list-cell-right">
+        <!-- ko if: stickyOnTop() -->
+          <span class="conversation-list-cell-badge cell-badge-dark-new conversation-muted" data-uie-name="status-sticky"><sticky-icon class="svg-icon"></sticky-icon></span>
+        <!-- /ko -->
         <span class="conversation-list-cell-context-menu" data-bind="click: (_, event) => on_click(conversation, event)" data-uie-name="go-options"></span>
         <!-- ko ifnot: showJoinButton -->
           <!-- ko if: cell_state().icon === ConversationStatusIcon.PENDING_CONNECTION -->

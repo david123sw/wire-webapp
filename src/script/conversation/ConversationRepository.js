@@ -243,6 +243,8 @@ export class ConversationRepository {
     this.conversations_archived = ko.observableArray([]);
     this.conversations_cleared = ko.observableArray([]);
     this.conversations_unarchived = ko.observableArray([]);
+    this.conversations_sticky_on_top = ko.observableArray([]);
+    this.conversations_sticky_on_top_index = {}; //conversation IDs for duplicate check
 
     this.init_handled = 0;
     this.init_promise = undefined;
@@ -287,6 +289,7 @@ export class ConversationRepository {
       const conversationsArchived = [];
       const conversationsCleared = [];
       const conversationsUnarchived = [];
+      const conversationsUnarchivedStickyOnTop = this.conversations_sticky_on_top();
 
       this.sorted_conversations().forEach(conversationEntity => {
         if (conversationEntity.is_cleared()) {
@@ -294,13 +297,21 @@ export class ConversationRepository {
         } else if (conversationEntity.is_archived()) {
           conversationsArchived.push(conversationEntity);
         } else {
-          conversationsUnarchived.push(conversationEntity);
+          if (!conversationEntity.stickyOnTop() && !this.conversations_sticky_on_top_index[conversationEntity.id]) {
+            conversationsUnarchived.push(conversationEntity);
+          }
+
+          if (conversationEntity.stickyOnTop() && !this.conversations_sticky_on_top_index[conversationEntity.id]) {
+            conversationsUnarchivedStickyOnTop.push(conversationEntity);
+            this.conversations_sticky_on_top_index[conversationEntity.id] = true;
+          }
         }
       });
-
+      conversationsUnarchivedStickyOnTop.sort(sortGroupsByLastEvent);
       this.conversations_archived(conversationsArchived);
       this.conversations_cleared(conversationsCleared);
-      this.conversations_unarchived(conversationsUnarchived);
+      this.conversations_sticky_on_top(conversationsUnarchivedStickyOnTop);
+      this.conversations_unarchived(conversationsUnarchivedStickyOnTop.concat(conversationsUnarchived));
     });
   }
 
@@ -315,6 +326,7 @@ export class ConversationRepository {
     amplify.subscribe(WebAppEvents.TEAM.MEMBER_LEAVE, this.teamMemberLeave.bind(this));
     amplify.subscribe(WebAppEvents.USER.UNBLOCKED, this.unblocked_user.bind(this));
     amplify.subscribe(WebAppEvents.CONVERSATION.INJECT_LEGAL_HOLD_MESSAGE, this.injectLegalHoldMessage.bind(this));
+    amplify.subscribe(WebAppEvents.CONVERSATION.STICK_ON_TOP, this.stickConversationOnTop.bind(this));
 
     this.eventService.addEventUpdatedListener(this._updateLocalMessageEntity.bind(this));
     this.eventService.addEventDeletedListener(this._deleteLocalMessageEntity.bind(this));
@@ -334,6 +346,20 @@ export class ConversationRepository {
     const conversationEntity = this.find_conversation_by_id(deletedEvent.conversation);
     if (conversationEntity) {
       conversationEntity.remove_message_by_id(deletedEvent.id);
+    }
+  }
+
+  stickConversationOnTop(currentConversationEntity, stickyEntity) {
+    currentConversationEntity.stickyOnTop(stickyEntity.sticky);
+    if (!stickyEntity.sticky) {
+      const conversationsUnarchivedStickyOnTop = this.conversations_sticky_on_top();
+      conversationsUnarchivedStickyOnTop.forEach((item, index, array) => {
+        if (item.id === currentConversationEntity.id) {
+          array.splice(index, 1);
+          this.conversations_sticky_on_top_index[item.id] = false;
+        }
+      });
+      this.conversations_sticky_on_top(conversationsUnarchivedStickyOnTop);
     }
   }
 
@@ -1669,6 +1695,27 @@ export class ConversationRepository {
     return this._toggleArchiveConversation(conversationEntity, true).then(() => {
       this.logger.info(`Conversation '${conversationEntity.id}' archived`);
     });
+  }
+
+  /**
+   * Stick a conversation on ListView Top or Not
+   *
+   * @param {Conversation} conversationEntity - Conversation to rename
+   * @returns {Promise} Resolves when the conversation was stuck on top
+   */
+  stickConversation(conversationEntity) {
+    const sticky = conversationEntity.stickyOnTop();
+    return this.conversation_service
+      .stickConversation(conversationEntity.id, !sticky)
+      .then(() => {
+        this.logger.info(
+          `Conversation '${conversationEntity.id}' '${sticky ? 'unsticky' : 'sticky'}' on top succeeded`,
+        );
+        this.stickConversationOnTop(conversationEntity, {sticky: !sticky});
+      })
+      .catch(() => {
+        this.logger.error(`Conversation '${conversationEntity.id}' stick on top failed`);
+      });
   }
 
   /**
@@ -3678,6 +3725,13 @@ export class ConversationRepository {
    */
   _onMemberUpdate(conversationEntity, eventJson) {
     const {conversation: conversationId, data: eventData, from} = eventJson;
+
+    //conversation-update:place_top
+    if (JSON.stringify({place_top: true}) === JSON.stringify(eventData)) {
+      return this.stickConversationOnTop(conversationEntity, {sticky: true});
+    } else if (JSON.stringify({place_top: false}) === JSON.stringify(eventData)) {
+      return this.stickConversationOnTop(conversationEntity, {sticky: false});
+    }
 
     const isBackendEvent = eventData.otr_archived_ref || eventData.otr_muted_ref;
     const inSelfConversation = !this.self_conversation() || conversationId === this.self_conversation().id;
