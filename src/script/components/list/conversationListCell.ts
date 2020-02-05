@@ -169,7 +169,9 @@ ko.components.register('conversation-list-cell', {
     <!-- ko if: isInViewport() -->
       <div class="conversation-list-cell-left" data-bind="css: {'conversation-list-cell-left-opaque': conversation.removed_from_conversation() || conversation.participating_user_ids().length === 0}">
         <!-- ko if: isGroup -->
-          <group-avatar class="conversation-list-cell-avatar-arrow" params="users: users(), conversation: conversation"></group-avatar>
+          <div class="avatar-halo">
+            <group-avatar class="conversation-list-cell-avatar-arrow" params="users: users(), conversation: conversation"></group-avatar>
+          </div>
         <!-- /ko -->
         <!-- ko if: !isGroup && users().length -->
           <div class="avatar-halo">

@@ -562,6 +562,14 @@ const callTemplate = `
   `;
 
 const memberTemplate = `
+  <!-- ko if: message.showGroupLargeAvatar() -->
+    <div class="message-connected">
+      <div class="avatar-halo-large">
+        <group-avatar-large params="conversation: conversation"></group-avatar-large>
+      </div>
+    </div>
+  <!-- /ko -->
+  
   <!-- ko if: message.showLargeAvatar() -->
     <div class="message-connected">
       <span class="message-connected-header" data-bind='text: message.otherUser().name()'></span>

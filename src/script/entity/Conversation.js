@@ -357,6 +357,8 @@ export class Conversation {
     this.publishPersistState = debounce(() => amplify.publish(WebAppEvents.CONVERSATION.PERSIST_STATE, this), 100);
 
     this._initSubscriptions();
+
+    // console.log('dav333 conversation info:', this);
   }
 
   _isInitialized() {

@@ -76,7 +76,13 @@ class ParticipanItem {
     this.participant = ko.unwrap(participant);
     this.participantName = () =>
       (this.participant as User).is_me
-        ? `${(this.participant as User).name()} (${capitalizeFirstChar(t('conversationYouNominative'))})`
+        ? (this.participant as User).is_creator
+          ? `${(this.participant as User).name()} (${capitalizeFirstChar(
+              t('conversationCreatorNominative'),
+            )} & ${capitalizeFirstChar(t('conversationYouNominative'))})`
+          : `${(this.participant as User).name()} (${capitalizeFirstChar(t('conversationYouNominative'))})`
+        : (this.participant as User).is_creator
+        ? `${(this.participant as User).name()} (${capitalizeFirstChar(t('conversationCreatorNominative'))})`
         : this.participant.name;
     this.isService = this.participant instanceof ServiceEntity || this.participant.isService;
     this.isUser = this.participant instanceof User && !this.participant.isService;

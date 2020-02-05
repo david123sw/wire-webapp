@@ -49,7 +49,18 @@ class AudioAssetComponent extends AbstractAssetTransferStateTracker {
 
     this.show_loudness_preview = ko.pureComputed(() => {
       if (this.asset.meta && this.asset.meta.loudness) {
-        return this.asset.meta.loudness.length > 0;
+        if (this.asset.meta.loudness.buffer instanceof ArrayBuffer) {
+          return this.asset.meta.loudness.length > 0;
+        }
+
+        if (this.asset.meta.loudness instanceof Object && typeof this.asset.meta.loudness === 'object') {
+          const ab = [];
+          for (const i in this.asset.meta.loudness) {
+            ab.push(this.asset.meta.loudness[i]);
+          }
+          this.asset.meta.loudness = new Uint8Array(ab);
+          return this.asset.meta.loudness.length > 0;
+        }
       }
     });
 

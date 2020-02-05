@@ -77,6 +77,7 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
       if (this.activeConversation()) {
         this.serviceParticipants.removeAll();
         this.userParticipants.removeAll();
+        let groupCreatorEntity = undefined;
 
         this.activeConversation()
           .participating_user_ets()
@@ -84,8 +85,19 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
             if (userEntity.isService) {
               return this.serviceParticipants.push(userEntity);
             }
-            this.userParticipants.push(userEntity);
+            if (userEntity.id !== this.activeConversation().creator) {
+              this.userParticipants.push(userEntity);
+            } else {
+              groupCreatorEntity = userEntity;
+            }
           });
+        if (groupCreatorEntity) {
+          this.userParticipants.unshift(groupCreatorEntity);
+        }
+        this.userParticipants.unshift(this.activeConversation().selfUser());
+        this.userParticipants().map(userEntity => {
+          userEntity.is_creator = userEntity.id === this.activeConversation().creator;
+        });
         const userCount = this.userParticipants().length;
         const exceedsMaxUserCount = userCount > ConversationDetailsViewModel.CONFIG.MAX_USERS_VISIBLE;
         if (exceedsMaxUserCount) {
@@ -168,7 +180,7 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
       return this.hasAdvancedNotifications() && !this.activeConversation().isGroup();
     });
 
-    this.showOptionTimedMessages = this.isSuperGroup; //this.isActiveGroupParticipant;
+    this.showOptionTimedMessages = this.isSuperGroup;
 
     this.showSectionOptions = ko.pureComputed(() => {
       return this.showOptionGuests() || this.showOptionNotificationsGroup() || this.showOptionTimedMessages();

@@ -230,6 +230,11 @@ export class MemberMessage extends SystemMessage {
       const largeAvatarTypes = [SystemMessageType.CONNECTION_ACCEPTED, SystemMessageType.CONNECTION_REQUEST];
       return largeAvatarTypes.includes(this.memberMessageType);
     };
+
+    this.showGroupLargeAvatar = () => {
+      const largeAvatarTypes = [SystemMessageType.CONVERSATION_CREATE];
+      return largeAvatarTypes.includes(this.memberMessageType);
+    };
   }
 
   _generateNameString(skipAnd = false, declension = Declension.ACCUSATIVE) {

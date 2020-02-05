@@ -60,6 +60,7 @@ class User {
 
   constructor(id = '') {
     this.id = id;
+    this.is_creator = false;
     this.is_me = false;
     this.isService = false;
     this.isSingleSignOn = false;
