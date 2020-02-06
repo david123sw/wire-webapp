@@ -3217,7 +3217,6 @@ export class ConversationRepository {
         if (conversationEntity) {
           // Check if conversation was archived
           previouslyArchived = conversationEntity.is_archived();
-
           const isBackendTimestamp = eventSource !== EventRepository.SOURCE.INJECTED;
           conversationEntity.update_timestamp_server(eventJson.server_time || eventJson.time, isBackendTimestamp);
         }
@@ -3363,6 +3362,9 @@ export class ConversationRepository {
 
       case BackendEvent.CONVERSATION.RENAME:
         return this._onRename(conversationEntity, eventJson);
+
+      case BackendEvent.CONVERSATION.UPDATE:
+        return this._onUpdate(conversationEntity, eventJson);
 
       case ClientEvent.CONVERSATION.ASSET_ADD:
         return this._onAssetAdd(conversationEntity, eventJson);
@@ -3922,6 +3924,22 @@ export class ConversationRepository {
       this.conversationMapper.updateProperties(conversationEntity, eventJson.data);
       return {conversationEntity, messageEntity};
     });
+  }
+
+  /**
+   * A conversation was updated.
+   *
+   * @private
+   * @param {Conversation} conversationEntity - Conversation entity that will be renamed
+   * @param {Object} eventJson - JSON data of 'conversation.rename' event
+   * @returns {Promise} Resolves when the event was handled
+   */
+  _onUpdate(conversationEntity, eventJson) {
+    const conversationEntityUpdated = this.conversationMapper.updateAppendedProperties(
+      conversationEntity,
+      eventJson.data,
+    );
+    return {conversationEntityUpdated};
   }
 
   /**

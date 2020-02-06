@@ -135,6 +135,8 @@ export class Conversation {
     this.last_server_timestamp = ko.observable(0);
     this.mutedTimestamp = ko.observable(0);
     this.stickyOnTop = ko.observable(false);
+    this.previewPictureResource = ko.observable();
+    this.mediumPictureResource = ko.observable();
 
     // Conversation states for view
     this.notificationState = ko.pureComputed(() => {
@@ -357,8 +359,6 @@ export class Conversation {
     this.publishPersistState = debounce(() => amplify.publish(WebAppEvents.CONVERSATION.PERSIST_STATE, this), 100);
 
     this._initSubscriptions();
-
-    // console.log('dav333 conversation info:', this);
   }
 
   _isInitialized() {
@@ -376,11 +376,13 @@ export class Conversation {
       this.last_event_timestamp,
       this.last_read_timestamp,
       this.last_server_timestamp,
+      this.mediumPictureResource,
       this.mutedState,
       this.mutedTimestamp,
       this.stickyOnTop,
       this.name,
       this.participating_user_ids,
+      this.previewPictureResource,
       this.receiptMode,
       this.status,
       this.type,
@@ -797,10 +799,12 @@ export class Conversation {
       last_read_timestamp: this.last_read_timestamp(),
       last_server_timestamp: this.last_server_timestamp(),
       legal_hold_status: this.legalHoldStatus(),
+      mediumPictureResource: this.mediumPictureResource(),
       muted_state: this.mutedState(),
       muted_timestamp: this.mutedTimestamp(),
       name: this.name(),
       others: this.participating_user_ids(),
+      previewPictureResource: this.previewPictureResource(),
       receipt_mode: this.receiptMode(),
       status: this.status(),
       sticky_on_top: this.stickyOnTop(),

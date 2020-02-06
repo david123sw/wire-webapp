@@ -44,7 +44,7 @@ export class ParticipantAvatar {
     return {
       [ParticipantAvatar.SIZE.LARGE]: 72,
       [ParticipantAvatar.SIZE.MEDIUM]: 40,
-      [ParticipantAvatar.SIZE.SMALL]: 28,
+      [ParticipantAvatar.SIZE.SMALL]: 32, //28
       [ParticipantAvatar.SIZE.X_LARGE]: 200,
       [ParticipantAvatar.SIZE.X_SMALL]: 24,
       [ParticipantAvatar.SIZE.XX_SMALL]: 20,
@@ -57,6 +57,9 @@ export class ParticipantAvatar {
 
     const isParticipantObservable = typeof params.participant === 'function';
     this.participant = isParticipantObservable ? params.participant : ko.observable(params.participant);
+
+    this.conversation = params.conversation;
+    this.isFakeUser = this.participant().isFakeUser;
 
     this.isService = ko.pureComputed(() => {
       return this.participant() instanceof ServiceEntity || this.participant().isService;
@@ -213,7 +216,12 @@ export class ParticipantAvatar {
 ko.components.register('participant-avatar', {
   template: `
     <div class="participant-avatar" data-bind="attr: {title: participant().name, 'data-uie-name': avatarType()}, css: cssClasses(), click: onClick, delay: delay">
-      <div class="avatar-background"></div>
+      <!-- ko ifnot: isFakeUser -->
+        <div class="avatar-background"></div>
+      <!-- /ko -->
+      <!-- ko if: isFakeUser -->
+        <group-avatar class="conversation-list-cell-avatar-arrow" params="conversation: conversation"></group-avatar>
+      <!-- /ko -->
       <!-- ko if: isUser -->
         <div class="avatar-initials" data-bind="text: initials()"></div>
       <!-- /ko -->

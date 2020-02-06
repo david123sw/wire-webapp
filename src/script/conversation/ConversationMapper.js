@@ -73,6 +73,7 @@ import {BaseError} from '../error/BaseError';
  * @property {number=} archived_timestamp
  * @property {number=} cleared_timestamp
  * @property {number=} ephemeral_timer
+ * @property {object=} mediumPictureResource
  * @property {number=} message_timer
  * @property {number=} last_event_timestamp
  * @property {number=} last_read_timestamp
@@ -81,6 +82,7 @@ import {BaseError} from '../error/BaseError';
  * @property {string=} otr_archived_ref
  * @property {boolean=} otr_muted
  * @property {string=} otr_muted_ref
+ * @property {object=} previewPictureResource
  * @property {boolean=} muted_state
  * @property {boolean=} sticky_on_top
  * @property {number=} status
@@ -141,6 +143,28 @@ export class ConversationMapper {
   }
 
   /**
+   * Updates all new appended properties of a conversation specified.
+   * @param {Conversation} conversationEntity - Conversation to be updated
+   * @param {ConversationBackendData} conversationData - Conversation data from backend
+   * @returns {Conversation} Updated conversation entity
+   */
+  updateAppendedProperties(conversationEntity, conversationData) {
+    const hasAsset = conversationData.assets && conversationData.assets.length;
+    // let mappedAssets;
+    if (hasAsset) {
+      // mappedAssets = mapProfileAssets(conversationEntity.id, conversationData.assets);
+      if (conversationData.assets[0]) {
+        conversationEntity.previewPictureResource(conversationData.assets[0]);
+      }
+      if (conversationData.assets[1]) {
+        conversationEntity.mediumPictureResource(conversationData.assets[1]);
+      }
+    }
+    // updateUserEntityAssets(conversationEntity, mappedAssets);
+    return conversationEntity;
+  }
+
+  /**
    * Update the membership properties of a conversation.
    *
    * @param {Conversation} conversationEntity - Conversation to be updated
@@ -159,12 +183,14 @@ export class ConversationMapper {
         archived_timestamp,
         cleared_timestamp,
         ephemeral_timer,
+        mediumPictureResource,
         message_timer,
         last_event_timestamp,
         last_read_timestamp,
         last_server_timestamp,
         legal_hold_status,
         muted_timestamp,
+        previewPictureResource,
         sticky_on_top,
         receipt_mode,
         status,
@@ -178,6 +204,11 @@ export class ConversationMapper {
 
       if (sticky_on_top !== undefined) {
         conversationEntity.stickyOnTop(sticky_on_top);
+      }
+
+      if (mediumPictureResource !== undefined && previewPictureResource !== undefined) {
+        conversationEntity.previewPictureResource(previewPictureResource);
+        conversationEntity.mediumPictureResource(mediumPictureResource);
       }
 
       if (cleared_timestamp !== undefined) {

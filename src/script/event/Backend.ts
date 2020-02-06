@@ -33,6 +33,7 @@ enum CONVERSATION {
   RENAME = 'conversation.rename',
   TYPING = 'conversation.typing',
   BGP_MESSAGE_ADD = 'conversation.bgp-message-add',
+  UPDATE = 'conversation.update',
 }
 
 enum TEAM {

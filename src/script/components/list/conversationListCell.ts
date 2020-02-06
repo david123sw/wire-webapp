@@ -19,7 +19,7 @@
 
 import ko from 'knockout';
 
-import {noop} from 'Util/util';
+import {createRandomUuid, noop} from 'Util/util';
 
 import {ParticipantAvatar} from 'Components/participantAvatar';
 import {generateCellState, transDesc} from '../../conversation/ConversationCellState';
@@ -31,6 +31,9 @@ import {viewportObserver} from '../../ui/viewportObserver';
 import 'Components/availabilityState';
 import {BackendEvent} from '../../event/Backend';
 import {ClientEvent} from '../../event/Client';
+
+import {mapProfileAssets, updateUserEntityAssets} from '../../assets/AssetMapper';
+import {User} from '../../entity/User';
 
 const lastMessagesFromConversation: {[index: string]: boolean} = {};
 
@@ -55,6 +58,7 @@ class ConversationListCell {
   is1To1: boolean;
   isInTeam: boolean;
   stickyOnTop: ko.Computed<boolean>;
+  fakeUser: User;
   isInViewport: ko.Observable<boolean>;
   users: any;
   cell_state: ko.Observable<ReturnType<typeof generateCellState>>;
@@ -84,6 +88,18 @@ class ConversationListCell {
     this.is1To1 = conversation.is1to1();
     this.isInTeam = conversation.selfUser().inTeam();
     this.stickyOnTop = ko.computed(() => conversation.stickyOnTop());
+    this.fakeUser = ko.computed(() => {
+      if (conversation.previewPictureResource() && conversation.mediumPictureResource()) {
+        const user = new User(createRandomUuid());
+        user.isFakeUser = true;
+        const assets = [conversation.previewPictureResource(), conversation.mediumPictureResource()];
+        const mappedAssets = mapProfileAssets(user.id, assets);
+        updateUserEntityAssets(user, mappedAssets);
+        return user;
+      } else {
+        return false;
+      }
+    });
 
     const cellHeight = 56;
     const cellTop = index() * cellHeight + offsetTop();
@@ -170,7 +186,12 @@ ko.components.register('conversation-list-cell', {
       <div class="conversation-list-cell-left" data-bind="css: {'conversation-list-cell-left-opaque': conversation.removed_from_conversation() || conversation.participating_user_ids().length === 0}">
         <!-- ko if: isGroup -->
           <div class="avatar-halo">
-            <group-avatar class="conversation-list-cell-avatar-arrow" params="users: users(), conversation: conversation"></group-avatar>
+            <!-- ko if: fakeUser() -->
+              <participant-avatar params="participant: fakeUser(), size: ParticipantAvatar.SIZE.SMALL, conversation: conversation"></participant-avatar>
+            <!-- /ko -->
+            <!-- ko ifnot: fakeUser() -->
+              <group-avatar class="conversation-list-cell-avatar-arrow" params="conversation: conversation"></group-avatar>
+            <!-- /ko -->
           </div>
         <!-- /ko -->
         <!-- ko if: !isGroup && users().length -->
