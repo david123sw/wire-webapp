@@ -65,7 +65,6 @@ participant-avatar {
 
     &.pending,
     &.blocked,
-    &.unknown,
     &.ignored {
       .avatar-image {
         filter: grayscale(100%);
@@ -111,6 +110,14 @@ participant-avatar {
     &.unknown {
       .avatar-background {
         background-color: @w-gray;
+      }
+
+      .avatar-image {
+        filter: grayscale(0%);
+      }
+
+      .avatar-border {
+        display: none;
       }
     }
   }

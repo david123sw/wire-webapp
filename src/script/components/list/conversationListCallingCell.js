@@ -18,7 +18,7 @@
  */
 
 import {formatSeconds} from 'Util/TimeUtil';
-import {afterRender} from 'Util/util';
+import {afterRender, createRandomUuid} from 'Util/util';
 import {t} from 'Util/LocalizerUtil';
 
 import {generateConversationUrl} from '../../router/routeGenerator';
@@ -28,6 +28,9 @@ import {STATE as CALL_STATE, REASON as CALL_REASON, CALL_TYPE} from '@wireapp/av
 import 'Components/list/participantItem';
 import 'Components/calling/fullscreenVideoCall';
 import 'Components/groupVideoGrid';
+
+import {mapProfileAssets, updateUserEntityAssets} from '../../assets/AssetMapper';
+import {User} from '../../entity/User';
 
 class ConversationListCallingCell {
   constructor({
@@ -47,6 +50,18 @@ class ConversationListCallingCell {
     this.multitasking = multitasking;
     this.callActions = callActions;
     this.ParticipantAvatar = ParticipantAvatar;
+    this.fakeUser = ko.computed(() => {
+      const conversation_ref = 'function' === typeof conversation ? conversation() : conversation;
+      if (conversation_ref.previewPictureResource() && conversation_ref.mediumPictureResource()) {
+        const user = new User(createRandomUuid());
+        user.isFakeUser = true;
+        const assets = [conversation_ref.previewPictureResource(), conversation_ref.mediumPictureResource()];
+        const mappedAssets = mapProfileAssets(user.id, assets);
+        updateUserEntityAssets(user, mappedAssets);
+        return user;
+      }
+      return false;
+    });
 
     this.conversationUrl = generateConversationUrl(conversation().id);
     this.multitasking.isMinimized(false); // reset multitasking default value, the call will be fullscreen if there are some remote videos
@@ -144,9 +159,18 @@ ko.components.register('conversation-list-calling-cell', {
     <div class="conversation-list-calling-cell conversation-list-cell">
       <!-- ko ifnot: temporaryUserStyle -->
         <div class="conversation-list-cell-left">
+        
           <!-- ko if: conversation().isGroup() -->
-            <group-avatar class="conversation-list-cell-avatar-arrow call-ui__avatar" params="users: conversationParticipants(), conversation: conversation"></group-avatar>
+            <div class="avatar-halo">
+              <!-- ko if: fakeUser() -->
+                <participant-avatar params="participant: fakeUser(), size: ParticipantAvatar.SIZE.SMALL, conversation: conversation"></participant-avatar>
+              <!-- /ko -->
+              <!-- ko ifnot: fakeUser() -->
+                <group-avatar params="conversation: conversation"></group-avatar>
+              <!-- /ko -->
+            </div>
           <!-- /ko -->
+          
           <!-- ko if: !conversation().isGroup() && conversationParticipants().length -->
             <participant-avatar params="participant: conversationParticipants()[0], size: ParticipantAvatar.SIZE.SMALL"></participant-avatar>
           <!-- /ko -->

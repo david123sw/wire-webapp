@@ -33,6 +33,7 @@ import {BackendEvent} from '../../event/Backend';
 import {ClientEvent} from '../../event/Client';
 
 import {mapProfileAssets, updateUserEntityAssets} from '../../assets/AssetMapper';
+import {AssetPayload} from '../../entity/message/Asset';
 import {User} from '../../entity/User';
 
 const lastMessagesFromConversation: {[index: string]: boolean} = {};
@@ -58,7 +59,7 @@ class ConversationListCell {
   is1To1: boolean;
   isInTeam: boolean;
   stickyOnTop: ko.Computed<boolean>;
-  fakeUser: User;
+  fakeUser: ko.Computed<User | boolean>;
   isInViewport: ko.Observable<boolean>;
   users: any;
   cell_state: ko.Observable<ReturnType<typeof generateCellState>>;
@@ -92,7 +93,7 @@ class ConversationListCell {
       if (conversation.previewPictureResource() && conversation.mediumPictureResource()) {
         const user = new User(createRandomUuid());
         user.isFakeUser = true;
-        const assets = [conversation.previewPictureResource(), conversation.mediumPictureResource()];
+        const assets: AssetPayload[] = [conversation.previewPictureResource(), conversation.mediumPictureResource()];
         const mappedAssets = mapProfileAssets(user.id, assets);
         updateUserEntityAssets(user, mappedAssets);
         return user;
@@ -190,7 +191,7 @@ ko.components.register('conversation-list-cell', {
               <participant-avatar params="participant: fakeUser(), size: ParticipantAvatar.SIZE.SMALL, conversation: conversation"></participant-avatar>
             <!-- /ko -->
             <!-- ko ifnot: fakeUser() -->
-              <group-avatar class="conversation-list-cell-avatar-arrow" params="conversation: conversation"></group-avatar>
+              <group-avatar params="conversation: conversation"></group-avatar>
             <!-- /ko -->
           </div>
         <!-- /ko -->

@@ -39,6 +39,10 @@ import './asset/locationAsset';
 import './asset/videoAsset';
 import {SHOW_LEGAL_HOLD_MODAL} from '../view_model/content/LegalHoldModalViewModel';
 
+import {mapProfileAssets, updateUserEntityAssets} from '../assets/AssetMapper';
+import {User} from '../entity/User';
+import {createRandomUuid} from 'Util/util';
+
 class Message {
   constructor(
     {
@@ -76,6 +80,18 @@ class Message {
     this.isSelfTemporaryGuest = isSelfTemporaryGuest;
     this.isLastDeliveredMessage = isLastDeliveredMessage;
     this.accentColor = ko.pureComputed(() => message.user().accent_color());
+    this.fakeUser = ko.computed(() => {
+      const conversation_ref = 'function' === typeof conversation ? conversation() : conversation;
+      if (conversation_ref.previewPictureResource() && conversation_ref.mediumPictureResource()) {
+        const user = new User(createRandomUuid());
+        user.isFakeUser = true;
+        const assets = [conversation_ref.previewPictureResource(), conversation_ref.mediumPictureResource()];
+        const mappedAssets = mapProfileAssets(user.id, assets);
+        updateUserEntityAssets(user, mappedAssets);
+        return user;
+      }
+      return false;
+    });
 
     this.onClickImage = onClickImage;
     this.onClickInvitePeople = onClickInvitePeople;
@@ -279,20 +295,13 @@ const normalTemplate = `
       </div>
     </div>
   <!-- /ko -->
-  <!-- ko if: message.quote() -->
-    <message-quote params="
-        conversation: conversation,
-        quote: message.quote(),
-        selfId: selfId,
-        conversationRepository: conversationRepository,
-        showDetail: onClickImage,
-        focusMessage: onClickTimestamp,
-        handleClickOnMessage: onClickMessage,
-        showUserDetails: onClickAvatar,
-      "></message-quote>
-  <!-- /ko -->
+  
+
 
   <div class="message-body" data-bind="attr: {'title': message.ephemeral_caption()}, css: {'message-body-self-special': !shouldShowAvatar}">
+  
+  
+    
     <!-- ko if: message.ephemeral_status() === EphemeralStatusType.ACTIVE -->
       <ephemeral-timer class="message-ephemeral-timer" params="message: message"></ephemeral-timer>
     <!-- /ko -->
@@ -306,18 +315,44 @@ const normalTemplate = `
       <!-- ko if: asset.is_text() -->
         <!-- ko if: asset.should_render_text -->
           <!-- ko if: shouldShowAvatar -->
-            <div class="text_content_background text_content_background_left">
+            <div class="text_content_background text_content_background_left" data-bind="css: {'text_content_background_preview_down':asset.previews().length, 'message_with_quotes':message.quote()}">
+              <!-- ko if: message.quote() -->
+                <message-quote params="
+                    conversation: conversation,
+                    quote: message.quote(),
+                    selfId: selfId,
+                    conversationRepository: conversationRepository,
+                    showDetail: onClickImage,
+                    focusMessage: onClickTimestamp,
+                    handleClickOnMessage: onClickMessage,
+                    showUserDetails: onClickAvatar,
+                    shouldShowAvatar: shouldShowAvatar,
+                  "></message-quote>
+              <!-- /ko -->
               <div class="text" data-bind="html: asset.render(selfId(), accentColor()), event: {click: (data, event) => onClickMessage(asset, event)}, css: {'text-large': includesOnlyEmojis(asset.text), 'text-foreground': message.status() === StatusType.SENDING, 'ephemeral-message-obfuscated': message.isObfuscated()}" dir="auto"></div>
             </div>
           <!-- /ko -->
           <!-- ko ifnot: shouldShowAvatar -->
-            <div class="text_content_background text_content_background_right">
-              <div class="text2nd" data-bind="html: asset.render(selfId(), accentColor()), event: {click: (data, event) => onClickMessage(asset, event)}, css: {'text-large': includesOnlyEmojis(asset.text), 'text-foreground': message.status() === StatusType.SENDING, 'ephemeral-message-obfuscated': message.isObfuscated()}" dir="auto"></div>
+            <div class="text_content_background text_content_background_right" data-bind="css: {'text_content_background_preview_down':asset.previews().length, 'message_with_quotes':message.quote()}">
+              <!-- ko if: message.quote() -->
+                <message-quote params="
+                    conversation: conversation,
+                    quote: message.quote(),
+                    selfId: selfId,
+                    conversationRepository: conversationRepository,
+                    showDetail: onClickImage,
+                    focusMessage: onClickTimestamp,
+                    handleClickOnMessage: onClickMessage,
+                    showUserDetails: onClickAvatar,
+                    shouldShowAvatar: shouldShowAvatar,
+                  "></message-quote>
+              <!-- /ko -->
+              <div class="text2nd" data-bind="html: asset.render(selfId(), accentColor()), event: {click: (data, event) => onClickMessage(asset, event)}, css: {'message_with_quotes_right': message.quote(), 'text-large': includesOnlyEmojis(asset.text), 'text-foreground': message.status() === StatusType.SENDING, 'ephemeral-message-obfuscated': message.isObfuscated()}" dir="auto"></div>
             </div>
           <!-- /ko -->
         <!-- /ko -->
         <!-- ko foreach: asset.previews() -->
-          <div class="text_content_background file_content_background" data-bind="css: {'text_content_background_right':!$parent.shouldShowAvatar, 'text_content_background_left':$parent.shouldShowAvatar}">
+          <div class="text_content_background file_content_background" data-bind="css: {'text_content_background_right':!$parent.shouldShowAvatar, 'text_content_background_left':$parent.shouldShowAvatar, 'text_content_background_preview_up':asset.text.indexOf('http') !== 0}">
             <link-preview-asset data-bind="css: {'ephemeral-asset-expired': $parent.message.isObfuscated()}" params="message: $parent.message"></link-preview-asset>
           </div>
         <!-- /ko -->
@@ -565,7 +600,12 @@ const memberTemplate = `
   <!-- ko if: message.showGroupLargeAvatar() -->
     <div class="message-connected">
       <div class="avatar-halo-large">
-        <group-avatar-large params="conversation: conversation"></group-avatar-large>
+        <!-- ko if: fakeUser() -->
+          <participant-avatar params="participant: fakeUser(), size: ParticipantAvatar.SIZE.X_LARGE, conversation: conversation"></participant-avatar>
+        <!-- /ko -->
+        <!-- ko ifnot: fakeUser() -->
+          <group-avatar-large params="conversation: conversation"></group-avatar-large>
+        <!-- /ko -->
       </div>
     </div>
   <!-- /ko -->

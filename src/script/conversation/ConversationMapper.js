@@ -150,9 +150,7 @@ export class ConversationMapper {
    */
   updateAppendedProperties(conversationEntity, conversationData) {
     const hasAsset = conversationData.assets && conversationData.assets.length;
-    // let mappedAssets;
     if (hasAsset) {
-      // mappedAssets = mapProfileAssets(conversationEntity.id, conversationData.assets);
       if (conversationData.assets[0]) {
         conversationEntity.previewPictureResource(conversationData.assets[0]);
       }
@@ -160,7 +158,6 @@ export class ConversationMapper {
         conversationEntity.mediumPictureResource(conversationData.assets[1]);
       }
     }
-    // updateUserEntityAssets(conversationEntity, mappedAssets);
     return conversationEntity;
   }
 
@@ -206,9 +203,12 @@ export class ConversationMapper {
         conversationEntity.stickyOnTop(sticky_on_top);
       }
 
-      if (mediumPictureResource !== undefined && previewPictureResource !== undefined) {
-        conversationEntity.previewPictureResource(previewPictureResource);
+      if (mediumPictureResource !== undefined) {
         conversationEntity.mediumPictureResource(mediumPictureResource);
+      }
+
+      if (previewPictureResource !== undefined) {
+        conversationEntity.previewPictureResource(previewPictureResource);
       }
 
       if (cleared_timestamp !== undefined) {

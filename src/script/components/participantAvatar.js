@@ -60,6 +60,7 @@ export class ParticipantAvatar {
 
     this.conversation = params.conversation;
     this.isFakeUser = this.participant().isFakeUser;
+    this.isLargePortrait = params.size === ParticipantAvatar.SIZE.X_LARGE;
 
     this.isService = ko.pureComputed(() => {
       return this.participant() instanceof ServiceEntity || this.participant().isService;
@@ -220,7 +221,12 @@ ko.components.register('participant-avatar', {
         <div class="avatar-background"></div>
       <!-- /ko -->
       <!-- ko if: isFakeUser -->
-        <group-avatar class="conversation-list-cell-avatar-arrow" params="conversation: conversation"></group-avatar>
+        <!-- ko if: isLargePortrait -->
+          <group-avatar-large params="conversation: conversation"></group-avatar-large>
+        <!-- /ko -->
+        <!-- ko ifnot: isLargePortrait -->
+          <group-avatar params="conversation: conversation"></group-avatar>
+        <!-- /ko -->
       <!-- /ko -->
       <!-- ko if: isUser -->
         <div class="avatar-initials" data-bind="text: initials()"></div>

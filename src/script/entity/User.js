@@ -67,6 +67,7 @@ class User {
     this.isDeleted = false;
     this.providerId = undefined;
     this.serviceId = undefined;
+    this.isFakeUser = false;
     this.providerName = ko.observable(undefined);
 
     this.joaatHash = -1;

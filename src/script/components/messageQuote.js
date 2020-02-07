@@ -34,6 +34,7 @@ class MessageQuote {
     selfId,
     showDetail,
     showUserDetails,
+    shouldShowAvatar,
   }) {
     this.updateCanShowMore = this.updateCanShowMore.bind(this);
     this.toggleShowMore = this.toggleShowMore.bind(this);
@@ -41,6 +42,7 @@ class MessageQuote {
     this.showDetail = showDetail;
     this.handleClickOnMessage = handleClickOnMessage;
     this.showUserDetails = showUserDetails;
+    this.shouldShowAvatar = shouldShowAvatar;
 
     this.focusMessage = () => {
       if (this.quotedMessage()) {
@@ -131,6 +133,10 @@ ko.components.register('message-quote', {
   template: `
   <!-- ko if: quotedMessage() || error() -->
     <div class="message-quote" data-uie-name="quote-item">
+      <!-- ko if: shouldShowAvatar -->
+        <div class="quote-before"></div>
+      <!-- /ko -->
+      
       <!-- ko if: error() -->
         <div class="message-quote__error" data-bind="text: t('replyQuoteError')" data-uie-name="label-error-quote"></div>
       <!-- /ko -->
