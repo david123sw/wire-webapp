@@ -148,17 +148,44 @@ const Login = ({
   };
 
   const beforeQRLoginConfirm = async (accessTokenStore: any): Promise<boolean> => {
-    const login: LoginData = {
-      clientType: persist ? ClientType.PERMANENT : ClientType.TEMPORARY,
-      email: '',
-      password: '',
-    };
-    await doLogin(login, accessTokenStore);
-    const secretKey = new Uint32Array(64);
-    self.crypto.getRandomValues(secretKey);
-    await save(secretKey);
-    history.push(ROUTE.HISTORY_INFO);
-    return Promise.resolve(true);
+    try {
+      const login: LoginData = {
+        clientType: persist ? ClientType.PERMANENT : ClientType.TEMPORARY,
+        email: '',
+        password: '',
+      };
+      await doLogin(login, accessTokenStore);
+      const secretKey = new Uint32Array(64);
+      self.crypto.getRandomValues(secretKey);
+      await save(secretKey);
+      history.push(ROUTE.HISTORY_INFO);
+      return Promise.resolve(true);
+    } catch (error) {
+      if ((error as BackendError).label) {
+        const backendError = error as BackendError;
+        switch (backendError.label) {
+          case BackendError.LABEL.TOO_MANY_CLIENTS: {
+            resetAuthError();
+            history.push(ROUTE.CLIENTS);
+            break;
+          }
+          case BackendError.LABEL.INVALID_CREDENTIALS:
+          case LabeledError.GENERAL_ERRORS.LOW_DISK_SPACE: {
+            break;
+          }
+          default: {
+            const isValidationError = Object.values(ValidationError.ERROR).some(errorType =>
+              backendError.label.endsWith(errorType),
+            );
+            if (!isValidationError) {
+              throw backendError;
+            }
+          }
+        }
+      } else {
+        throw error;
+      }
+    }
   };
 
   const immediateLogin = async () => {

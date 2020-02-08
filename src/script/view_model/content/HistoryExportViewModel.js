@@ -122,7 +122,7 @@ z.viewModel.content.HistoryExportViewModel = class HistoryExportViewModel {
   downloadArchiveFile() {
     const userName = this.userRepository.self().username();
     const fileExtension = HistoryExportViewModel.CONFIG.FILE_EXTENSION;
-    const filename = `Wire-${userName}-Backup_${getCurrentDate()}.${fileExtension}`;
+    const filename = `Secret-${userName}-Backup_${getCurrentDate()}.${fileExtension}`;
 
     this.dismissExport();
     downloadBlob(this.archiveBlob(), filename, 'application/octet-stream');

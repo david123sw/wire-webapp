@@ -20,10 +20,13 @@
 class GroupAvatar {
   constructor({conversation}) {
     const conversation_ref = 'function' === typeof conversation ? conversation() : conversation;
-    this.conversation_accent_color = conversation_ref.accent_color
-      ? conversation_ref.accent_color
-      : `var(--accent-color-${Math.floor(Math.random() * 7 + 1)})`;
-    conversation_ref.accent_color = this.conversation_accent_color;
+    this.conversation_accent_color =
+      conversation_ref && conversation_ref.accent_color
+        ? conversation_ref.accent_color
+        : `var(--accent-color-${Math.floor(Math.random() * 7 + 1)})`;
+    if (conversation_ref) {
+      conversation_ref.accent_color = this.conversation_accent_color;
+    }
   }
 }
 
