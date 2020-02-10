@@ -80,6 +80,7 @@ class ConversationListCell {
     element: HTMLElement,
   ) {
     this.conversation = conversation;
+
     this.isSelected = ko.computed(() => is_selected(conversation));
     // "click" should be renamed to "right_click"
     this.on_click = click;
