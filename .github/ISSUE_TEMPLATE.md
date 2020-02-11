@@ -6,11 +6,11 @@ If you have a feature request that affects Secret in general, was kindly ask you
 
 ## Secret for web version
 
-<!--- Check the the 3rd line of the source code on https://webapp-new2.isecret.im. -->
+<!--- Check the the 3rd line of the source code on https://webapp.secret.chat. -->
 
 ## Browser version
 
-<!--- Can be checked at http://webapp-new2.isecret.im.-->
+<!--- Can be checked at http://webapp.secret.chat.-->
 
 ## Installed browser addons
 

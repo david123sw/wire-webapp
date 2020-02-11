@@ -29,9 +29,9 @@ export const URL = {
   TERMS_OF_USE_PERSONAL: env.URL && env.URL.TERMS_OF_USE_PERSONAL,
   TERMS_OF_USE_TEAMS: env.URL && env.URL.TERMS_OF_USE_TEAMS,
   WEBAPP: {
-    INTERNAL: 'https://webapp-new2.isecret.im',
-    PRODUCTION: env.APP_BASE || 'https://webapp-new2.isecret.im',
-    STAGING: 'https://webapp-new2.isecret.im',
+    INTERNAL: 'https://webapp.secret.chat',
+    PRODUCTION: env.APP_BASE || 'https://webapp.secret.chat',
+    STAGING: 'https://webapp.secret.chat',
   },
   WEBSITE: env.URL && env.URL.WEBSITE_BASE,
 };

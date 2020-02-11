@@ -160,7 +160,7 @@ function client_preview_init() {
         TERMS_OF_USE_TEAMS: 'https://isecret.im',
         WEBSITE_BASE: 'https://isecret.im',
       },
-      VERSION: readFile(VERSION_FILE, '1.0.0'),
+      VERSION: VERSION_FILE, //readFile(VERSION_FILE, '1.0.0'),
     },
     COMMIT: readFile(COMMIT_FILE, ''),
     SERVER: {
@@ -174,7 +174,7 @@ function client_preview_init() {
       PORT_HTTP: 21080,
       ROBOTS: {
         ALLOW: readFile(ROBOTS_ALLOW_FILE, 'User-agent: *\r\nDisallow: /'),
-        ALLOWED_HOSTS: ['webapp-new2.isecret.im'],
+        ALLOWED_HOSTS: ['webapp.secret.chat'],
         DISALLOW: readFile(ROBOTS_DISALLOW_FILE, 'User-agent: *\r\nDisallow: /'),
       },
     },

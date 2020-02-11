@@ -165,7 +165,7 @@ function client_preview_init(): any {
         TERMS_OF_USE_TEAMS: 'https://isecret.im',
         WEBSITE_BASE: 'https://isecret.im',
       },
-      VERSION: readFile(VERSION_FILE, '1.0.0'),
+      VERSION: VERSION_FILE, //readFile(VERSION_FILE, '1.0.0'),
     },
     COMMIT: readFile(COMMIT_FILE, ''),
     SERVER: {
@@ -179,7 +179,7 @@ function client_preview_init(): any {
       PORT_HTTP: 21080,
       ROBOTS: {
         ALLOW: readFile(ROBOTS_ALLOW_FILE, 'User-agent: *\r\nDisallow: /'),
-        ALLOWED_HOSTS: ['webapp-new2.isecret.im'],
+        ALLOWED_HOSTS: ['webapp.secret.chat'],
         DISALLOW: readFile(ROBOTS_DISALLOW_FILE, 'User-agent: *\r\nDisallow: /'),
       },
     },
@@ -191,7 +191,7 @@ function client_preview_init(): any {
 if ('production' === process.env.NODE_ENV) {
   client_preview_init();
 }
-const unique_app_entry = 'https://webapp-new2.isecret.im';
+const unique_app_entry = 'https://webapp.secret.chat';
 const unique_connect_entry = 'https://account.isecret.im';
 const unique_connect_entry_wss = 'wss://account.isecret.im';
 //PROD_SPEC
