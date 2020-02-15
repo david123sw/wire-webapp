@@ -187,9 +187,7 @@ if ('production' === process.env.NODE_ENV) {
   client_preview_init();
 }
 //PROD_SPEC
-
 const env = window.wire.env;
-
 export const ACCENT_ID = {
   BLUE: 1,
   GREEN: 2,
@@ -199,7 +197,6 @@ export const ACCENT_ID = {
   RED: 4,
   YELLOW: 3,
 };
-
 // TODO: Deprecated. Should be replaced with "src/script/auth/config.ts".
 export const config = {
   FEATURE: {

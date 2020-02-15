@@ -167,7 +167,7 @@ export class ContentMessage extends Message {
 
     if (!file_name) {
       const date = moment(this.timestamp());
-      file_name = `Wire ${date.format('YYYY-MM-DD')} at ${date.format('LT')}`;
+      file_name = `Secret ${date.format('YYYY-MM-DD')} at ${date.format('LT')}`;
     }
 
     if (asset_et.file_type) {
