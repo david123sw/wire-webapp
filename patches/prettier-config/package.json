@@ -1,0 +1,9 @@
+{
+  "description": "Wire Prettier config",
+  "license": "GPL-3.0",
+  "main": "index.json",
+  "name": "@wireapp/prettier-config",
+  "repository": "https://github.com/david123sw/wire-web-packages/tree/master/packages/prettier-config",
+  "version": "0.3.0",
+  "gitHead": "c0473a83d5d3986147845fdfade217791a7fc000"
+}

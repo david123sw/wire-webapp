@@ -1,0 +1,40 @@
+{
+  "bin": {
+    "copy-config": "dist/cli.js"
+  },
+  "dependencies": {
+    "axios": "0.19.0",
+    "copy": "0.3.2",
+    "cosmiconfig": "5.2.1",
+    "fs-extra": "8.1.0",
+    "jszip": "3.2.2",
+    "logdown": "3.2.8",
+    "rimraf": "3.0.0"
+  },
+  "description": "Wire's internal configuration copy tool",
+  "devDependencies": {
+    "@types/copy": "0.3.1",
+    "@types/cosmiconfig": "5.0.3",
+    "@types/fs-extra": "8.0.1",
+    "@types/jszip": "3.1.6",
+    "@types/rimraf": "2.0.3",
+    "jasmine": "3.5.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "license": "GPL-3.0",
+  "main": "dist/index.js",
+  "name": "@wireapp/copy-config",
+  "repository": "https://github.com/david123sw/wire-web-packages/tree/master/packages/copy-config",
+  "scripts": {
+    "build": "yarn build:node",
+    "build:node": "tsc",
+    "clean": "rimraf dist",
+    "dist": "yarn clean && yarn build",
+    "test": "yarn test:node",
+    "test:node": "jasmine --config=jasmine.json"
+  },
+  "version": "0.8.6",
+  "gitHead": "6972b50b258ffb02c8384b552d0009cbfa015a56"
+}

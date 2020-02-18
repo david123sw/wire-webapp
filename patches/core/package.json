@@ -1,0 +1,70 @@
+{
+  "browser": {
+    "./dist/cryptography/AssetCryptography.node": "./dist/cryptography/AssetCryptography.browser.js"
+  },
+  "dependencies": {
+    "@types/long": "4.0.0",
+    "@types/node": "~12",
+    "@wireapp/api-client": "8.0.0",
+    "@wireapp/cryptobox": "12.0.0",
+    "@wireapp/protocol-messaging": "1.24.2",
+    "@wireapp/store-engine": "4.0.0",
+    "bazinga64": "5.5.27",
+    "hash.js": "1.1.7",
+    "logdown": "3.2.8",
+    "protobufjs": "6.8.8",
+    "pure-uuid": "1.5.7"
+  },
+  "devDependencies": {
+    "@types/faker": "4.1.6",
+    "@types/jasmine": "3.4.4",
+    "@wireapp/commons": "2.2.21",
+    "commander": "3.0.2",
+    "cross-env": "6.0.3",
+    "dotenv": "8.2.0",
+    "faker": "4.1.0",
+    "istanbul": "1.1.0-alpha.1",
+    "jasmine": "3.5.0",
+    "karma": "4.4.1",
+    "karma-chrome-launcher": "3.1.0",
+    "karma-jasmine": "2.0.1",
+    "karma-jasmine-diff-reporter": "2.0.0",
+    "karma-sourcemap-loader": "0.3.7",
+    "karma-spec-reporter": "0.0.32",
+    "mock-socket": "9.0.2",
+    "nock": "11.6.0",
+    "nyc": "14.1.1",
+    "rimraf": "3.0.0",
+    "terser-webpack-plugin": "2.2.1",
+    "ts-node": "8.4.1",
+    "typescript": "3.6.4",
+    "webpack": "4.41.2",
+    "webpack-cli": "3.3.9"
+  },
+  "description": "Wire for Web's communication core.",
+  "files": [
+    "dist"
+  ],
+  "license": "GPL-3.0",
+  "main": "dist/Account.js",
+  "name": "@wireapp/core",
+  "repository": "https://github.com/david123sw/wire-web-packages/tree/master/packages/core",
+  "scripts": {
+    "build": "yarn build:node && yarn build:browser",
+    "build:browser": "webpack --progress",
+    "build:node": "tsc",
+    "clean": "rimraf dist .tmp",
+    "coverage": "cross-env JASMINE_CONFIG_PATH=src/test/node/support/jasmine.json istanbul cover --report html ../../node_modules/jasmine/bin/jasmine.js",
+    "dist": "yarn clean && yarn build",
+    "start": "yarn dist && node index.js",
+    "start:echo": "cross-env NODE_DEBUG=@wireapp/core* node src/demo/echo.js",
+    "start:sender": "cross-env NODE_DEBUG=@wireapp/core* node src/demo/sender.js",
+    "test": "yarn test:node && yarn test:browser",
+    "test:browser": "webpack && karma start",
+    "test:project": "yarn dist && yarn test",
+    "test:node": "nyc jasmine --config=jasmine.json"
+  },
+  "types": "./dist/Account.d.ts",
+  "version": "14.0.0",
+  "gitHead": "e8b993753086839a864ed6f449cf087812e133ab"
+}
