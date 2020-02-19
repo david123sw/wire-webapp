@@ -102,6 +102,7 @@ export class AuthAction {
       try {
         onBeforeLogin(dispatch, getState, global);
         await core.login(loginData, false, clientAction.generateClientPayload(loginData.clientType), accessTokenStore);
+
         await this.persistAuthData(loginData.clientType, core, dispatch, localStorageAction);
         await dispatch(cookieAction.setCookie(COOKIE_NAME_APP_OPENED, {appInstanceId: global.config.APP_INSTANCE_ID}));
         await dispatch(selfAction.fetchSelf());

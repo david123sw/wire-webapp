@@ -20,6 +20,7 @@
 import {AddParticipantsViewModel} from './panel/AddParticipantsViewModel';
 import {ConversationDetailsViewModel} from './panel/ConversationDetailsViewModel';
 import {ConversationParticipantsViewModel} from './panel/ConversationParticipantsViewModel';
+import {ConversationManagerViewModel} from './panel/ConversationManagerViewModel';
 import {GroupParticipantServiceViewModel} from './panel/GroupParticipantServiceViewModel';
 import {GroupParticipantUserViewModel} from './panel/GroupParticipantUserViewModel';
 import {GuestsAndServicesViewModel} from './panel/GuestsAndServicesViewModel';
@@ -41,6 +42,7 @@ z.viewModel.PanelViewModel = class PanelViewModel {
     return {
       ADD_PARTICIPANTS: 'PanelViewModel.STATE.ADD_PARTICIPANTS',
       CONVERSATION_DETAILS: 'PanelViewModel.STATE.CONVERSATION_DETAILS',
+      CONVERSATION_MANAGER: 'PanelViewModel.STATE.CONVERSATION_MANAGER',
       CONVERSATION_PARTICIPANTS: 'PanelViewModel.STATE.CONVERSATION_PARTICIPANTS',
       GROUP_PARTICIPANT_SERVICE: 'PanelViewModel.STATE.GROUP_PARTICIPANT_SERVICE',
       GROUP_PARTICIPANT_USER: 'PanelViewModel.STATE.GROUP_PARTICIPANT_USER',
@@ -57,6 +59,7 @@ z.viewModel.PanelViewModel = class PanelViewModel {
       [PanelViewModel.STATE.ADD_PARTICIPANTS]: AddParticipantsViewModel,
       [PanelViewModel.STATE.CONVERSATION_DETAILS]: ConversationDetailsViewModel,
       [PanelViewModel.STATE.CONVERSATION_PARTICIPANTS]: ConversationParticipantsViewModel,
+      [PanelViewModel.STATE.CONVERSATION_MANAGER]: ConversationManagerViewModel,
       [PanelViewModel.STATE.GROUP_PARTICIPANT_SERVICE]: GroupParticipantServiceViewModel,
       [PanelViewModel.STATE.GROUP_PARTICIPANT_USER]: GroupParticipantUserViewModel,
       [PanelViewModel.STATE.GUEST_OPTIONS]: GuestsAndServicesViewModel,
