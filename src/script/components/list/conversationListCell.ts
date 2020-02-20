@@ -59,6 +59,7 @@ class ConversationListCell {
   is1To1: boolean;
   isInTeam: boolean;
   stickyOnTop: ko.Computed<boolean>;
+  mutedState: ko.Computed<number | boolean>;
   fakeUser: ko.Computed<User | boolean>;
   isInViewport: ko.Observable<boolean>;
   users: any;
@@ -80,7 +81,6 @@ class ConversationListCell {
     element: HTMLElement,
   ) {
     this.conversation = conversation;
-
     this.isSelected = ko.computed(() => is_selected(conversation));
     // "click" should be renamed to "right_click"
     this.on_click = click;
@@ -90,11 +90,14 @@ class ConversationListCell {
     this.is1To1 = conversation.is1to1();
     this.isInTeam = conversation.selfUser().inTeam();
     this.stickyOnTop = ko.computed(() => conversation.stickyOnTop());
+    this.mutedState = ko.computed(() => conversation.mutedState());
     this.fakeUser = ko.computed(() => {
-      if (conversation.previewPictureResource() && conversation.mediumPictureResource()) {
+      const preview = conversation.previewPictureResource();
+      const complete = conversation.mediumPictureResource();
+      if (preview && complete) {
         const user = new User(createRandomUuid());
         user.isFakeUser = true;
-        const assets: AssetPayload[] = [conversation.previewPictureResource(), conversation.mediumPictureResource()];
+        const assets: AssetPayload[] = [JSON.parse(JSON.stringify(preview)), JSON.parse(JSON.stringify(complete))];
         const mappedAssets = mapProfileAssets(user.id, assets);
         updateUserEntityAssets(user, mappedAssets);
         return user;
@@ -215,10 +218,6 @@ ko.components.register('conversation-list-cell', {
         <span class="conversation-list-cell-description" data-bind="text: cell_state().description" data-uie-name="secondary-line"></span>
       </div>
       <div class="conversation-list-cell-right">
-        <!-- ko if: stickyOnTop() -->
-          <span class="conversation-list-cell-badge cell-badge-dark-new conversation-muted" data-uie-name="status-sticky"><sticky-icon class="svg-icon"></sticky-icon></span>
-        <!-- /ko -->
-        <span class="conversation-list-cell-context-menu" data-bind="click: (_, event) => on_click(conversation, event)" data-uie-name="go-options"></span>
         <!-- ko ifnot: showJoinButton -->
           <!-- ko if: cell_state().icon === ConversationStatusIcon.PENDING_CONNECTION -->
             <span class="conversation-list-cell-badge cell-badge-dark" data-uie-name="status-pending"><pending-icon class="svg-icon"></pending-icon></span>
@@ -235,13 +234,17 @@ ko.components.register('conversation-list-cell', {
           <!-- ko if: cell_state().icon === ConversationStatusIcon.MISSED_CALL -->
             <span class="conversation-list-cell-badge cell-badge-light" data-uie-name="status-missed-call"><hangup-icon class="svg-icon"></hangup-icon></span>
           <!-- /ko -->
-          <!-- ko if: cell_state().icon === ConversationStatusIcon.MUTED -->
-            <span class="conversation-list-cell-badge cell-badge-dark conversation-muted" data-uie-name="status-silence"><mute-icon class="svg-icon"></mute-icon></span>
-          <!-- /ko -->
           <!-- ko if: cell_state().icon === ConversationStatusIcon.UNREAD_MESSAGES && conversation.unreadState().allMessages.length > 0 -->
             <span class="conversation-list-cell-badge cell-badge-light" data-bind="text: conversation.unreadState().allMessages.length" data-uie-name="status-unread"></span>
           <!-- /ko -->
         <!-- /ko -->
+        <!-- ko if: stickyOnTop() -->
+          <span class="conversation-list-cell-badge cell-badge-dark-new conversation-muted" data-uie-name="status-sticky"><sticky-icon class="svg-icon"></sticky-icon></span>
+        <!-- /ko -->
+        <!-- ko if: mutedState() -->
+          <span class="conversation-list-cell-badge cell-badge-dark conversation-muted" data-uie-name="status-silence"><mute-icon class="svg-icon"></mute-icon></span>
+        <!-- /ko -->
+        <span class="conversation-list-cell-context-menu" data-bind="click: (_, event) => on_click(conversation, event)" data-uie-name="go-options"></span>
         <!-- ko if: showJoinButton -->
           <div class="call-ui__button call-ui__button--green call-ui__button--join" data-bind="click: onClickJoinCall, text: t('callJoin')" data-uie-name="do-call-controls-call-join"></div>
         <!-- /ko -->

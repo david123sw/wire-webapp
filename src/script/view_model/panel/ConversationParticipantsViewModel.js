@@ -32,9 +32,28 @@ export class ConversationParticipantsViewModel extends BasePanelViewModel {
 
     this.participants = ko.pureComputed(() => {
       if (this.activeConversation()) {
-        return this.activeConversation()
+        const userParticipants = [];
+        let groupCreatorEntity = undefined;
+
+        this.activeConversation()
           .participating_user_ets()
-          .filter(userEntity => !userEntity.isService);
+          .map(userEntity => {
+            if (userEntity.id !== this.activeConversation().creator) {
+              userParticipants.push(userEntity);
+            } else {
+              groupCreatorEntity = userEntity;
+            }
+          });
+
+        if (groupCreatorEntity) {
+          userParticipants.unshift(groupCreatorEntity);
+        }
+        userParticipants.unshift(this.activeConversation().selfUser());
+        userParticipants.map(userEntity => {
+          userEntity.is_creator = userEntity.id === this.activeConversation().creator;
+        });
+
+        return userParticipants;
       }
       return [];
     });

@@ -43,6 +43,8 @@ import {mapProfileAssets, updateUserEntityAssets} from '../assets/AssetMapper';
 import {User} from '../entity/User';
 import {createRandomUuid} from 'Util/util';
 
+import {ConversationType} from '../conversation/ConversationType';
+
 class Message {
   constructor(
     {
@@ -80,12 +82,22 @@ class Message {
     this.isSelfTemporaryGuest = isSelfTemporaryGuest;
     this.isLastDeliveredMessage = isLastDeliveredMessage;
     this.accentColor = ko.pureComputed(() => message.user().accent_color());
+    this.one2one = ko.pureComputed(
+      () =>
+        ConversationType.ONE2ONE === ('function' === typeof conversation ? conversation().type() : conversation.type()),
+    );
     this.fakeUser = ko.computed(() => {
       const conversation_ref = 'function' === typeof conversation ? conversation() : conversation;
-      if (conversation_ref.previewPictureResource() && conversation_ref.mediumPictureResource()) {
+      const previous =
+        typeof this.fakeUser === 'function' && typeof this.fakeUser() === 'object'
+          ? [this.fakeUser().previewPictureResource(), this.fakeUser().mediumPictureResource()]
+          : [{identifier: ''}, {identifier: ''}];
+      const preview = conversation_ref.previewPictureResource();
+      const complete = conversation_ref.mediumPictureResource();
+      if (preview && complete && preview.key !== previous[0].identifier && complete.key !== previous[1].identifier) {
         const user = new User(createRandomUuid());
         user.isFakeUser = true;
-        const assets = [conversation_ref.previewPictureResource(), conversation_ref.mediumPictureResource()];
+        const assets = [JSON.parse(JSON.stringify(preview)), JSON.parse(JSON.stringify(complete))];
         const mappedAssets = mapProfileAssets(user.id, assets);
         updateUserEntityAssets(user, mappedAssets);
         return user;
@@ -296,12 +308,7 @@ const normalTemplate = `
     </div>
   <!-- /ko -->
   
-
-
   <div class="message-body" data-bind="attr: {'title': message.ephemeral_caption()}, css: {'message-body-self-special': !shouldShowAvatar}">
-  
-  
-    
     <!-- ko if: message.ephemeral_status() === EphemeralStatusType.ACTIVE -->
       <ephemeral-timer class="message-ephemeral-timer" params="message: message"></ephemeral-timer>
     <!-- /ko -->
@@ -597,7 +604,7 @@ const callTemplate = `
   `;
 
 const memberTemplate = `
-  <!-- ko if: message.showGroupLargeAvatar() -->
+  <!-- ko ifnot: one2one() -->
     <div class="message-connected">
       <div class="avatar-halo-large">
         <!-- ko if: fakeUser() -->
