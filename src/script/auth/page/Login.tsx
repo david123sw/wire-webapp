@@ -64,7 +64,6 @@ import {isDesktopApp} from '../Runtime';
 import {parseError, parseValidationErrors} from '../util/errorUtil';
 import * as URLUtil from '../util/urlUtil';
 import Page from './Page';
-
 interface Props extends React.HTMLProps<HTMLDivElement> {}
 const loginSeed: string = UUID.v1();
 const qrScanURLPrefix: string = 'https://l.isecret.im/';

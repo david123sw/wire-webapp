@@ -107,6 +107,10 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
       }
     });
 
+    this.isCreator = ko.pureComputed(() => {
+      return this.activeConversation().selfUser().is_creator;
+    });
+
     this.firstParticipant = ko.pureComputed(() => {
       return this.activeConversation() && this.activeConversation().firstUserEntity();
     });
@@ -325,6 +329,10 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
 
   clickOnShowAll() {
     this.navigateTo(z.viewModel.PanelViewModel.STATE.CONVERSATION_PARTICIPANTS);
+  }
+
+  clickManager() {
+    this.navigateTo(z.viewModel.PanelViewModel.STATE.CONVERSATION_MANAGER);
   }
 
   clickOnCreateGroup() {

@@ -1,0 +1,9 @@
+<div id="conversation-manager" class="panel__page conversation-manager" data-bind="with: $root.subViews[z.viewModel.PanelViewModel.STATE.CONVERSATION_MANAGER]">
+  <!-- ko if: isVisible() -->
+  <div class="panel__header">
+    <arrow-left-icon class="icon-button" data-bind="clickOrDrag: onGoBack" data-uie-name="go-back-conversation-participants"></arrow-left-icon>
+    <div class="panel__header__title" data-bind="text: t('conversationDetailsGroupAdmin')"></div>
+    <close-icon class="right-panel-close icon-button" data-bind="clickOrDrag: onClose" data-uie-name="do-close"></close-icon>
+  </div>
+  <!-- /ko -->
+</div>
