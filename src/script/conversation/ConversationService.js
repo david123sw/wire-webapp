@@ -49,6 +49,18 @@ export class ConversationService {
   }
 
   //##############################################################################
+  // Manager set conversations
+  //##############################################################################
+
+  postModifyGroupInfo(conversation_id, payload) {
+    return this.backendClient.sendJson({
+      data: payload,
+      type: 'PUT',
+      url: `${ConversationService.CONFIG.URL_CONVERSATIONS}/${conversation_id}/update`,
+    });
+  }
+
+  //##############################################################################
   // Create conversations
   //##############################################################################
 
