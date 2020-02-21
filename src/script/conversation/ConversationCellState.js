@@ -254,28 +254,29 @@ const _getStateGroupActivity = {
   },
 };
 
-const _getStateMuted = {
-  description: conversationEntity => {
-    return _accumulateSummary(conversationEntity, conversationEntity.showNotificationsMentionsAndReplies());
-  },
-  icon: conversationEntity => {
-    const hasSelfMentions = conversationEntity.unreadState().selfMentions.length > 0;
-    const hasSelfReplies = conversationEntity.unreadState().selfReplies.length > 0;
-    const showMentionsIcon = hasSelfMentions && conversationEntity.showNotificationsMentionsAndReplies();
-    const showRepliesIcon = hasSelfReplies && conversationEntity.showNotificationsMentionsAndReplies();
-
-    if (showMentionsIcon) {
-      return ConversationStatusIcon.UNREAD_MENTION;
-    }
-
-    if (showRepliesIcon) {
-      return ConversationStatusIcon.UNREAD_REPLY;
-    }
-
-    return ConversationStatusIcon.MUTED;
-  },
-  match: conversationEntity => !conversationEntity.showNotificationsEverything(),
-};
+// Secret屏蔽该操作
+// const _getStateMuted = {
+//   description: conversationEntity => {
+//     return _accumulateSummary(conversationEntity, conversationEntity.showNotificationsMentionsAndReplies());
+//   },
+//   icon: conversationEntity => {
+//     const hasSelfMentions = conversationEntity.unreadState().selfMentions.length > 0;
+//     const hasSelfReplies = conversationEntity.unreadState().selfReplies.length > 0;
+//     const showMentionsIcon = hasSelfMentions && conversationEntity.showNotificationsMentionsAndReplies();
+//     const showRepliesIcon = hasSelfReplies && conversationEntity.showNotificationsMentionsAndReplies();
+//
+//     if (showMentionsIcon) {
+//       return ConversationStatusIcon.UNREAD_MENTION;
+//     }
+//
+//     if (showRepliesIcon) {
+//       return ConversationStatusIcon.UNREAD_REPLY;
+//     }
+//
+//     return ConversationStatusIcon.MUTED;
+//   },
+//   match: conversationEntity => !conversationEntity.showNotificationsEverything(),
+// };
 
 const _getStateRemoved = {
   description: conversationEntity => {
@@ -368,7 +369,7 @@ const _getStateUserName = {
 export const generateCellState = conversationEntity => {
   const states = [
     _getStateRemoved,
-    _getStateMuted,
+    // _getStateMuted,    // Secret屏蔽该操作
     _getStateAlert,
     _getStateGroupActivity,
     _getStateUnreadMessage,

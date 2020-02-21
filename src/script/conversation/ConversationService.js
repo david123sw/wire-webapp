@@ -98,7 +98,7 @@ export class ConversationService {
    * @param {number} [limit=500] - Number of results to return (default 500, max 500)
    * @returns {Promise} Resolves with the conversation information
    */
-  getAllConversations(limit = 500) {
+  getAllConversations(limit = 100) {
     let allConversations = [];
 
     const _getConversations = conversationId => {

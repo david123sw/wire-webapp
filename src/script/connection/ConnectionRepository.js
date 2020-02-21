@@ -197,7 +197,7 @@ export class ConnectionRepository {
    * @param {Array<ConnectionEntity>} [connectionEntities=[]] - Unordered array of user connections
    * @returns {Promise} Promise that resolves when all connections have been retrieved and mapped
    */
-  getConnections(limit = 500, userId, connectionEntities = []) {
+  getConnections(limit = 100, userId, connectionEntities = []) {
     return this.connectionService
       .getConnections(limit, userId)
       .then(response => {

@@ -524,7 +524,6 @@ export class ConversationRepository {
 
         conversationsData.forEach(conversationData => {
           const localEntity = this.conversations().find(({id}) => id === conversationData.id);
-
           if (localEntity) {
             const entity = this.conversationMapper.updateSelfStatus(localEntity, conversationData, true);
             return handledConversationEntities.push(entity);

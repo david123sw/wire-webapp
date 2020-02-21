@@ -83,7 +83,7 @@ import {BaseError} from '../error/BaseError';
  * @property {boolean=} otr_muted
  * @property {string=} otr_muted_ref
  * @property {object=} previewPictureResource
- * @property {boolean=} muted_state
+ * @property {number=} muted_state
  * @property {boolean=} sticky_on_top
  * @property {number=} status
  * @property {number=} verification_state
@@ -151,10 +151,8 @@ export class ConversationMapper {
   updateAppendedProperties(conversationEntity, conversationData) {
     const hasAsset = conversationData.assets && conversationData.assets.length;
     if (hasAsset) {
-      if (conversationData.assets[0]) {
+      if (conversationData.assets[0] && conversationData.assets[1]) {
         conversationEntity.previewPictureResource(conversationData.assets[0]);
-      }
-      if (conversationData.assets[1]) {
         conversationEntity.mediumPictureResource(conversationData.assets[1]);
       }
     }
@@ -203,11 +201,8 @@ export class ConversationMapper {
         conversationEntity.stickyOnTop(sticky_on_top);
       }
 
-      if (mediumPictureResource !== undefined) {
+      if (mediumPictureResource !== undefined && previewPictureResource !== undefined) {
         conversationEntity.mediumPictureResource(mediumPictureResource);
-      }
-
-      if (previewPictureResource !== undefined) {
         conversationEntity.previewPictureResource(previewPictureResource);
       }
 
@@ -270,7 +265,11 @@ export class ConversationMapper {
         conversationEntity.setTimestamp(mutedTimestamp, Conversation.TIMESTAMP_TYPE.MUTED);
 
         const mutedState = this.getMutedState(otr_muted, selfState.otr_muted_status);
-        conversationEntity.mutedState(mutedState);
+        if (typeof mutedState === 'boolean') {
+          conversationEntity.mutedState(mutedState ? NOTIFICATION_STATE.NOTHING : NOTIFICATION_STATE.EVERYTHING);
+        } else {
+          conversationEntity.mutedState(mutedState);
+        }
       }
 
       if (disablePersistence) {
@@ -379,6 +378,7 @@ export class ConversationMapper {
         receipt_mode,
         team,
         type,
+        assets,
       } = remoteConversationData;
       const {others: othersStates, self: selfState} = members;
 
@@ -386,10 +386,13 @@ export class ConversationMapper {
         accessModes: access,
         accessRole: access_role,
         creator,
+        mediumPictureResource: assets[1],
         message_timer,
         name,
+        previewPictureResource: assets[0],
         receipt_mode,
         status: selfState.status,
+        sticky_on_top: selfState.place_top,
         team_id: team,
         type,
       };
@@ -437,7 +440,6 @@ export class ConversationMapper {
       const {muted_state: mutedState, muted_timestamp: mutedTimestamp} = localConversationData;
       const remoteMutedTimestamp = new Date(selfState.otr_muted_ref).getTime();
       const isRemoteMutedTimestampNewer = isRemoteTimestampNewer(mutedTimestamp, remoteMutedTimestamp);
-
       if (isRemoteMutedTimestampNewer || mutedState === undefined) {
         const remoteMutedState = this.getMutedState(selfState.otr_muted, selfState.otr_muted_statu);
         mergedConversation.muted_state = remoteMutedState;

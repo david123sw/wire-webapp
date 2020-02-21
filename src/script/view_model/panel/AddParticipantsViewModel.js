@@ -93,6 +93,10 @@ export class AddParticipantsViewModel extends BasePanelViewModel {
         userEntities = this.userRepository.connected_users();
       }
 
+      userEntities.map(userEntity => {
+        userEntity.is_creator = false;
+      });
+
       return userEntities.filter(userEntity => {
         return !activeConversation.participating_user_ids().find(id => userEntity.id === id);
       });
