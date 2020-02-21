@@ -7,6 +7,17 @@ export class ConversationManagerViewModel extends BasePanelViewModel {
     const repositories = params.repositories;
     this.conversationRepository = repositories.conversation;
     this.conversation_service = repositories.conversation_service;
+
+    this.memberJoinConfirm = ko.pureComputed(() => {
+      return this.activeConversation().confirm() || this.activeConversation().member_join_confirm();
+    });
+    this.urlInvite = ko.pureComputed(() => {
+      return (
+        this.activeConversation().confirm() ||
+        this.activeConversation().add_right() ||
+        this.activeConversation().url_invite()
+      );
+    });
   }
 
   getElementId() {
@@ -34,15 +45,22 @@ export class ConversationManagerViewModel extends BasePanelViewModel {
     }
   }
   onUrlInviteEvt() {
-    const checked = this.activeConversation().url_invite();
-    this.activeConversation().url_invite(!checked);
-    this.conversationRepository.conversation_service.postModifyGroupInfo(this.activeConversation().id, {
-      url_invite: !checked,
-    });
+    if (this.activeConversation().confirm() || this.activeConversation().add_right()) {
+      this.activeConversation().url_invite(false);
+    } else {
+      const checked = this.activeConversation().url_invite();
+      this.activeConversation().url_invite(!checked);
+      this.conversationRepository.conversation_service.postModifyGroupInfo(this.activeConversation().id, {
+        url_invite: !checked,
+      });
+    }
   }
   onAddRightEvt() {
     const checked = this.activeConversation().add_right();
     this.activeConversation().add_right(!checked);
+    if (!checked) {
+      this.activeConversation().url_invite(false);
+    }
     this.conversationRepository.conversation_service.postModifyGroupInfo(this.activeConversation().id, {
       addright: !checked,
     });

@@ -80,6 +80,8 @@ export class Conversation {
     this.add_friend = ko.observable(false); //群内成员是否能互相加好友
     this.forumid = ko.observable(''); //社区ID int64
 
+    this.invite_code = ko.observable('');
+
     this.is_loaded = ko.observable(false);
     this.is_pending = ko.observable(false);
 
@@ -105,6 +107,9 @@ export class Conversation {
       const isGroupConversation = this.type() === ConversationType.GROUP;
       const hasOneParticipant = this.participating_user_ids().length === 1;
       return isGroupConversation && hasOneParticipant && this.team_id && !this.name();
+    });
+    this.isCreator = ko.pureComputed(() => {
+      return this.selfUser().is_creator;
     });
     this.isGroup = ko.pureComputed(() => {
       const isGroupConversation =

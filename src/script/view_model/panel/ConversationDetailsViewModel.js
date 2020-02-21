@@ -107,10 +107,6 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
       }
     });
 
-    this.isCreator = ko.pureComputed(() => {
-      return this.activeConversation().selfUser().is_creator;
-    });
-
     this.firstParticipant = ko.pureComputed(() => {
       return this.activeConversation() && this.activeConversation().firstUserEntity();
     });

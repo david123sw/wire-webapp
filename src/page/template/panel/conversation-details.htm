@@ -130,7 +130,7 @@
           </div>
         <!-- /ko -->
         <div class="conversation-details__participants">
-          <!-- ko if: activeConversation() && activeConversation().isGroup() -->
+          <!-- ko if: activeConversation() && activeConversation().isGroup() && (activeConversation().view_mem() || activeConversation().isCreator())-->
             <!-- ko if: userParticipants().length -->
               <div class="conversation-details__list-head" data-bind="text: t('conversationDetailsPeople')"></div>
               <user-list params="user: userParticipants, click: clickOnShowUser, noUnderline: true, arrow: true, searchRepository: searchRepository, teamRepository: teamRepository, conversationRepository: conversationRepository" data-uie-name="list-users"></user-list>
@@ -150,7 +150,7 @@
           <!-- /ko -->
         </div>
       <!-- /ko -->
-      <!-- ko if: isCreator()-->
+      <!-- ko if:  activeConversation() && activeConversation().isGroup() && activeConversation().isCreator()-->
       <div class="panel__action-item panel__action-item--no-border" data-bind="click: clickManager" data-uie-name="go-conversation-manager">
         <people-icon class="panel__action-item__icon"></people-icon>
         <div class="panel__action-item__text" data-bind="text: t('conversationDetailsGroupAdmin')"></div>
