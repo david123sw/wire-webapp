@@ -305,8 +305,10 @@ export class ConversationMapper {
       id,
       memberjoin_confirm,
       members,
+      msg_only_to_manager,
       name,
       others,
+      show_invitor_list,
       type,
       url_invite,
       viewmem,
@@ -327,6 +329,8 @@ export class ConversationMapper {
     conversationEntity.view_chg_mem_notify(view_chg_mem_notify);
     conversationEntity.add_friend(add_friend);
     conversationEntity.forumid(forumid);
+    conversationEntity.msg_only_to_manager(msg_only_to_manager);
+    conversationEntity.show_invitor_list(show_invitor_list);
 
     const selfState = members ? members.self : conversationData;
     conversationEntity = this.updateSelfStatus(conversationEntity, selfState);
@@ -407,11 +411,13 @@ export class ConversationMapper {
         url_invite,
         confirm,
         memberjoin_confirm,
+        msg_only_to_manager,
         addright,
         viewmem,
         view_chg_mem_notify,
         add_friend,
         forumid,
+        show_invitor_list,
       } = remoteConversationData;
       const {others: othersStates, self: selfState} = members;
 
@@ -426,9 +432,11 @@ export class ConversationMapper {
         mediumPictureResource: assets[1],
         memberjoin_confirm,
         message_timer,
+        msg_only_to_manager,
         name,
         previewPictureResource: assets[0],
         receipt_mode,
+        show_invitor_list,
         status: selfState.status,
         sticky_on_top: selfState.place_top,
         team_id: team,

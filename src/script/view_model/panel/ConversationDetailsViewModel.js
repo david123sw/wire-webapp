@@ -134,6 +134,27 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
         : false;
     });
 
+    this.inviteCode = ko.pureComputed(() => {
+      if (!this.activeConversation().isGroup()) {
+        return false;
+      }
+      const inviteCode = this.activeConversation().invite_code();
+      if (!inviteCode && !this.activeConversation().is_request_invite) {
+        const activeConversation = this.activeConversation();
+        activeConversation.is_request_invite = true;
+        this.conversationRepository.conversation_service.getInviteUrl(activeConversation.id).then(res => {
+          if (res.code === 200 && res.data) {
+            activeConversation.invite_code(res.data.inviteurl);
+          } else {
+            activeConversation.is_request_invite = false;
+          }
+        });
+      } else if (inviteCode) {
+        return true;
+      }
+      return false;
+    });
+
     this.isEditingName = ko.observable(false);
 
     this.isEditingName.subscribe(isEditing => {

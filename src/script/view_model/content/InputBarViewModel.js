@@ -102,6 +102,13 @@ z.viewModel.content.InputBarViewModel = class InputBarViewModel {
     this.conversationEntity = this.conversationRepository.active_conversation;
     this.selfUser = this.userRepository.self;
 
+    this.isAllowChat = ko.pureComputed(() => {
+      if (!this.conversationEntity().isGroup()) {
+        return true;
+      }
+      return !this.conversationEntity().msg_only_to_manager();
+    });
+
     this.joinedCall = repositories.calling.joinedCall;
     this.conversationHasFocus = ko.observable(true).extend({notify: 'always'});
 
@@ -139,7 +146,9 @@ z.viewModel.content.InputBarViewModel = class InputBarViewModel {
       return this.replyMessageEntity() && this.replyMessageEntity().assets() && this.replyMessageEntity().assets()[0];
     });
 
-    this.isEditing = ko.pureComputed(() => !!this.editMessageEntity());
+    this.isEditing = ko.pureComputed(() => {
+      return !!this.editMessageEntity();
+    });
     this.isReplying = ko.pureComputed(() => !!this.replyMessageEntity());
     this.replyMessageId = ko.pureComputed(() => (this.replyMessageEntity() ? this.replyMessageEntity().id : undefined));
 

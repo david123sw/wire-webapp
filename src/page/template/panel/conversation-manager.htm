@@ -58,8 +58,8 @@
     <div class="panel__action-item panel__action-item--no-border" data-uie-name="go-conversation-manager">
       <div class="panel__action-item__text" data-bind="text: t('conversationManagerForbiddenChat')"></div>
       <div>
-        <label class="toggle toggle-init color-black">
-          <input type="checkbox">
+        <label class="toggle toggle-init color-black" data-bind="click: onForbiddenEvt">
+          <input type="checkbox" data-bind="checked:!activeConversation().msg_only_to_manager()">
           <span class="toggle-icon"></span>
         </label>
       </div>
@@ -68,7 +68,7 @@
       <div class="panel__action-item__text" data-bind="text: t('conversationManagerHideOtherChat')"></div>
       <div>
         <label class="toggle toggle-init color-black">
-          <input type="checkbox">
+          <input type="checkbox" >
           <span class="toggle-icon"></span>
         </label>
       </div>
@@ -76,8 +76,8 @@
     <div class="panel__action-item panel__action-item--no-border" data-uie-name="go-conversation-manager">
       <div class="panel__action-item__text" data-bind="text: t('conversationManagerShowInviteList')"></div>
       <div>
-        <label class="toggle toggle-init color-black">
-          <input type="checkbox">
+        <label class="toggle toggle-init color-black" data-bind="click: onShowInvitorListEvt">
+          <input type="checkbox" data-bind="checked:!activeConversation().show_invitor_list()">
           <span class="toggle-icon"></span>
         </label>
       </div>

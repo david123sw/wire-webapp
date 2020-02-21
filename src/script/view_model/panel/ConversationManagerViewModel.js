@@ -33,6 +33,20 @@ export class ConversationManagerViewModel extends BasePanelViewModel {
       confirm: !confirm,
     });
   }
+  onForbiddenEvt() {
+    const checked = this.activeConversation().msg_only_to_manager();
+    this.activeConversation().msg_only_to_manager(!checked);
+    this.conversationRepository.conversation_service.postModifyGroupInfo(this.activeConversation().id, {
+      msg_only_to_manager: !checked,
+    });
+  }
+  onShowInvitorListEvt() {
+    const checked = this.activeConversation().show_invitor_list();
+    this.activeConversation().show_invitor_list(!checked);
+    this.conversationRepository.conversation_service.postModifyGroupInfo(this.activeConversation().id, {
+      show_invitor_list: !checked,
+    });
+  }
   onInvitedEvt() {
     if (this.activeConversation().confirm()) {
       this.activeConversation().member_join_confirm(false);

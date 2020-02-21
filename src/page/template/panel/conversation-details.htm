@@ -150,7 +150,13 @@
           <!-- /ko -->
         </div>
       <!-- /ko -->
-      <!-- ko if:  activeConversation() && activeConversation().isGroup() && activeConversation().isCreator()-->
+      <!-- ko if: inviteCode() -->
+      <div class="panel__action-item panel__action-item--no-border">
+        <people-icon class="panel__action-item__icon"></people-icon>
+        <div class="panel__action-item__text" data-bind="text: activeConversation().invite_code()"></div>
+      </div>
+      <!-- /ko -->
+      <!-- ko if: activeConversation() && activeConversation().isGroup() && activeConversation().isCreator()-->
       <div class="panel__action-item panel__action-item--no-border" data-bind="click: clickManager" data-uie-name="go-conversation-manager">
         <people-icon class="panel__action-item__icon"></people-icon>
         <div class="panel__action-item__text" data-bind="text: t('conversationDetailsGroupAdmin')"></div>

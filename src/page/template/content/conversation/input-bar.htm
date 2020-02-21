@@ -1,6 +1,7 @@
 <!--@formatter:off-->
 <div id="conversation-input-bar" class="conversation-input-bar" data-bind="with: $root.inputBar">
 
+  <!-- ko if: isAllowChat() -->
   <!-- ko if: isReplying() && !isEditing() -->
     <div class="input-bar__reply" data-uie-name="input-bar-reply-box">
       <close-icon data-bind="click: handleCancelReply" data-uie-name="do-close-reply-box"></close-icon>
@@ -166,5 +167,11 @@
       </div>
     <!-- /ko -->
   </div>
+  <!-- /ko -->
+  <!-- ko if: !isAllowChat() -->
+    <div class="conversation-forbidden">
+      全员禁言
+    </div>
+  <!-- /ko -->
 </div>
 <!--@formatter:on-->

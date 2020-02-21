@@ -79,8 +79,11 @@ export class Conversation {
     this.view_chg_mem_notify = ko.observable(false); //邀请、删除群成员通知，群内所有人是否可见
     this.add_friend = ko.observable(false); //群内成员是否能互相加好友
     this.forumid = ko.observable(''); //社区ID int64
+    this.show_invitor_list = ko.observable(false); //显示邀请列表
+    this.msg_only_to_manager = ko.observable(false); //消息仅群主可以显示消息，其他成员不可见
 
     this.invite_code = ko.observable('');
+    this.is_request_invite = false;
 
     this.is_loaded = ko.observable(false);
     this.is_pending = ko.observable(false);
