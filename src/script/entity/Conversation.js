@@ -70,6 +70,16 @@ export class Conversation {
     this.team_id = undefined;
     this.type = ko.observable();
 
+    // secret conversation
+    this.url_invite = ko.observable(false); //开启url链接加入
+    this.confirm = ko.observable(false); //群聊邀请需群主确认 与memberjoin_confirm 互斥
+    this.member_join_confirm = ko.observable(false); //群聊邀请需被邀请者确认与confirm 互斥
+    this.add_right = ko.observable(false); //仅限群主拉人
+    this.view_mem = ko.observable(false); //允许查看群成员信息
+    this.view_chg_mem_notify = ko.observable(false); //邀请、删除群成员通知，群内所有人是否可见
+    this.add_friend = ko.observable(false); //群内成员是否能互相加好友
+    this.forumid = ko.observable(''); //社区ID int64
+
     this.is_loaded = ko.observable(false);
     this.is_pending = ko.observable(false);
 

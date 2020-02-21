@@ -296,12 +296,37 @@ export class ConversationMapper {
       throw new z.error.ConversationError(BaseError.TYPE.INVALID_PARAMETER);
     }
 
-    const {creator, id, members, name, others, type} = conversationData;
+    const {
+      addright,
+      add_friend,
+      confirm,
+      creator,
+      forumid,
+      id,
+      memberjoin_confirm,
+      members,
+      name,
+      others,
+      type,
+      url_invite,
+      viewmem,
+      view_chg_mem_notify,
+    } = conversationData;
     let conversationEntity = new Conversation(id);
 
     conversationEntity.creator = creator;
     conversationEntity.type(type);
     conversationEntity.name(name ? name : '');
+
+    //secret
+    conversationEntity.url_invite(url_invite);
+    conversationEntity.confirm(confirm);
+    conversationEntity.member_join_confirm(memberjoin_confirm);
+    conversationEntity.add_right(addright);
+    conversationEntity.view_mem(viewmem);
+    conversationEntity.view_chg_mem_notify(view_chg_mem_notify);
+    conversationEntity.add_friend(add_friend);
+    conversationEntity.forumid(forumid);
 
     const selfState = members ? members.self : conversationData;
     conversationEntity = this.updateSelfStatus(conversationEntity, selfState);
@@ -379,14 +404,27 @@ export class ConversationMapper {
         team,
         type,
         assets,
+        url_invite,
+        confirm,
+        memberjoin_confirm,
+        addright,
+        viewmem,
+        view_chg_mem_notify,
+        add_friend,
+        forumid,
       } = remoteConversationData;
       const {others: othersStates, self: selfState} = members;
 
       const updates = {
         accessModes: access,
         accessRole: access_role,
+        add_friend,
+        addright,
+        confirm,
         creator,
+        forumid,
         mediumPictureResource: assets[1],
+        memberjoin_confirm,
         message_timer,
         name,
         previewPictureResource: assets[0],
@@ -395,6 +433,9 @@ export class ConversationMapper {
         sticky_on_top: selfState.place_top,
         team_id: team,
         type,
+        url_invite,
+        view_chg_mem_notify,
+        viewmem,
       };
 
       if (typeof localConversationData.receipt_mode === 'number') {
