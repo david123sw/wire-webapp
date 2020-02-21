@@ -9,7 +9,7 @@
     <div class="panel__action-item panel__action-item--no-border" data-uie-name="go-conversation-manager">
       <div class="panel__action-item__text" data-bind="text: t('conversationManagerInvite')"></div>
       <div>
-        <label class="toggle toggle-init color-black">
+        <label class="toggle toggle-init color-black" data-bind="click: onInviteEvt">
           <input type="checkbox" data-bind="checked:!activeConversation().confirm()">
           <span class="toggle-icon"></span>
         </label>
@@ -18,7 +18,7 @@
     <div class="panel__action-item panel__action-item--no-border" data-uie-name="go-conversation-manager">
       <div class="panel__action-item__text" data-bind="text: t('conversationManagerInvited')"></div>
       <div>
-        <label class="toggle toggle-init color-black">
+        <label class="toggle toggle-init color-black" data-bind="click: onInvitedEvt">
           <input type="checkbox" data-bind="checked:!activeConversation().member_join_confirm()">
           <span class="toggle-icon"></span>
         </label>
@@ -27,7 +27,7 @@
     <div class="panel__action-item panel__action-item--no-border" data-uie-name="go-conversation-manager">
       <div class="panel__action-item__text" data-bind="text: t('conversationManagerOnlyInvited')"></div>
       <div>
-        <label class="toggle toggle-init color-black">
+        <label class="toggle toggle-init color-black" data-bind="click: onAddRightEvt">
           <input type="checkbox" data-bind="checked:!activeConversation().add_right()">
           <span class="toggle-icon"></span>
         </label>
@@ -36,7 +36,7 @@
     <div class="panel__action-item panel__action-item--no-border" data-uie-name="go-conversation-manager">
       <div class="panel__action-item__text" data-bind="text: t('conversationManagerOpenHref')"></div>
       <div>
-        <label class="toggle toggle-init color-black">
+        <label class="toggle toggle-init color-black" data-bind="click: onUrlInviteEvt">
           <input type="checkbox" data-bind="checked:!activeConversation().url_invite()">
           <span class="toggle-icon"></span>
         </label>
@@ -45,7 +45,7 @@
     <div class="panel__action-item panel__action-item--no-border" data-uie-name="go-conversation-manager">
       <div class="panel__action-item__text" data-bind="text: t('conversationManagerCheckMember')"></div>
       <div>
-        <label class="toggle toggle-init color-black">
+        <label class="toggle toggle-init color-black" data-bind="click: onViewMemEvt">
           <input type="checkbox" data-bind="checked:!activeConversation().view_mem()">
           <span class="toggle-icon"></span>
         </label>
@@ -85,7 +85,7 @@
     <div class="panel__action-item panel__action-item--no-border" data-uie-name="go-conversation-manager">
       <div class="panel__action-item__text" data-bind="text: t('conversationManagerHideInvite')"></div>
       <div>
-        <label class="toggle toggle-init color-black">
+        <label class="toggle toggle-init color-black" data-bind="click: onViewChgMemNotifyEvt">
           <input type="checkbox" data-bind="checked:!activeConversation().view_chg_mem_notify()">
           <span class="toggle-icon"></span>
         </label>
@@ -94,7 +94,7 @@
     <div class="panel__action-item panel__action-item--no-border" data-uie-name="go-conversation-manager">
       <div class="panel__action-item__text" data-bind="text: t('conversationManagerForbiddenAddF')"></div>
       <div>
-        <label class="toggle toggle-init color-black">
+        <label class="toggle toggle-init color-black" data-bind="click: onAddFriendEvt">
           <input type="checkbox" data-bind="checked:!activeConversation().add_friend()">
           <span class="toggle-icon"></span>
         </label>
