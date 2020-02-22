@@ -34,6 +34,7 @@ enum CONVERSATION {
   TYPING = 'conversation.typing',
   BGP_MESSAGE_ADD = 'conversation.bgp-message-add',
   UPDATE = 'conversation.update',
+  GROUP_CREATION = 'conversation.group-creation',
 }
 
 enum TEAM {

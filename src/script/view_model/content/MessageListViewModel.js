@@ -167,13 +167,6 @@ class MessageListViewModel {
    * @returns {Promise} Resolves when conversation was changed
    */
   changeConversation(conversationEntity, messageEntity) {
-    // Clean up old conversation--Secret屏蔽该操作
-    // this.conversationLoaded(false);
-    // if (this.conversation()) {
-    //   this.release_conversation(this.conversation());
-    // }
-
-    // Update new conversation
     this.conversation(conversationEntity);
 
     // Keep last read timestamp to render unread when entering conversation

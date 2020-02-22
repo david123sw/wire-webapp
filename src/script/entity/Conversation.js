@@ -42,6 +42,7 @@ import {ClientRepository} from '../client/ClientRepository';
 import {StatusType} from '../message/StatusType';
 import {ConnectionEntity} from '../connection/ConnectionEntity';
 import {HIDE_LEGAL_HOLD_MODAL} from '../view_model/content/LegalHoldModalViewModel';
+import {BackendEvent} from '../event/Backend';
 
 export class Conversation {
   static get TIMESTAMP_TYPE() {
@@ -271,7 +272,17 @@ export class Conversation {
     this.hasAdditionalMessages = ko.observable(true);
 
     this.messages_visible = ko
-      .pureComputed(() => (!this.id ? [] : this.messages().filter(messageEntity => messageEntity.visible())))
+      .pureComputed(() =>
+        !this.id
+          ? []
+          : this.messages().filter((messageEntity, index, array) => {
+              const checks = [BackendEvent.CONVERSATION.MEMBER_LEAVE, BackendEvent.CONVERSATION.MEMBER_JOIN];
+              const previous = index >= 1 ? array[index - 1] : undefined;
+              const same = previous && previous.type === messageEntity.type && previous.from === messageEntity.from;
+              const exclude = same && checks.includes(messageEntity.type);
+              return messageEntity.visible() && !exclude;
+            }),
+      )
       .extend({trackArrayChanges: true});
 
     // Calling
