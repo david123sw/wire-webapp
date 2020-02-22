@@ -34,6 +34,11 @@ import {ConversationRepository} from '../../conversation/ConversationRepository'
 
 import 'Components/panel/panelActions';
 
+import {mapProfileAssets, updateUserEntityAssets} from '../../assets/AssetMapper';
+import {User} from '../../entity/User';
+import {createRandomUuid} from 'Util/util';
+import {ParticipantAvatar} from 'Components/participantAvatar';
+
 export class ConversationDetailsViewModel extends BasePanelViewModel {
   static get CONFIG() {
     return {
@@ -65,6 +70,8 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
 
     this.isActivatedAccount = this.userRepository.isActivatedAccount;
     this.isTeam = this.teamRepository.isTeam;
+
+    this.ParticipantAvatar = ParticipantAvatar;
 
     this.isTeamOnly = ko.pureComputed(() => this.activeConversation() && this.activeConversation().isTeamOnly());
 
@@ -122,6 +129,21 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
         : false;
     });
 
+    // Details avatar
+    this.fakeUser = ko.pureComputed(() => {
+      const preview = this.activeConversation().previewPictureResource();
+      const complete = this.activeConversation().mediumPictureResource();
+      if (preview && complete) {
+        const user_et = new User(createRandomUuid());
+        user_et.isFakeUser = true;
+        const assets = [JSON.parse(JSON.stringify(preview)), JSON.parse(JSON.stringify(complete))];
+        const mappedAssets = mapProfileAssets(user_et.id, assets);
+        updateUserEntityAssets(user_et, mappedAssets);
+        return user_et;
+      }
+      return false;
+    });
+
     this.isSuperGroup = ko.pureComputed(() => {
       if (!this.activeConversation().isActiveParticipant() || !this.activeConversation()) {
         return false;
@@ -164,6 +186,8 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
       }
       const name = $('.conversation-details__name--input');
       $('.conversation-details__name').css('height', `${name.height()}px`);
+      $('.conversation-details__name').css('width', '70%');
+      $('.conversation-details__name').css('background-color', 'red');
     });
 
     this.isServiceMode = ko.pureComputed(() => {
@@ -274,16 +298,6 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
           label: t('conversationDetailsActionCreateGroup'),
         },
       },
-      // Secret未匹配,屏蔽
-      // {
-      //   condition: () => true,
-      //   item: {
-      //     click: () => this.clickToArchive(),
-      //     icon: 'archive-icon',
-      //     identifier: 'do-archive',
-      //     label: t('conversationDetailsActionArchive'),
-      //   },
-      // },
       {
         condition: () => conversationEntity.isRequest(),
         item: {
@@ -428,6 +442,8 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
       this.isEditingName(true);
     }
   }
+
+  clickToUploadAvatar() {}
 
   clickToLeave() {
     this.actionsViewModel.leaveConversation(this.activeConversation());
