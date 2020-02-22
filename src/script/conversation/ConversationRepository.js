@@ -606,6 +606,11 @@ export class ConversationRepository {
       });
   }
 
+  /**
+   * Get last messages from conversation.
+   * @param {Conversation} conversationEntity - Respective conversation
+   * @returns {Promise} Resolves with the messages
+   */
   getPrecedingMessagesAsLast(conversationEntity) {
     conversationEntity.is_pending(true);
 

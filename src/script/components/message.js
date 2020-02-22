@@ -44,6 +44,7 @@ import {User} from '../entity/User';
 import {createRandomUuid} from 'Util/util';
 
 import {ConversationType} from '../conversation/ConversationType';
+import {BackendEvent} from '../event/Backend';
 
 class Message {
   constructor(
@@ -82,6 +83,11 @@ class Message {
     this.isSelfTemporaryGuest = isSelfTemporaryGuest;
     this.isLastDeliveredMessage = isLastDeliveredMessage;
     this.accentColor = ko.pureComputed(() => message.user().accent_color());
+    this.showGroupAvatar = ko.pureComputed(
+      () =>
+        message.memberMessageType === SystemMessageType.CONVERSATION_CREATE &&
+        message.type === BackendEvent.CONVERSATION.GROUP_CREATION,
+    );
     this.one2one = ko.pureComputed(
       () =>
         ConversationType.ONE2ONE === ('function' === typeof conversation ? conversation().type() : conversation.type()),
@@ -604,7 +610,7 @@ const callTemplate = `
   `;
 
 const memberTemplate = `
-  <!-- ko ifnot: one2one() -->
+  <!-- ko if: !one2one() && showGroupAvatar() -->
     <div class="message-connected">
       <div class="avatar-halo-large">
         <!-- ko if: fakeUser() -->
