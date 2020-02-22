@@ -31,6 +31,7 @@ export enum UserlistMode {
   COMPACT = 'UserlistMode.COMPACT',
   DEFAULT = 'UserlistMode.DEFAULT',
   OTHERS = 'UserlistMode.OTHERS',
+  INVITE = 'UserlistMode.INVITE',
 }
 
 interface UserListParams {

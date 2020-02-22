@@ -25,7 +25,6 @@ import {sortByPriority} from 'Util/StringUtil';
 
 import {TeamMapper} from './TeamMapper';
 import {TeamService} from './TeamService';
-import {TeamEntity} from './TeamEntity';
 import {roleFromTeamPermissions, ROLE} from '../user/UserPermission';
 
 import {BackendEvent} from '../event/Backend';
@@ -94,22 +93,25 @@ export class TeamRepository {
   }
 
   getTeam() {
-    const teamPromise = this.selfUser().teamId ? this._getTeamById() : this._getBindingTeam();
-    return teamPromise
-      .then(teamData => {
-        if (teamData) {
-          const teamEntity = this.teamMapper.mapTeamFromObject(teamData);
-          this.team(teamEntity);
-          return this.updateTeamMembers(teamEntity);
-        }
-
-        this.team(new TeamEntity());
-      })
-      .then(() => {
-        // doesn't need to be awaited because it publishes the account info over amplify.
-        this.sendAccountInfo();
-        return this.team();
-      });
+    this.sendAccountInfo();
+    return [];
+    // 移除teams请求
+    // const teamPromise = this.selfUser().teamId ? this._getTeamById() : this._getBindingTeam();
+    // return teamPromise
+    //   .then(teamData => {
+    //     if (teamData) {
+    //       const teamEntity = this.teamMapper.mapTeamFromObject(teamData);
+    //       this.team(teamEntity);
+    //       return this.updateTeamMembers(teamEntity);
+    //     }
+    //
+    //     this.team(new TeamEntity());
+    //   })
+    //   .then(() => {
+    //     // doesn't need to be awaited because it publishes the account info over amplify.
+    //     this.sendAccountInfo();
+    //     return this.team();
+    //   });
   }
 
   getTeamMember(teamId, userId) {

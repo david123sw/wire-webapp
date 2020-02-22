@@ -59,7 +59,6 @@ export class ConversationParticipantsViewModel extends BasePanelViewModel {
         userParticipants.map(userEntity => {
           userEntity.is_creator = userEntity.id === this.activeConversation().creator;
         });
-
         return userParticipants;
       }
       return [];
