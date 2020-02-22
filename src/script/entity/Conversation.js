@@ -83,6 +83,7 @@ export class Conversation {
     this.show_invitor_list = ko.observable(false); //显示邀请列表
     this.msg_only_to_manager = ko.observable(false); //消息仅群主可以显示消息，其他成员不可见
     this.block_time = ko.observable(0); //禁言
+    this.advisory = ko.observable(''); //公告
 
     this.orator = ko.observable([]); //演讲者
     this.managers = ko.observable([]); //管理员

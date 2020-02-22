@@ -70,6 +70,20 @@
             <!-- /ko -->
           <!-- /ko -->
         </div>
+        <!-- ko if: activeConversation() && activeConversation().isGroup() && activeConversation().isCreator()-->
+          <div class="conversation-details__announcement-inner">
+            <textarea class="conversation-details__announcement conversation-details__announcement--input"
+                      dir="auto"
+                      spellcheck="false"
+                      data-bind="attr: {readonly: !isEditingAnnouncement(), maxlength: ConversationRepository.CONFIG.GROUP.MAX_ANNOUNCEMENT_LENGTH}, enter: onAnnounceSubmit, resize, value: activeConversation() && activeConversation().advisory()"
+                      data-uie-name="enter-announcement">
+            </textarea>
+            <div class="conversation-details__r">
+              <div class="conversation-details__r-c" data-bind="click: onAnnounceCancel, text: isEditingAnnouncement()? t('backupCancel'):t('conversationContextMenuEdit')"></div>
+              <div class="conversation-details__r-d" data-bind="css:{'conversation-details__r-e':isEditingAnnouncement()},click: onAnnounceSubmit, text: t('conversationSave')"></div>
+            </div>
+          </div>
+        <!-- /ko -->
         <!-- ko if: showTopActions() -->
           <div class="conversation-details-top-actions">
             <!-- ko if: z.userPermission().canUpdateGroupParticipants() && showActionAddParticipants() -->

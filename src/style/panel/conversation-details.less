@@ -38,6 +38,36 @@
     display: flex;
     flex-direction: row;
   }
+  &__announcement-inner {
+    padding: 0 16px;
+  }
+  &__announcement {
+    display: flex;
+    min-height: 100px;
+    padding: 0;
+    font-size: 20px;
+    word-break: break-word;
+    &--input {
+      width: 100%;
+    }
+  }
+
+  &__r {
+    display: flex;
+    justify-content: space-between;
+    &-c {
+      padding: 3px 5px;
+    }
+    &-d {
+      padding: 3px 5px;
+      color: #999;
+      pointer-events: none;
+    }
+    &-e {
+      color: #333;
+      pointer-events: auto;
+    }
+  }
 
   &__name {
     display: flex;

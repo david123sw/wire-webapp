@@ -73,6 +73,7 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
     this.showAllUsersCount = ko.observable(0);
     this.selectedService = ko.observable();
 
+    this.isEditingAnnouncement = ko.observable(false);
     ko.computed(() => {
       if (this.activeConversation()) {
         this.serviceParticipants.removeAll();
@@ -401,11 +402,27 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
       this.actionsViewModel.cancelConnectionRequest(userEntity, true, nextConversationEntity);
     }
   }
-
   clickToClear() {
     this.actionsViewModel.clearConversation(this.activeConversation());
   }
-
+  onAnnounceSubmit(data, event) {
+    let advisory = $('.conversation-details__announcement').val();
+    advisory = advisory.trim();
+    this.conversationRepository.conversation_service.postModifyGroupInfo(this.activeConversation().id, {
+      advisory: advisory,
+    });
+    this.activeConversation().advisory(advisory);
+    this.isEditingAnnouncement(false);
+  }
+  onAnnounceCancel() {
+    const isEditing = this.isEditingAnnouncement();
+    if (!isEditing) {
+      this.preAnnouncementText = this.activeConversation().advisory();
+    } else {
+      this.activeConversation().advisory(this.preAnnouncementText);
+    }
+    this.isEditingAnnouncement(!isEditing);
+  }
   clickToEditGroupName() {
     if (this.isActiveGroupParticipant()) {
       this.isEditingName(true);

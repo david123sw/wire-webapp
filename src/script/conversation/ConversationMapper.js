@@ -299,6 +299,7 @@ export class ConversationMapper {
     const {
       addright,
       add_friend,
+      advisory,
       block_time,
       confirm,
       creator,
@@ -337,6 +338,7 @@ export class ConversationMapper {
     conversationEntity.block_time(block_time ? block_time : 0);
     conversationEntity.orator(orator);
     conversationEntity.managers(manager);
+    conversationEntity.advisory(advisory);
 
     const selfState = members ? members.self : conversationData;
     conversationEntity = this.updateSelfStatus(conversationEntity, selfState);
@@ -406,6 +408,7 @@ export class ConversationMapper {
       const {
         access,
         access_role,
+        advisory,
         block_time,
         creator,
         manager,
@@ -435,6 +438,7 @@ export class ConversationMapper {
         accessRole: access_role,
         add_friend,
         addright,
+        advisory,
         block_time,
         confirm,
         creator,

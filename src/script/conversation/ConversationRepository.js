@@ -111,6 +111,7 @@ export class ConversationRepository {
       CONFIRMATION_THRESHOLD: TIME_IN_MILLIS.WEEK,
       EXTERNAL_MESSAGE_THRESHOLD: 200 * 1024,
       GROUP: {
+        MAX_ANNOUNCEMENT_LENGTH: 256,
         MAX_NAME_LENGTH: 64,
         MAX_SIZE: Config.MAX_GROUP_PARTICIPANTS,
       },
