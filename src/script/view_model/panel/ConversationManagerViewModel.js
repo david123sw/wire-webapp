@@ -7,6 +7,7 @@ export class ConversationManagerViewModel extends BasePanelViewModel {
     const repositories = params.repositories;
     this.conversationRepository = repositories.conversation;
     this.conversation_service = repositories.conversation_service;
+    this.navigateTo = params.navigateTo;
 
     this.memberJoinConfirm = ko.pureComputed(() => {
       return this.activeConversation().confirm() || this.activeConversation().member_join_confirm();
@@ -23,6 +24,13 @@ export class ConversationManagerViewModel extends BasePanelViewModel {
   getElementId() {
     return 'conversation-manager';
   }
+  onManagerEvt() {
+    this.navigateTo(z.viewModel.PanelViewModel.STATE.CONVERSATION_ADMIN);
+  }
+  onOratorEvt() {
+    this.navigateTo(z.viewModel.PanelViewModel.STATE.CONVERSATION_ORATOR);
+  }
+
   onInviteEvt() {
     const confirm = this.activeConversation().confirm();
     this.activeConversation().confirm(!confirm);
@@ -33,11 +41,18 @@ export class ConversationManagerViewModel extends BasePanelViewModel {
       confirm: !confirm,
     });
   }
-  onForbiddenEvt() {
+  onMsgOnlyToManagerEvt() {
     const checked = this.activeConversation().msg_only_to_manager();
     this.activeConversation().msg_only_to_manager(!checked);
     this.conversationRepository.conversation_service.postModifyGroupInfo(this.activeConversation().id, {
       msg_only_to_manager: !checked,
+    });
+  }
+  onForbiddenEvt() {
+    const checked = this.activeConversation().block_time() ? 0 : -1;
+    this.activeConversation().block_time(checked);
+    this.conversationRepository.conversation_service.postModifyGroupInfo(this.activeConversation().id, {
+      block_time: checked,
     });
   }
   onShowInvitorListEvt() {

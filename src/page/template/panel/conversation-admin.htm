@@ -1,0 +1,19 @@
+<div id="conversation-admin" class="panel__page conversation-participants" data-bind="with: $root.subViews[z.viewModel.PanelViewModel.STATE.CONVERSATION_ADMIN]">
+  <!-- ko if: isVisible() -->
+  <div class="panel__header">
+    <arrow-left-icon class="icon-button" data-bind="clickOrDrag: onGoBack" data-uie-name="go-back-conversation-participants"></arrow-left-icon>
+    <div class="panel__header__title" data-bind="text: t('conversationManager')"></div>
+    <close-icon class="right-panel-close icon-button" data-bind="clickOrDrag: onClose" data-uie-name="do-close"></close-icon>
+  </div>
+  <div class="panel__content conversation-participants__content">
+    <div class="conversation-participants__list panel__content" data-bind="fadingscrollbar">
+      <user-list class="user-list-light" params="user: participants, click: clickOnShowUser, noUnderline: true, arrow: true, teamRepository: teamRepository, conversationRepository: conversationRepository" data-uie-name="list-conversation-participants"></user-list>
+    </div>
+    <div class="add-participants__footer">
+      <button class="button button-full" data-bind="click: onAddEvt" data-uie-name="do-create">
+        <span data-bind="text: t('conversationAdd')"></span>
+      </button>
+    </div>
+  </div>
+  <!-- /ko -->
+</div>

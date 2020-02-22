@@ -6,6 +6,11 @@
     <close-icon class="right-panel-close icon-button" data-bind="clickOrDrag: onClose" data-uie-name="do-close"></close-icon>
   </div>
   <div class="panel__content conversation-participants__content">
+    <div class="panel__action-item panel__action-item--no-border" data-uie-name="go-conversation-manager"
+         data-bind="click:onManagerEvt">
+      <div class="panel__action-item__text" data-bind="text: t('conversationManager')"></div>
+      <disclose-icon></disclose-icon>
+    </div>
     <div class="panel__action-item panel__action-item--no-border" data-uie-name="go-conversation-manager">
       <div class="panel__action-item__text" data-bind="text: t('conversationManagerInvite')"></div>
       <div>
@@ -55,11 +60,17 @@
       <div class="panel__action-item__text" data-bind="text: t('conversationManagerTransfer')"></div>
       <disclose-icon></disclose-icon>
     </div>
+    <div class="panel__action-item panel__action-item--no-border" data-uie-name="go-conversation-manager"
+         data-bind="click:onOratorEvt">
+      <div class="panel__action-item__text" data-bind="text: t('conversationManagerOrator')"></div>
+      <disclose-icon></disclose-icon>
+    </div>
+
     <div class="panel__action-item panel__action-item--no-border" data-uie-name="go-conversation-manager">
       <div class="panel__action-item__text" data-bind="text: t('conversationManagerForbiddenChat')"></div>
       <div>
         <label class="toggle toggle-init color-black" data-bind="click: onForbiddenEvt">
-          <input type="checkbox" data-bind="checked:!activeConversation().msg_only_to_manager()">
+          <input type="checkbox" data-bind="checked:!activeConversation().block_time()">
           <span class="toggle-icon"></span>
         </label>
       </div>
@@ -67,8 +78,8 @@
     <div class="panel__action-item panel__action-item--no-border" data-uie-name="go-conversation-manager">
       <div class="panel__action-item__text" data-bind="text: t('conversationManagerHideOtherChat')"></div>
       <div>
-        <label class="toggle toggle-init color-black">
-          <input type="checkbox" >
+        <label class="toggle toggle-init color-black"  data-bind="click: onMsgOnlyToManagerEvt">
+          <input type="checkbox" data-bind="checked:!activeConversation().msg_only_to_manager()">
           <span class="toggle-icon"></span>
         </label>
       </div>

@@ -81,6 +81,10 @@ export class Conversation {
     this.forumid = ko.observable(''); //社区ID int64
     this.show_invitor_list = ko.observable(false); //显示邀请列表
     this.msg_only_to_manager = ko.observable(false); //消息仅群主可以显示消息，其他成员不可见
+    this.block_time = ko.observable(0); //禁言
+
+    this.orator = ko.observable([]); //演讲者
+    this.managers = ko.observable([]); //管理员
 
     this.invite_code = ko.observable('');
     this.is_request_invite = false;
@@ -105,6 +109,16 @@ export class Conversation {
     this.isGuestRoom = ko.pureComputed(() => this.accessState() === ACCESS_STATE.TEAM.GUEST_ROOM);
     this.isTeamOnly = ko.pureComputed(() => this.accessState() === ACCESS_STATE.TEAM.TEAM_ONLY);
     this.withAllTeamMembers = ko.observable(undefined);
+
+    this.isAllowChat = ko.pureComputed(() => {
+      if (!this.isGroup()) {
+        return true;
+      }
+      if (this.selfUser().is_creator) {
+        return true;
+      }
+      return !this.block_time();
+    });
 
     this.isTeam1to1 = ko.pureComputed(() => {
       const isGroupConversation = this.type() === ConversationType.GROUP;

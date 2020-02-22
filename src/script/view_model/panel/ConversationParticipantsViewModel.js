@@ -29,6 +29,7 @@ export class ConversationParticipantsViewModel extends BasePanelViewModel {
     this.searchRepository = repositories.search;
     this.teamRepository = repositories.team;
     this.conversationRepository = repositories.conversation;
+    this.onGoBack = params.onGoBack;
 
     this.participants = ko.pureComputed(() => {
       if (this.activeConversation()) {
@@ -42,6 +43,12 @@ export class ConversationParticipantsViewModel extends BasePanelViewModel {
               userParticipants.push(userEntity);
             } else {
               groupCreatorEntity = userEntity;
+            }
+            if (this.alreadyExist) {
+              userEntity.isAlready =
+                this.alreadyExist.findIndex(userId => {
+                  return userId === userEntity.id;
+                }) !== -1;
             }
           });
 
@@ -69,11 +76,49 @@ export class ConversationParticipantsViewModel extends BasePanelViewModel {
   }
 
   clickOnShowUser(userEntity) {
-    this.navigateTo(z.viewModel.PanelViewModel.STATE.GROUP_PARTICIPANT_USER, {entity: userEntity});
+    if (this.mode === 1) {
+      if (this.alreadyExist) {
+        const idx = this.alreadyExist.findIndex(userId => {
+          return userId === userEntity.id;
+        });
+        if (idx === -1) {
+          this.alreadyExist.push(userEntity.id);
+          this.conversationRepository.conversation_service.postModifyGroupInfo(this.activeConversation().id, {
+            orator: this.alreadyExist,
+          });
+          this.activeConversation().orator(this.alreadyExist);
+        } else {
+          return;
+        }
+      }
+      this.onGoBack();
+    } else if (this.mode === 2) {
+      if (this.alreadyExist) {
+        const idx = this.alreadyExist.findIndex(userId => {
+          return userId === userEntity.id;
+        });
+        if (idx === -1) {
+          this.alreadyExist.push(userEntity.id);
+          this.conversationRepository.conversation_service.postModifyGroupInfo(this.activeConversation().id, {
+            man_add: [userEntity.id],
+          });
+          this.activeConversation().managers(this.alreadyExist);
+        } else {
+          return;
+        }
+      }
+      this.onGoBack();
+    } else {
+      this.navigateTo(z.viewModel.PanelViewModel.STATE.GROUP_PARTICIPANT_USER, {entity: userEntity});
+    }
   }
 
-  initView(highlightedUsers = []) {
+  initView(params) {
     this.searchInput('');
-    this.highlightedUsers(highlightedUsers);
+    this.highlightedUsers(params && params.highlightedUsers ? params.highlightedUsers : []);
+    if (params && params.mode) {
+      this.mode = params.mode;
+      this.alreadyExist = params.exist ? params.exist : [];
+    }
   }
 }

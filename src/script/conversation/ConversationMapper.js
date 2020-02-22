@@ -299,14 +299,17 @@ export class ConversationMapper {
     const {
       addright,
       add_friend,
+      block_time,
       confirm,
       creator,
       forumid,
       id,
+      manager,
       memberjoin_confirm,
       members,
       msg_only_to_manager,
       name,
+      orator,
       others,
       show_invitor_list,
       type,
@@ -331,6 +334,9 @@ export class ConversationMapper {
     conversationEntity.forumid(forumid);
     conversationEntity.msg_only_to_manager(msg_only_to_manager);
     conversationEntity.show_invitor_list(show_invitor_list);
+    conversationEntity.block_time(block_time ? block_time : 0);
+    conversationEntity.orator(orator);
+    conversationEntity.managers(manager);
 
     const selfState = members ? members.self : conversationData;
     conversationEntity = this.updateSelfStatus(conversationEntity, selfState);
@@ -400,10 +406,13 @@ export class ConversationMapper {
       const {
         access,
         access_role,
+        block_time,
         creator,
+        manager,
         members,
         message_timer,
         name,
+        orator,
         receipt_mode,
         team,
         type,
@@ -426,14 +435,17 @@ export class ConversationMapper {
         accessRole: access_role,
         add_friend,
         addright,
+        block_time,
         confirm,
         creator,
         forumid,
+        manager,
         mediumPictureResource: assets[1],
         memberjoin_confirm,
         message_timer,
         msg_only_to_manager,
         name,
+        orator,
         previewPictureResource: assets[0],
         receipt_mode,
         show_invitor_list,
