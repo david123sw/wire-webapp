@@ -103,6 +103,7 @@ import {BackendClientError} from '../error/BackendClientError';
 import {showLegalHoldWarning} from '../legal-hold/LegalHoldWarning';
 import * as LegalHoldEvaluator from '../legal-hold/LegalHoldEvaluator';
 import {DeleteConversationMessage} from '../entity/message/DeleteConversationMessage';
+// import {ConversationService} from '../conversation/ConversationService';
 
 // Conversation repository for all conversation interactions with the conversation service
 export class ConversationRepository {
@@ -1622,6 +1623,29 @@ export class ConversationRepository {
       this.sendText(conversationEntity, textMessage, null, quoteEntity);
       return this.upload_images(conversationEntity, [blob]);
     });
+  }
+
+  /**
+   * Change the group avatar image.
+   * @param {Conversation} conversationEntity - Conversation to send message in
+   * @param {Blob} picture - data of avatar image
+   * @returns {Promise} Resolves when the avatar image was posted
+   */
+  change_picture(conversationEntity, picture) {
+    return this.asset_service
+      .uploadProfileImage(picture)
+      .then(({previewImageKey, mediumImageKey}) => {
+        const assets = [
+          {key: previewImageKey, size: 'preview', type: 'image'},
+          {key: mediumImageKey, size: 'complete', type: 'image'},
+        ];
+        return this.conversation_service.updateConversationAvatar(conversationEntity.id, assets).then(() => {
+          this.logger.info(`Group update avatar finished.`);
+        });
+      })
+      .catch(error => {
+        throw new Error(`Error during profile image upload: ${error.message || error.code || error}`);
+      });
   }
 
   /**

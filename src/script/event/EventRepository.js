@@ -641,8 +641,6 @@ export class EventRepository {
   processEvent(event, source) {
     const isEncryptedEvent = event.type === BackendEvent.CONVERSATION.OTR_MESSAGE_ADD;
     const isSuperGroupEvent = event.type === BackendEvent.CONVERSATION.BGP_MESSAGE_ADD;
-
-    // console.log('---- 此处解密----', event);
     const mapEvent =
       isSuperGroupEvent || isEncryptedEvent
         ? this.cryptographyRepository.handleEncryptedEvent(event)
@@ -650,7 +648,6 @@ export class EventRepository {
 
     return mapEvent
       .then(mappedEvent => {
-        // console.log('----解密结果----', mappedEvent);
         return this.eventProcessMiddlewares.reduce((eventPromise, middleware) => {
           // use reduce to resolve promises sequentially
           // see https://hackernoon.com/functional-javascript-resolving-promises-sequentially-7aac18c4431e

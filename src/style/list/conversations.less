@@ -61,21 +61,46 @@
 
 .conversation-details-group-name-static {
   display: flex;
-  width: 188px;
+  width: 180px;
   height: 100%;
   border: none;
-  background-color: green;
-  font-size: 25px;
+  margin-left: 2px;
+  font-size: 16px;
   font-weight: 600;
-  word-break: break-all;
 }
 
 .conversation-details-group-name-input {
-  width: 196px !important;
+  overflow: scroll;
+  width: 100% !important;
+  height: 100% !important;
+  margin-left: 2px;
+  font-size: 16px;
+  overflow-y: scroll !important;
+}
+
+.conversation-details-group-name-input-icon {
+  margin-left: 0px;
+}
+
+.conversation-details-group-avatar {
+  width: 32px;
+  height: 32px;
+}
+
+.conversation-details-group-avatar-camera {
+  top: 2px !important;
+  left: 2px !important;
+  width: 32px !important;
+  height: 32px !important;
+  font-size: 12px !important;
+}
+
+.conversation-details-group-avatar-click {
+  pointer-events: none;
 }
 
 .conversation-details-group-capacity {
-  width: 50px; //20%;
+  width: 58px;
   margin-top: 0px;
   margin-right: 0px;
   font-size: 12px;

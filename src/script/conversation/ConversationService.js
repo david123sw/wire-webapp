@@ -164,6 +164,23 @@ export class ConversationService {
   }
 
   /**
+   * Update the conversation avatar.
+   *
+   * @see https://staging-nginz-https.zinfra.io/swagger-ui/#!/conversations/updateConversation
+   *
+   * @param {string} conversationId - ID of conversation to rename
+   * @param {Object} assets - new name of the conversation
+   * @returns {Promise} Resolves with the server response
+   */
+  updateConversationAvatar(conversationId, assets) {
+    return this.backendClient.sendJson({
+      data: {assets: assets},
+      type: 'PUT',
+      url: `${ConversationService.CONFIG.URL_CONVERSATIONS}/${conversationId}/update`,
+    });
+  }
+
+  /**
    * Update the conversation message timer value.
    *
    * @see https://staging-nginz-https.zinfra.io/swagger-ui/#!/conversations/updateConversationMessageTimer
