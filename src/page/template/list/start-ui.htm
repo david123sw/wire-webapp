@@ -87,7 +87,7 @@
                   <span class="start-ui-list-header" data-bind="text: t('searchConnections')"></span>
                 <!-- /ko -->
                 <!-- ko if: isVisible() -->
-                  <user-list class="search-list-theme-black" params="user: contacts(), click: clickOnContact, searchRepository: searchRepository, teamRepository: teamRepository, conversationRepository: conversationRepository"></user-list>
+                  <user-list class="search-list-theme-black" params="user: contacts(), click: clickOnContact, mode: UserlistMode.INVITE, searchRepository: searchRepository, teamRepository: teamRepository, conversationRepository: conversationRepository"></user-list>
                 <!-- /ko -->
               </div>
             <!-- /ko -->

@@ -277,11 +277,27 @@ export class Conversation {
         !this.id
           ? []
           : this.messages().filter((messageEntity, index, array) => {
-              const checks = [BackendEvent.CONVERSATION.MEMBER_LEAVE, BackendEvent.CONVERSATION.MEMBER_JOIN];
+              const checks = [
+                BackendEvent.CONVERSATION.MEMBER_LEAVE,
+                BackendEvent.CONVERSATION.MEMBER_JOIN,
+                BackendEvent.CONVERSATION.RENAME,
+              ];
               const previous = index >= 1 ? array[index - 1] : undefined;
-              const same = previous && previous.type === messageEntity.type && previous.from === messageEntity.from;
-              const exclude = same && checks.includes(messageEntity.type);
-              return messageEntity.visible() && !exclude;
+              const include = checks.includes(messageEntity.type);
+
+              const same1 = previous && previous.type === messageEntity.type && previous.from === messageEntity.from;
+              const exclude1 = same1 && include;
+              if (same1) {
+                return messageEntity.visible() && !exclude1;
+              }
+
+              const same2 = previous && previous.name === messageEntity.name && previous.from === messageEntity.from;
+              const exclude2 = same2 && include;
+              if (same2) {
+                return messageEntity.visible() && !exclude2;
+              }
+
+              return messageEntity.visible();
             }),
       )
       .extend({trackArrayChanges: true});

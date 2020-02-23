@@ -114,7 +114,6 @@ class StartUIViewModel {
         const teamUsersWithoutPartners = this.teamRepository
           .teamUsers()
           .filter(user => connectedUsers.includes(user) || this.teamRepository.isSelfConnectedTo(user.id));
-
         return teamUsersWithoutPartners;
       }
 
@@ -373,9 +372,10 @@ class StartUIViewModel {
           user.username() === normalizedQuery
         );
       });
-
+      for (let i = 0; i < filteredResults.length; ++i) {
+        filteredResults[i].is_creator = false;
+      }
       this.searchResults.contacts(filteredResults);
-
       this.searchResults.groups(this.conversationRepository.getGroupsByName(normalizedQuery, isHandle));
     }
   }

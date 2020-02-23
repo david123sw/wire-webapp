@@ -158,7 +158,7 @@ export class SearchRepository {
     const searchPromises = [directorySearch];
 
     if (validateHandle(name)) {
-      searchPromises.push(this.userRepository.get_user_id_by_handle(name));
+      // no check
     }
 
     return Promise.all(searchPromises)

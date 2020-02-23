@@ -73,9 +73,14 @@ class ParticipanItem {
     element: HTMLElement,
   ) {
     this.avatarSize = ParticipantAvatar.SIZE.SMALL;
+    this.isDefaultMode = mode === UserlistMode.DEFAULT;
+    this.isOthersMode = mode === UserlistMode.OTHERS;
     this.participant = ko.unwrap(participant);
-    this.participantName = () =>
-      (this.participant as User).is_me
+    this.participantName = () => {
+      if (mode === UserlistMode.INVITE && (this.participant as User)) {
+        return this.participant.name;
+      }
+      return (this.participant as User).is_me
         ? (this.participant as User).is_creator
           ? `${(this.participant as User).name()} (${capitalizeFirstChar(
               t('conversationCreatorNominative'),
@@ -84,14 +89,12 @@ class ParticipanItem {
         : (this.participant as User).is_creator
         ? `${(this.participant as User).name()} (${capitalizeFirstChar(t('conversationCreatorNominative'))})`
         : this.participant.name;
+    };
     this.isService = this.participant instanceof ServiceEntity || this.participant.isService;
     this.isUser = this.participant instanceof User && !this.participant.isService;
     this.selfInTeam = selfInTeam;
     const isTemporaryGuest = this.isUser && (this.participant as User).isTemporaryGuest();
     this.badge = badge;
-
-    this.isDefaultMode = mode === UserlistMode.DEFAULT;
-    this.isOthersMode = mode === UserlistMode.OTHERS;
 
     this.canSelect = canSelect;
     this.isSelected = isSelected;
