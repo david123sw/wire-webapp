@@ -16,7 +16,7 @@
  * along with this program. If not, see http://www.gnu.org/licenses/.
  *
  */
-import {Decoder} from 'bazinga64';
+// import {Decoder} from 'bazinga64';
 import {ConversationType} from '../../../src/script/conversation/ConversationType';
 
 import {error as StoreEngineError, MemoryEngine} from '@wireapp/store-engine';
@@ -35,6 +35,7 @@ import {EventName} from '../tracking/EventName';
 import {ClientEntity} from '../client/ClientEntity';
 
 import {BackendClientError} from '../error/BackendClientError';
+import {BackendEvent} from '../event/Backend';
 
 export class CryptographyRepository {
   static get CONFIG() {
@@ -447,13 +448,18 @@ export class CryptographyRepository {
    * @returns {Promise} Resolves with the decrypted message in ProtocolBuffer format
    */
   _decryptEvent(event) {
-    const {data: eventData, from: userId, convtype: super_group_type} = event;
+    const {data: eventData, from: userId} = event;
+
+    const isUnencryptEvent = event.type === BackendEvent.CONVERSATION.BGP_MESSAGE_ADD;
+    if (isUnencryptEvent) {
+      return new Promise((resolve, reject) => {
+        const result = GenericMessage.decode(base64ToArray(eventData.text));
+        resolve(result);
+      });
+    }
+
     const cipherText = base64ToArray(eventData.text || eventData.key).buffer;
     const sessionId = this._constructSessionId(userId, eventData.sender);
-
-    if (ConversationType.SUPER_GROUP === super_group_type) {
-      return Promise.resolve(GenericMessage.decode(Decoder.fromBase64(eventData.text).asBytes));
-    }
     return this.cryptobox.decrypt(sessionId, cipherText).then(plaintext => GenericMessage.decode(plaintext));
   }
 
