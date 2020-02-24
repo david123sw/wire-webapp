@@ -38,10 +38,14 @@ import {mapProfileAssets, updateUserEntityAssets} from '../../assets/AssetMapper
 import {User} from '../../entity/User';
 import {createRandomUuid} from 'Util/util';
 import {ParticipantAvatar} from 'Components/participantAvatar';
+import {modals, ModalsViewModel} from '../ModalsViewModel';
+import {validateProfileImageResolution} from 'Util/util';
 
 export class ConversationDetailsViewModel extends BasePanelViewModel {
   static get CONFIG() {
     return {
+      AVATAR_IMG_SIZE: 32,
+      AVATAR_IMG_TYPES: ['image/bmp', 'image/jpeg', 'image/jpg', 'image/png', '.jpg-large'],
       MAX_USERS_VISIBLE: 7,
       REDUCED_USERS_COUNT: 5,
     };
@@ -72,6 +76,8 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
     this.isTeam = this.teamRepository.isTeam;
 
     this.ParticipantAvatar = ParticipantAvatar;
+
+    this.GroupAvatarFileTypes = ConversationDetailsViewModel.CONFIG.AVATAR_IMG_TYPES.join(',');
 
     this.isTeamOnly = ko.pureComputed(() => this.activeConversation() && this.activeConversation().isTeamOnly());
 
@@ -186,8 +192,6 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
       }
       const name = $('.conversation-details__name--input');
       $('.conversation-details__name').css('height', `${name.height()}px`);
-      $('.conversation-details__name').css('width', '70%');
-      $('.conversation-details__name').css('background-color', 'red');
     });
 
     this.isServiceMode = ko.pureComputed(() => {
@@ -443,7 +447,55 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
     }
   }
 
-  clickToUploadAvatar() {}
+  clickOnChangePicture(files) {
+    const [newUserPicture] = Array.from(files);
+
+    this.setPicture(newUserPicture).catch(error => {
+      const isInvalidUpdate = error.type === z.error.UserError.TYPE.INVALID_UPDATE;
+      if (!isInvalidUpdate) {
+        throw error;
+      }
+    });
+  }
+
+  setPicture(newUserPicture) {
+    const isTooLarge = newUserPicture.size > z.config.MAXIMUM_IMAGE_FILE_SIZE;
+    if (isTooLarge) {
+      const maximumSizeInMB = z.config.MAXIMUM_IMAGE_FILE_SIZE / 1024 / 1024;
+      const messageString = t('modalPictureTooLargeMessage', maximumSizeInMB);
+      const titleString = t('modalPictureTooLargeHeadline');
+
+      return this._showUploadWarning(titleString, messageString);
+    }
+
+    const isWrongFormat = !ConversationDetailsViewModel.CONFIG.AVATAR_IMG_TYPES.includes(newUserPicture.type);
+    if (isWrongFormat) {
+      const titleString = t('modalPictureFileFormatHeadline');
+      const messageString = t('modalPictureFileFormatMessage');
+
+      return this._showUploadWarning(titleString, messageString);
+    }
+
+    const minHeight = ConversationDetailsViewModel.CONFIG.AVATAR_IMG_SIZE;
+    const minWidth = ConversationDetailsViewModel.CONFIG.AVATAR_IMG_SIZE;
+
+    return validateProfileImageResolution(newUserPicture, minWidth, minHeight).then(isValid => {
+      if (isValid) {
+        return this.conversationRepository.change_picture(this.activeConversation(), newUserPicture);
+      }
+
+      const messageString = t('modalPictureTooSmallMessage');
+      const titleString = t('modalPictureTooSmallHeadline');
+      return this._showUploadWarning(titleString, messageString);
+    });
+  }
+
+  _showUploadWarning(title, message) {
+    const modalOptions = {text: {message, title}};
+    modals.showModal(ModalsViewModel.TYPE.ACKNOWLEDGE, modalOptions);
+
+    return Promise.reject(new z.error.UserError(z.error.UserError.TYPE.INVALID_UPDATE));
+  }
 
   clickToLeave() {
     this.actionsViewModel.leaveConversation(this.activeConversation());
