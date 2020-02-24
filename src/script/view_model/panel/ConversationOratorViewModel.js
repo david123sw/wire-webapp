@@ -1,4 +1,5 @@
 import {BasePanelViewModel} from './BasePanelViewModel';
+import {ConversationParticipantsViewModel} from './ConversationParticipantsViewModel';
 
 export class ConversationOratorViewModel extends BasePanelViewModel {
   constructor(params) {
@@ -38,7 +39,7 @@ export class ConversationOratorViewModel extends BasePanelViewModel {
     this.navigateTo(z.viewModel.PanelViewModel.STATE.CONVERSATION_PARTICIPANTS, {
       exist: this.activeConversation().orator(),
       highlightedUsers: [],
-      mode: 1,
+      mode: ConversationParticipantsViewModel.STATE.MODIFY_ORATOR,
     });
   }
 }
