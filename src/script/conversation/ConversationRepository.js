@@ -4351,4 +4351,42 @@ export class ConversationRepository {
       amplify.publish(WebAppEvents.ANALYTICS.EVENT, EventName.CONTRIBUTED, attributes);
     }
   }
+
+  //##############################################################################
+  // Group Manager
+  //##############################################################################
+
+  removeAdminFromConversation(conversationEntity, removeUserId) {
+    return this.conversation_service
+      .postModifyGroupInfo(conversationEntity.id, {
+        man_del: [removeUserId],
+      })
+      .then(() => {
+        const idx = conversationEntity.managers().findIndex(userId => {
+          return removeUserId === userId;
+        });
+        if (idx !== -1) {
+          const managers = conversationEntity.managers();
+          managers.splice(idx, 1);
+          conversationEntity.managers(managers);
+        }
+        return {conversationEntity, removeUserId};
+      });
+  }
+  removeOratorFromConversation(conversationEntity, removeUserId) {
+    const orators = [];
+    conversationEntity.orator().map(userId => {
+      if (userId !== removeUserId) {
+        orators.push(userId);
+      }
+    });
+    return this.conversation_service
+      .postModifyGroupInfo(conversationEntity.id, {
+        orator: orators,
+      })
+      .then(() => {
+        conversationEntity.orator(orators);
+        return {conversationEntity, removeUserId};
+      });
+  }
 }

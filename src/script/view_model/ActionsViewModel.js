@@ -283,6 +283,45 @@ export class ActionsViewModel {
     }
   }
 
+  removeAdminFromConversation(conversationEntity, userEntity) {
+    if (conversationEntity && userEntity) {
+      return new Promise(resolve => {
+        amplify.publish(WebAppEvents.WARNING.MODAL, ModalsViewModel.TYPE.CONFIRM, {
+          primaryAction: {
+            action: () => {
+              this.conversationRepository.removeAdminFromConversation(conversationEntity, userEntity.id);
+              resolve();
+            },
+            text: t('modalConversationRemoveAction'),
+          },
+          text: {
+            message: t('conversationActionAdminRemoveMessage', userEntity.first_name()),
+            title: t('modalConversationRemoveHeadline'),
+          },
+        });
+      });
+    }
+  }
+  removeOratorFromConversation(conversationEntity, userEntity) {
+    if (conversationEntity && userEntity) {
+      return new Promise(resolve => {
+        amplify.publish(WebAppEvents.WARNING.MODAL, ModalsViewModel.TYPE.CONFIRM, {
+          primaryAction: {
+            action: () => {
+              this.conversationRepository.removeOratorFromConversation(conversationEntity, userEntity.id);
+              resolve();
+            },
+            text: t('modalConversationRemoveAction'),
+          },
+          text: {
+            message: t('conversationActionOratorRemoveMessage', userEntity.first_name()),
+            title: t('modalConversationRemoveHeadline'),
+          },
+        });
+      });
+    }
+  }
+
   removeFromConversation(conversationEntity, userEntity) {
     if (conversationEntity && userEntity) {
       if (userEntity.isService) {
@@ -299,7 +338,7 @@ export class ActionsViewModel {
             text: t('modalConversationRemoveAction'),
           },
           text: {
-            message: t('modalConversationRemoveMessage', userEntity.first_name()),
+            message: t('conversationActionAdminRemoveMessage', userEntity.first_name()),
             title: t('modalConversationRemoveHeadline'),
           },
         });

@@ -30,7 +30,10 @@ export class ConversationOratorViewModel extends BasePanelViewModel {
     });
   }
   clickOnShowUser(userEntity) {
-    this.navigateTo(z.viewModel.PanelViewModel.STATE.GROUP_PARTICIPANT_USER, {entity: userEntity});
+    this.navigateTo(z.viewModel.PanelViewModel.STATE.GROUP_PARTICIPANT_USER, {
+      entity: userEntity,
+      isOrator: true,
+    });
   }
   getElementId() {
     return 'conversation-orator';

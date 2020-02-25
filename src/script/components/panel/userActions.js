@@ -37,15 +37,24 @@ export const Actions = {
   REMOVE: 'UserActions.REMOVE',
   SEND_REQUEST: 'UserActions.SEND_REQUEST',
   UNBLOCK: 'UserActions.UNBLOCK',
+  USER_REMOVE_ADMIN: 'USER_REMOVE_ADMIN',
+  USER_REMOVE_ORATOR: 'USER_REMOVE_ORATOR',
 };
 
 ko.components.register('user-actions', {
   template: '<panel-actions params="items: items()"></panel-actions>',
-  viewModel: function({user, conversation = () => false, actionsViewModel, onAction = noop, isSelfActivated}) {
+  viewModel: function({
+    user,
+    conversation = () => false,
+    actionsViewModel,
+    onAction = noop,
+    isSelfActivated,
+    isOrator = false,
+    isAdmin = false,
+  }) {
     isSelfActivated = ko.unwrap(isSelfActivated);
     const isMe = ko.computed(() => user() && user().is_me);
     const isNotMe = ko.computed(() => !isMe() && isSelfActivated);
-
     const allItems = [
       {
         // open self profile
@@ -172,6 +181,32 @@ ko.components.register('user-actions', {
           icon: 'minus-icon',
           identifier: 'do-remove',
           label: t('groupParticipantActionRemove'),
+        },
+      },
+      {
+        condition: () => {
+          return isAdmin();
+        },
+        item: {
+          click: () => {
+            actionsViewModel.removeAdminFromConversation(conversation(), user()).then(() => onAction(Actions.REMOVE));
+          },
+          icon: 'minus-icon',
+          identifier: 'remove-admin',
+          label: t('conversationActionAdminRemove'),
+        },
+      },
+      {
+        condition: () => {
+          return isOrator();
+        },
+        item: {
+          click: () => {
+            actionsViewModel.removeOratorFromConversation(conversation(), user()).then(() => onAction(Actions.REMOVE));
+          },
+          icon: 'minus-icon',
+          identifier: 'remove-admin',
+          label: t('conversationActionOratorRemove'),
         },
       },
     ];

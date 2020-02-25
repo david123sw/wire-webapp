@@ -1029,5 +1029,9 @@
   "conversationManagerOrator": "演讲者",
   "conversationAdd": "添加",
   "conversationSave": "保存",
-  "conversationAnnouncement": "群公告"
+  "conversationAnnouncement": "群公告",
+  "conversationActionAdminRemove": "移除管理身份",
+  "conversationActionOratorRemove": "移除演讲者身份",
+  "conversationActionAdminRemoveMessage": "{{user}}将不再具有管理员身份。",
+  "conversationActionOratorRemoveMessage": "{{user}}将不再是演讲者。"
 }
