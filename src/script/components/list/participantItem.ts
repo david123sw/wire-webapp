@@ -77,18 +77,24 @@ class ParticipanItem {
     this.isOthersMode = mode === UserlistMode.OTHERS;
     this.participant = ko.unwrap(participant);
     this.participantName = () => {
+      const remarkAndName = this.participant.remark()
+        ? `${this.participant.remark()}(${this.participant.name()})`
+        : this.participant.name();
       if (mode === UserlistMode.INVITE && (this.participant as User)) {
-        return this.participant.name;
+        return remarkAndName;
       }
-      return (this.participant as User).is_me
+
+      const describle = (this.participant as User).is_me
         ? (this.participant as User).is_creator
           ? `${(this.participant as User).name()} (${capitalizeFirstChar(
               t('conversationCreatorNominative'),
             )} & ${capitalizeFirstChar(t('conversationYouNominative'))})`
           : `${(this.participant as User).name()} (${capitalizeFirstChar(t('conversationYouNominative'))})`
         : (this.participant as User).is_creator
-        ? `${(this.participant as User).name()} (${capitalizeFirstChar(t('conversationCreatorNominative'))})`
-        : this.participant.name;
+        ? `${remarkAndName} (${capitalizeFirstChar(t('conversationCreatorNominative'))})`
+        : remarkAndName;
+
+      return describle;
     };
     this.isService = this.participant instanceof ServiceEntity || this.participant.isService;
     this.isUser = this.participant instanceof User && !this.participant.isService;

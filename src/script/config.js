@@ -215,7 +215,7 @@ export const config = {
   LOGIN_CODE_EXPIRATION: 10 * 60,
 
   // 25 megabyte upload limit for personal use (private users & guests)
-  MAXIMUM_ASSET_FILE_SIZE_PERSONAL: 25 * 1024 * 1024,
+  MAXIMUM_ASSET_FILE_SIZE_PERSONAL: 100 * 1024 * 1024,
 
   // 100 megabyte upload limit for organizations (team members)
   MAXIMUM_ASSET_FILE_SIZE_TEAM: 100 * 1024 * 1024,

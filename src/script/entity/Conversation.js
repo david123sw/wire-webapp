@@ -385,6 +385,10 @@ export class Conversation {
       if (this.isRequest() || this.is1to1()) {
         const [userEntity] = this.participating_user_ets();
         const userName = userEntity && userEntity.name();
+        const remark = userEntity && userEntity.remark();
+        if (remark) {
+          return remark;
+        }
         return userName ? userName : '…';
       }
 

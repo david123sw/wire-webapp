@@ -78,6 +78,7 @@ class User {
 
     this.email = ko.observable();
     this.phone = ko.observable();
+    this.remark = ko.observable('');
 
     this.name = ko.observable('');
     this.first_name = ko.pureComputed(() => {

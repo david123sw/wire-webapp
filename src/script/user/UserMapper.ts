@@ -102,7 +102,12 @@ export class UserMapper {
       service,
       sso_id: ssoId,
       team,
+      remark,
     } = userData;
+
+    if (remark !== undefined) {
+      userEntity.remark(remark);
+    }
 
     if (accentId) {
       userEntity.accent_id(accentId);

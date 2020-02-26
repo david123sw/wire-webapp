@@ -32,7 +32,7 @@ ko.components.register('panel-user-details', {
         <verified-icon class="panel-participant__verified-icon" data-uie-name="status-verified-participant"></verified-icon>
       <!-- /ko -->
 
-      <div class="panel-participant__name" data-bind="text: participant().name()" data-uie-name="status-name"></div>
+      <div class="panel-participant__name" data-bind="text: describle()" data-uie-name="status-name"></div>
 
 
       <!-- ko if: participant().username() -->
@@ -71,6 +71,12 @@ ko.components.register('panel-user-details', {
       this.isVerified = params.hasOwnProperty('isVerified') ? params.isVerified : this.participant().is_verified;
       this.badge = params.badge;
       this.ParticipantAvatar = ParticipantAvatar;
+
+      this.describle = ko.pureComputed(() => {
+        return this.participant().remark()
+          ? `${this.participant().remark()}(${this.participant().name()})`
+          : this.participant().name();
+      });
 
       this.availabilityLabel = ko.pureComputed(() => {
         const availabilitySetToNone = this.participant().availability() === Availability.Type.NONE;
