@@ -89,10 +89,11 @@
         </div>
         <!-- ko if: activeConversation() && activeConversation().isGroup() && activeConversation().isCreator()-->
           <div class="conversation-details__announcement-inner">
+            <div class="conversation-details__list-head" data-bind="text: t('conversationAnnouncement')"></div>
             <textarea class="conversation-details__announcement conversation-details__announcement--input"
                       dir="auto"
                       spellcheck="false"
-                      data-bind="attr: {readonly: !isEditingAnnouncement(), maxlength: ConversationRepository.CONFIG.GROUP.MAX_ANNOUNCEMENT_LENGTH}, enter: onAnnounceSubmit, resize, value: activeConversation() && activeConversation().advisory()"
+                      data-bind="css:{'conversation-details__announcement-a':isEditingAnnouncement()},attr: {readonly: !isEditingAnnouncement(), maxlength: ConversationRepository.CONFIG.GROUP.MAX_ANNOUNCEMENT_LENGTH}, enter: onAnnounceSubmit, resize, value: activeConversation() && activeConversation().advisory()"
                       data-uie-name="enter-announcement">
             </textarea>
             <div class="conversation-details__r">

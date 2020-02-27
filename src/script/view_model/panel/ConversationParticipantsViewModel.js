@@ -21,6 +21,14 @@ import {BasePanelViewModel} from './BasePanelViewModel';
 import {MotionDuration} from '../../motion/MotionDuration';
 
 export class ConversationParticipantsViewModel extends BasePanelViewModel {
+  static get STATE() {
+    return {
+      DEFAULT: 'ConversationParticipantsViewModel.STATE.DEFAULT',
+      MODIFY_ADMIN: 'ConversationParticipantsViewModel.STATE.MODIFY_ADMIN',
+      MODIFY_MANAGER: 'ConversationParticipantsViewModel.STATE.MODIFY_MANAGER',
+      MODIFY_ORATOR: 'ConversationParticipantsViewModel.STATE.MODIFY_ORATOR',
+    };
+  }
   constructor(params) {
     super(params);
     this.clickOnShowUser = this.clickOnShowUser.bind(this);
@@ -30,6 +38,7 @@ export class ConversationParticipantsViewModel extends BasePanelViewModel {
     this.teamRepository = repositories.team;
     this.conversationRepository = repositories.conversation;
     this.onGoBack = params.onGoBack;
+    this.alreadyExist = ko.observable('');
 
     this.participants = ko.pureComputed(() => {
       if (this.activeConversation()) {
@@ -44,18 +53,29 @@ export class ConversationParticipantsViewModel extends BasePanelViewModel {
             } else {
               groupCreatorEntity = userEntity;
             }
-            if (this.alreadyExist) {
+            if (this.alreadyExist()) {
               userEntity.isAlready =
-                this.alreadyExist.findIndex(userId => {
+                this.alreadyExist().findIndex(userId => {
                   return userId === userEntity.id;
                 }) !== -1;
+            } else {
+              userEntity.isAlready = false;
             }
           });
 
         if (groupCreatorEntity) {
           userParticipants.unshift(groupCreatorEntity);
         }
-        userParticipants.unshift(this.activeConversation().selfUser());
+        const selfUser = this.activeConversation().selfUser();
+        if (this.alreadyExist()) {
+          selfUser.isAlready =
+            this.alreadyExist().findIndex(userId => {
+              return userId === selfUser.id;
+            }) !== -1;
+        } else {
+          selfUser.isAlready = false;
+        }
+        userParticipants.unshift(selfUser);
         userParticipants.map(userEntity => {
           userEntity.is_creator = userEntity.id === this.activeConversation().creator;
         });
@@ -75,33 +95,49 @@ export class ConversationParticipantsViewModel extends BasePanelViewModel {
   }
 
   clickOnShowUser(userEntity) {
-    if (this.mode === 1) {
-      if (this.alreadyExist) {
-        const idx = this.alreadyExist.findIndex(userId => {
+    if (this.mode === ConversationParticipantsViewModel.STATE.MODIFY_ORATOR) {
+      if (this.alreadyExist()) {
+        const idx = this.alreadyExist().findIndex(userId => {
           return userId === userEntity.id;
         });
         if (idx === -1) {
-          this.alreadyExist.push(userEntity.id);
+          this.alreadyExist().push(userEntity.id);
           this.conversationRepository.conversation_service.postModifyGroupInfo(this.activeConversation().id, {
-            orator: this.alreadyExist,
+            orator: this.alreadyExist(),
           });
-          this.activeConversation().orator(this.alreadyExist);
+          this.activeConversation().orator(this.alreadyExist());
         } else {
           return;
         }
       }
       this.onGoBack();
-    } else if (this.mode === 2) {
-      if (this.alreadyExist) {
-        const idx = this.alreadyExist.findIndex(userId => {
+    } else if (this.mode === ConversationParticipantsViewModel.STATE.MODIFY_ADMIN) {
+      if (this.alreadyExist()) {
+        const idx = this.alreadyExist().findIndex(userId => {
           return userId === userEntity.id;
         });
         if (idx === -1) {
-          this.alreadyExist.push(userEntity.id);
+          this.alreadyExist().push(userEntity.id);
           this.conversationRepository.conversation_service.postModifyGroupInfo(this.activeConversation().id, {
             man_add: [userEntity.id],
           });
-          this.activeConversation().managers(this.alreadyExist);
+          this.activeConversation().managers(this.alreadyExist());
+        } else {
+          return;
+        }
+      }
+      this.onGoBack();
+    } else if (this.mode === ConversationParticipantsViewModel.STATE.MODIFY_MANAGER) {
+      if (this.alreadyExist()) {
+        const idx = this.alreadyExist().findIndex(userId => {
+          return userId === userEntity.id;
+        });
+        if (idx === -1) {
+          this.alreadyExist().push(userEntity.id);
+          this.conversationRepository.conversation_service.postModifyGroupManager(
+            this.activeConversation().id,
+            userEntity.id,
+          );
         } else {
           return;
         }
@@ -117,7 +153,10 @@ export class ConversationParticipantsViewModel extends BasePanelViewModel {
     this.highlightedUsers(params && params.highlightedUsers ? params.highlightedUsers : []);
     if (params && params.mode) {
       this.mode = params.mode;
-      this.alreadyExist = params.exist ? params.exist : [];
+      this.alreadyExist(params.exist ? params.exist : []);
+    } else {
+      this.mode = ConversationParticipantsViewModel.STATE.DEFAULT;
+      this.alreadyExist(null);
     }
   }
 }

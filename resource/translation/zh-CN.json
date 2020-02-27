@@ -1013,6 +1013,7 @@
   "extra_special_message_type_18": "[收到分享消息,请在手机端查看]",
   "extra_special_message_type_4_to_1": "您",
   "extra_special_message_type_4_to_2": "你",
+
   "conversationManager": "管理员",
   "conversationManagerInvite": "群聊邀请确认",
   "conversationManagerInvited": "群成员被邀请确认",
@@ -1027,5 +1028,10 @@
   "conversationManagerForbiddenAddF": "禁止群成员互加好友",
   "conversationManagerOrator": "演讲者",
   "conversationAdd": "添加",
-  "conversationSave": "保存"
+  "conversationSave": "保存",
+  "conversationAnnouncement": "群公告",
+  "conversationActionAdminRemove": "移除管理身份",
+  "conversationActionOratorRemove": "移除演讲者身份",
+  "conversationActionAdminRemoveMessage": "{{user}}将不再具有管理员身份。",
+  "conversationActionOratorRemoveMessage": "{{user}}将不再是演讲者。"
 }

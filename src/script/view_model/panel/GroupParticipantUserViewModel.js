@@ -40,6 +40,9 @@ export class GroupParticipantUserViewModel extends BasePanelViewModel {
     this.selectedParticipant = ko.observable(undefined);
 
     this.onUserAction = this.onUserAction.bind(this);
+
+    this.isAdmin = ko.observable(false);
+    this.isOrator = ko.observable(false);
   }
 
   showActionDevices(userEntity) {
@@ -64,9 +67,11 @@ export class GroupParticipantUserViewModel extends BasePanelViewModel {
     this.navigateTo(z.viewModel.PanelViewModel.STATE.PARTICIPANT_DEVICES, {entity: this.selectedParticipant()});
   }
 
-  initView({entity: user}) {
+  initView({entity: user, isAdmin, isOrator}) {
     const userEntity = user;
     this.selectedParticipant(userEntity);
+    this.isAdmin(!!isAdmin);
+    this.isOrator(!!isOrator);
 
     if (userEntity.isTemporaryGuest()) {
       userEntity.checkGuestExpiration();

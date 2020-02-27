@@ -9,11 +9,13 @@
     <div class="conversation-participants__list panel__content" data-bind="fadingscrollbar">
       <user-list class="user-list-light" params="user: participants, click: clickOnShowUser, noUnderline: true, arrow: true, teamRepository: teamRepository, conversationRepository: conversationRepository" data-uie-name="list-conversation-participants"></user-list>
     </div>
+    <!-- ko if: isShowAdd() -->
     <div class="add-participants__footer">
       <button class="button button-full" data-bind="click: onAddEvt" data-uie-name="do-create">
         <span data-bind="text: t('conversationAdd')"></span>
       </button>
     </div>
+    <!-- /ko -->
   </div>
   <!-- /ko -->
 </div>

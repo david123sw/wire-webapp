@@ -1,4 +1,5 @@
 import {BasePanelViewModel} from './BasePanelViewModel';
+import {ConversationParticipantsViewModel} from './ConversationParticipantsViewModel';
 
 export class ConversationManagerViewModel extends BasePanelViewModel {
   constructor(params) {
@@ -23,6 +24,13 @@ export class ConversationManagerViewModel extends BasePanelViewModel {
 
   getElementId() {
     return 'conversation-manager';
+  }
+  onTransfer() {
+    this.navigateTo(z.viewModel.PanelViewModel.STATE.CONVERSATION_PARTICIPANTS, {
+      exist: [this.activeConversation().selfUser().id],
+      highlightedUsers: [],
+      mode: ConversationParticipantsViewModel.STATE.MODIFY_MANAGER,
+    });
   }
   onManagerEvt() {
     this.navigateTo(z.viewModel.PanelViewModel.STATE.CONVERSATION_ADMIN);

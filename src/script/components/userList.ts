@@ -37,6 +37,7 @@ export enum UserlistMode {
 interface UserListParams {
   click: (userEntity: User, event: MouseEvent) => void;
   filter: ko.Observable<string>;
+  isSelect: false;
   selected: ko.ObservableArray<User>;
   searchRepository: SearchRepository;
   teamRepository: TeamRepository;
@@ -54,7 +55,7 @@ ko.components.register('user-list', {
     <div class="search-list" data-bind="css: cssClasses(), foreach: {data: filteredUserEntities(), as: 'user', noChildContext: true }">
       <participant-item
         params="participant: user, customInfo: infos && infos()[user.id], canSelect: isSelectEnabled, isSelected: isSelected(user), mode: mode, badge: teamRepository.getRoleBadge(user.id), selfInTeam: selfInTeam"
-        data-bind="click: (viewmodel, event) => onUserClick(user, event), css: {'no-underline': noUnderline, 'show-arrow': arrow, 'highlighted': highlightedUserIds.includes(user.id) || user.isAlready}">
+        data-bind="click: (viewmodel, event) => onUserClick(user, event), css: {'no-underline': noUnderline, 'show-arrow': arrow, 'highlighted': highlightedUserIds.includes(user.id) || (user.isAlready && isSelect)}">
       </participant-item>
     </div>
 
@@ -71,6 +72,7 @@ ko.components.register('user-list', {
   viewModel: function({
     click,
     filter = ko.observable(''),
+    isSelect = false,
     selected: selectedUsers,
     searchRepository,
     teamRepository,
@@ -92,7 +94,7 @@ ko.components.register('user-list', {
     this.noUnderline = noUnderline;
     this.arrow = arrow;
     this.selfInTeam = teamRepository.selfUser().inTeam();
-
+    this.isSelect = isSelect;
     const isCompactMode = mode === UserlistMode.COMPACT;
 
     this.cssClasses = ko.pureComputed(() => (isCompactMode ? 'search-list-sm' : 'search-list-lg'));

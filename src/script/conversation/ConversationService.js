@@ -58,6 +58,15 @@ export class ConversationService {
       url: `${ConversationService.CONFIG.URL_CONVERSATIONS}/${conversation_id}/update`,
     });
   }
+
+  postModifyGroupManager(conversation_id, userId) {
+    return this.backendClient.sendJson({
+      data: {creator: userId},
+      type: 'PUT',
+      url: `${ConversationService.CONFIG.URL_CONVERSATIONS}/${conversation_id}/creator`,
+    });
+  }
+
   getInviteUrl(conversation_id, renew = false) {
     return this.backendClient.sendJson({
       type: 'POST',
