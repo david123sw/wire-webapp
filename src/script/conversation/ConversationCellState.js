@@ -254,7 +254,7 @@ const _getStateGroupActivity = {
   },
 };
 
-// Secret屏蔽该操作
+// Deprecated
 // const _getStateMuted = {
 //   description: conversationEntity => {
 //     return _accumulateSummary(conversationEntity, conversationEntity.showNotificationsMentionsAndReplies());
@@ -346,7 +346,6 @@ const _getStateUnreadMessage = {
 const _getStateUserName = {
   description: conversationEntity => {
     return generateCellStateEx(conversationEntity);
-    // Secret屏蔽该操作
     // const [userEntity] = conversationEntity.participating_user_ets();
     // const hasUsername = userEntity && userEntity.username();
     // return hasUsername ? `@${userEntity.username()}` : '';
@@ -358,7 +357,6 @@ const _getStateUserName = {
   },
   match: conversationEntity => {
     return true;
-    // Secret屏蔽该操作
     // const lastMessageEntity = conversationEntity.getLastMessage();
     // const isMemberJoin = lastMessageEntity && lastMessageEntity.is_member() && lastMessageEntity.isMemberJoin();
     // const isEmpty1to1Conversation = conversationEntity.is1to1() && isMemberJoin;
@@ -369,7 +367,7 @@ const _getStateUserName = {
 export const generateCellState = conversationEntity => {
   const states = [
     _getStateRemoved,
-    // _getStateMuted,    // Secret屏蔽该操作
+    // _getStateMuted,    //Deprecated
     _getStateAlert,
     _getStateGroupActivity,
     _getStateUnreadMessage,

@@ -103,7 +103,11 @@ export class Message {
 
     this.unsafeSenderName = ko.pureComputed(() => getFirstName(this.user(), undefined, true));
     this.headerSenderName = ko.pureComputed(() => {
-      return this.user().isService ? this.user().name() : this.user().first_name();
+      return this.user().isService
+        ? this.user().name()
+        : this.user().remark()
+        ? this.user().remark()
+        : this.user().first_name();
     });
 
     this.accent_color = ko.pureComputed(() => `accent-color-${this.user().accent_id()}`);

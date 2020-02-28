@@ -39,15 +39,15 @@ export class DecryptErrorMessage extends Message {
     this.client_id = '';
 
     this.htmlCaption = ko.pureComputed(() => {
-      const userName = this.user().first_name();
+      const userName = this.user().remark() ? this.user().remark() : this.user().first_name();
       const replaceHighlight = {
         '/highlight': '</span>',
         highlight: '<span class="label-bold-xs">',
       };
 
       return this.is_remote_identity_changed()
-        ? t('conversationUnableToDecrypt2', userName, replaceHighlight)
-        : t('conversationUnableToDecrypt1', userName, replaceHighlight);
+        ? t('conversationUnableToDecrypt2', `[bold]${userName}[/bold]`, replaceHighlight)
+        : t('conversationUnableToDecrypt1', `[bold]${userName}[/bold]`, replaceHighlight);
     });
 
     this.link = ko.pureComputed(() => {

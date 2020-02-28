@@ -48,9 +48,7 @@
             <!-- /ko -->
             <div class="conversation-details__name conversation-details-group-name-static" data-bind="visible: !isEditingName(), click: z.userPermission().canUpdateConversationSettings() ? clickToEditGroupName: undefined, attr: {title: t('tooltipConversationDetailsRename')}" data-uie-name="status-name">
               <div class="conversation-details__name conversation-details-group-name-static" data-bind="text: activeConversation() && activeConversation().display_name()"></div>
-              <!-- ko if: z.userPermission().canUpdateConversationSettings() -->
-                <edit-icon class="conversation-details__name__edit-icon conversation-details-group-name-input-icon"></edit-icon>
-              <!-- /ko -->
+
             </div>
             <textarea class="conversation-details__name conversation-details__name--input conversation-details-group-name-input"
                       dir="auto"
@@ -58,6 +56,10 @@
                       data-bind="attr: {maxlength: ConversationRepository.CONFIG.GROUP.MAX_NAME_LENGTH}, enter: renameConversation, resize, value: activeConversation() && activeConversation().display_name(), visible: isEditingName()"
                       data-uie-name="enter-name">
             </textarea>
+
+            <!-- ko if: z.userPermission().canUpdateConversationSettings() -->
+            <edit-icon class="conversation-details__name__edit-icon conversation-details-group-name-input-icon"></edit-icon>
+            <!-- /ko -->
           <!-- /ko -->
           <!-- ko ifnot: isActiveGroupParticipant() -->
             <div class="conversation-details__name">

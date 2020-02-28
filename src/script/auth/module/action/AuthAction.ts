@@ -368,8 +368,6 @@ export class AuthAction {
     return async (dispatch, getState, {config, core, actions: {cookieAction, localStorageAction}}) => {
       dispatch(AuthActionCreator.startLogout());
       try {
-        // Secret屏蔽该操作
-        // await core.logout();
         await dispatch(cookieAction.safelyRemoveCookie(COOKIE_NAME_APP_OPENED, config.APP_INSTANCE_ID));
         await dispatch(localStorageAction.deleteLocalStorage(LocalStorageKey.AUTH.ACCESS_TOKEN.VALUE));
         dispatch(AuthActionCreator.successfulSilentLogout());

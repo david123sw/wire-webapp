@@ -50,7 +50,7 @@ export const LocalizerUtil = {
 
     const firstNames = userEntities
       .map(userEntity => {
-        const firstName = userEntity.first_name();
+        const firstName = userEntity.remark() ? userEntity.remark() : userEntity.first_name();
         return boldNames ? `[bold]${firstName}[/bold]` : firstName;
       })
       .sort((userNameA, userNameB) => sortByPriority(userNameA, userNameB));

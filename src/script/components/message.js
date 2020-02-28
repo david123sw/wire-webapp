@@ -47,6 +47,7 @@ import {ConversationType} from '../conversation/ConversationType';
 import {BackendEvent} from '../event/Backend';
 
 class Message {
+  static PREVIOUS_MSG_FROM_USER = '';
   constructor(
     {
       message,
@@ -77,7 +78,11 @@ class Message {
   ) {
     this.message = message;
     this.conversation = conversation;
+    this.hasSameSenderWithPreviousMessage =
+      '' === Message.PREVIOUS_MSG_FROM_USER ? false : this.message.from === Message.PREVIOUS_MSG_FROM_USER;
     this.shouldShowAvatar = selfId() !== this.message.from;
+    Message.PREVIOUS_MSG_FROM_USER =
+      SystemMessageType.CONVERSATION_CREATE === message.memberMessageType ? '' : this.message.from;
     this.shouldShowInvitePeople = shouldShowInvitePeople;
     this.selfId = selfId;
     this.isSelfTemporaryGuest = isSelfTemporaryGuest;
@@ -297,7 +302,7 @@ const receiptStatusTemplate = `
 `;
 
 const normalTemplate = `
-  <!-- ko if: shouldShowAvatar -->
+  <!-- ko if: shouldShowAvatar && !hasSameSenderWithPreviousMessage -->
     <div class="message-header">
       <div class="message-header-icon">
         <participant-avatar class="sender-avatar" params="participant: message.user, click: onClickAvatar, size: ParticipantAvatar.SIZE.X_SMALL"></participant-avatar>

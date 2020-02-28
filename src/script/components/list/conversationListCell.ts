@@ -33,6 +33,7 @@ import {BackendEvent} from '../../event/Backend';
 import {ClientEvent} from '../../event/Client';
 
 import {mapProfileAssets, updateUserEntityAssets} from '../../assets/AssetMapper';
+import {NOTIFICATION_STATE} from '../../conversation/NotificationSetting';
 import {AssetPayload} from '../../entity/message/Asset';
 import {User} from '../../entity/User';
 
@@ -81,7 +82,12 @@ class ConversationListCell {
     element: HTMLElement,
   ) {
     this.conversation = conversation;
-    this.isSelected = ko.computed(() => is_selected(conversation));
+    // this.isSelected = ko.computed(() => is_selected(conversation));
+    this.isSelected = ko.computed(() => {
+      const status = is_selected(conversation);
+      return status;
+    });
+
     // "click" should be renamed to "right_click"
     this.on_click = click;
     this.ParticipantAvatar = ParticipantAvatar;
@@ -148,8 +154,22 @@ class ConversationListCell {
       .computed(() => {
         const current = this.cell_state().description;
         const next = generateCellState(this.conversation);
-        if (next.description !== '' && next.description !== current) {
-          this.cell_state(next);
+        if (NOTIFICATION_STATE.NOTHING === this.mutedState()) {
+          if (this.isSelected()) {
+            next.icon = null;
+            this.cell_state(next);
+          } else {
+            next.description =
+              0 === this.conversation.unreadState().allMessages.length
+                ? next.description
+                : t('conversationsSecondaryLineSummaryMessage', this.conversation.unreadState().allMessages.length);
+            next.icon = null;
+            this.cell_state(next);
+          }
+        } else {
+          if (next.description !== '' && next.description !== current) {
+            this.cell_state(next);
+          }
         }
       })
       .extend({rateLimit: 500});

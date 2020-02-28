@@ -41,7 +41,8 @@ export const getFirstName = (userEntity, declension, bypassSanitization = false)
   if (userEntity.is_me) {
     return getSelfName(declension, bypassSanitization);
   }
-  return bypassSanitization ? userEntity.first_name() : escapeString(userEntity.first_name());
+  const displayed_name = userEntity.remark() ? userEntity.remark() : userEntity.first_name();
+  return bypassSanitization ? displayed_name : escapeString(displayed_name);
 };
 
 /**
