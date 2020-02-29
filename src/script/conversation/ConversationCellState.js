@@ -21,6 +21,7 @@ import {t} from 'Util/LocalizerUtil';
 
 import {ConversationStatusIcon} from './ConversationStatusIcon';
 import {AssetTransferState} from '../assets/AssetTransferState';
+import {BackendEvent} from '../event/Backend';
 
 const ACTIVITY_TYPE = {
   CALL: 'ConversationCellState.ACTIVITY_TYPE.CALL',
@@ -191,14 +192,24 @@ const _getStateGroupActivity = {
         if (lastMessageEntity.isMemberJoin()) {
           if (userCountIsOne) {
             if (!lastMessageEntity.remoteUserEntities().length) {
-              return t('conversationsSecondaryLinePersonAddedYou', lastMessageEntity.user().name());
+              return t(
+                'conversationsSecondaryLinePersonAddedYou',
+                lastMessageEntity.user().remark() ? lastMessageEntity.user().remark() : lastMessageEntity.user().name(),
+              );
             }
 
             const [remoteUserEntity] = lastMessageEntity.remoteUserEntities();
             const userSelfJoined = lastMessageEntity.user().id === remoteUserEntity.id;
             const string = userSelfJoined
-              ? t('conversationsSecondaryLinePersonAddedSelf', remoteUserEntity.name())
-              : t('conversationsSecondaryLinePersonAdded', remoteUserEntity.name());
+              ? t(
+                  'conversationsSecondaryLinePersonAddedSelf',
+                  remoteUserEntity.remark() ? remoteUserEntity.remark() : remoteUserEntity.name(),
+                )
+              : remoteUserEntity.senderName() +
+                t(
+                  'conversationsSecondaryLinePersonAdded',
+                  remoteUserEntity.remark() ? remoteUserEntity.remark() : remoteUserEntity.name(),
+                );
 
             return string;
           }
@@ -212,14 +223,22 @@ const _getStateGroupActivity = {
 
             if (remoteUserEntity) {
               if (lastMessageEntity.isTeamMemberLeave()) {
-                const name = lastMessageEntity.name() || remoteUserEntity.name();
+                const name =
+                  lastMessageEntity.name() ||
+                  (remoteUserEntity.remark() ? remoteUserEntity.remark() : remoteUserEntity.name());
                 return t('conversationsSecondaryLinePersonRemovedTeam', name);
               }
 
               const userSelfLeft = remoteUserEntity.id === lastMessageEntity.user().id;
               const string = userSelfLeft
-                ? t('conversationsSecondaryLinePersonLeft', remoteUserEntity.name())
-                : t('conversationsSecondaryLinePersonRemoved', remoteUserEntity.name());
+                ? t(
+                    'conversationsSecondaryLinePersonLeft',
+                    remoteUserEntity.remark() ? remoteUserEntity.remark() : remoteUserEntity.name(),
+                  )
+                : t(
+                    'conversationsSecondaryLinePersonRemoved',
+                    remoteUserEntity.remark() ? remoteUserEntity.remark() : remoteUserEntity.name(),
+                  );
 
               return string;
             }
@@ -254,7 +273,6 @@ const _getStateGroupActivity = {
   },
 };
 
-// Deprecated
 // const _getStateMuted = {
 //   description: conversationEntity => {
 //     return _accumulateSummary(conversationEntity, conversationEntity.showNotificationsMentionsAndReplies());
@@ -346,9 +364,6 @@ const _getStateUnreadMessage = {
 const _getStateUserName = {
   description: conversationEntity => {
     return generateCellStateEx(conversationEntity);
-    // const [userEntity] = conversationEntity.participating_user_ets();
-    // const hasUsername = userEntity && userEntity.username();
-    // return hasUsername ? `@${userEntity.username()}` : '';
   },
   icon: conversationEntity => {
     if (conversationEntity.isRequest()) {
@@ -357,22 +372,11 @@ const _getStateUserName = {
   },
   match: conversationEntity => {
     return true;
-    // const lastMessageEntity = conversationEntity.getLastMessage();
-    // const isMemberJoin = lastMessageEntity && lastMessageEntity.is_member() && lastMessageEntity.isMemberJoin();
-    // const isEmpty1to1Conversation = conversationEntity.is1to1() && isMemberJoin;
-    // return conversationEntity.isRequest() || isEmpty1to1Conversation;
   },
 };
 
 export const generateCellState = conversationEntity => {
-  const states = [
-    _getStateRemoved,
-    // _getStateMuted,    //Deprecated
-    _getStateAlert,
-    _getStateGroupActivity,
-    _getStateUnreadMessage,
-    _getStateUserName,
-  ];
+  const states = [_getStateRemoved, _getStateAlert, _getStateGroupActivity, _getStateUnreadMessage, _getStateUserName];
   const matchingState = states.find(state => state.match(conversationEntity)) || _getStateDefault;
   return {
     description: matchingState.description(conversationEntity),
@@ -421,6 +425,69 @@ export const generateCellStateEx = conversationEntity => {
     const hasString = string && string !== true;
     const stateText = hasString ? string : messageEntity.get_first_asset().text;
     return conversationEntity.isGroup() ? `${messageEntity.unsafeSenderName()}: ${stateText}` : stateText;
+  }
+
+  const userCount = messageEntity.userEntities().length;
+  const hasUserCount = userCount >= 1;
+
+  if (hasUserCount) {
+    const userCountIsOne = userCount === 1;
+    if (messageEntity.type === BackendEvent.CONVERSATION.MEMBER_JOIN) {
+      if (userCountIsOne) {
+        if (!messageEntity.remoteUserEntities().length) {
+          return t(
+            'conversationsSecondaryLinePersonAddedYou',
+            messageEntity.user().remark() ? messageEntity.user().remark() : messageEntity.user().name(),
+          );
+        }
+
+        const [remoteUserEntity] = messageEntity.remoteUserEntities();
+        const userSelfJoined = messageEntity.user().id === remoteUserEntity.id;
+        const describle = userSelfJoined
+          ? t(
+              'conversationsSecondaryLinePersonAddedSelf',
+              remoteUserEntity.remark() ? remoteUserEntity.remark() : remoteUserEntity.name(),
+            )
+          : messageEntity.senderName() +
+            t(
+              'conversationsSecondaryLinePersonAdded',
+              remoteUserEntity.remark() ? remoteUserEntity.remark() : remoteUserEntity.name(),
+            );
+
+        return describle;
+      }
+
+      return t('conversationsSecondaryLinePeopleAdded', userCount);
+    }
+
+    if (messageEntity.type === BackendEvent.CONVERSATION.MEMBER_LEAVE) {
+      if (userCountIsOne) {
+        const [remoteUserEntity] = messageEntity.remoteUserEntities();
+
+        if (remoteUserEntity) {
+          if (messageEntity.isTeamMemberLeave()) {
+            const name =
+              messageEntity.name() || (remoteUserEntity.remark() ? remoteUserEntity.remark() : remoteUserEntity.name());
+            return t('conversationsSecondaryLinePersonRemovedTeam', name);
+          }
+
+          const userSelfLeft = remoteUserEntity.id === messageEntity.user().id;
+          const describle = userSelfLeft
+            ? t(
+                'conversationsSecondaryLinePersonLeft',
+                remoteUserEntity.remark() ? remoteUserEntity.remark() : remoteUserEntity.name(),
+              )
+            : t(
+                'conversationsSecondaryLinePersonRemoved',
+                remoteUserEntity.remark() ? remoteUserEntity.remark() : remoteUserEntity.name(),
+              );
+
+          return describle;
+        }
+      }
+
+      return t('conversationsSecondaryLinePeopleLeft', userCount);
+    }
   }
 
   return '';

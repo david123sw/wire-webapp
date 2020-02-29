@@ -357,7 +357,7 @@
   "conversationsSecondaryLineIncomingCall": "{{user}}正在呼叫",
   "conversationsSecondaryLinePeopleAdded": "{{user}}人被添加",
   "conversationsSecondaryLinePeopleLeft": "{{number}}人离开",
-  "conversationsSecondaryLinePersonAdded": "已添加 {{user}}",
+  "conversationsSecondaryLinePersonAdded": "添加了{{user}}",
   "conversationsSecondaryLinePersonAddedSelf": "{{user}}已加入",
   "conversationsSecondaryLinePersonAddedYou": "{{user}}添加了您",
   "conversationsSecondaryLinePersonLeft": "{{user}}离开",

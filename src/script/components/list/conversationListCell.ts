@@ -32,6 +32,7 @@ import 'Components/availabilityState';
 import {BackendEvent} from '../../event/Backend';
 import {ClientEvent} from '../../event/Client';
 
+import {t} from 'Util/LocalizerUtil';
 import {mapProfileAssets, updateUserEntityAssets} from '../../assets/AssetMapper';
 import {NOTIFICATION_STATE} from '../../conversation/NotificationSetting';
 import {AssetPayload} from '../../entity/message/Asset';
@@ -169,6 +170,60 @@ class ConversationListCell {
         } else {
           if (next.description !== '' && next.description !== current) {
             this.cell_state(next);
+            lastMessagesFromConversation[this.conversation.id] = true;
+          } else {
+            if (!lastMessagesFromConversation[this.conversation.id]) {
+              window.wire.app.repository.conversation
+                .getPrecedingMessagesAsLast(this.conversation)
+                .then((events: any) => {
+                  const last = events[0];
+                  if (last) {
+                    if (ClientEvent.CONVERSATION.MESSAGE_ADD === last.type) {
+                      let prefix = '';
+                      if (this.conversation.isGroup()) {
+                        const user_from = this.conversation.allUserEntities.filter(userEntity => {
+                          return userEntity.id === last.from;
+                        });
+                        prefix = user_from[0].remark() ? user_from[0].remark() : user_from[0].name();
+                        prefix = `${prefix}: `;
+                      }
+                      this.cell_state({
+                        description: last.data.content ? `${prefix}${last.data.content}` : '',
+                        icon: this.cell_state().icon,
+                      });
+                    } else if (BackendEvent.CONVERSATION.MEMBER_LEAVE === last.type) {
+                      const desc = last.data.user_names
+                        ? transDesc('conversationsSecondaryLinePersonLeft', last.data.user_names.join(','))
+                        : '';
+                      this.cell_state({icon: this.cell_state().icon, description: desc});
+                    } else if (BackendEvent.CONVERSATION.MEMBER_JOIN === last.type) {
+                      const add_id = last.from;
+                      const added_ids = last.data.user_ids.slice(0);
+                      added_ids.unshift(add_id);
+                      const added_names = [];
+                      for (let i = 0; i < added_ids.length; ++i) {
+                        this.conversation.allUserEntities.map(userEntity => {
+                          if (userEntity.id === added_ids[i]) {
+                            if (this.conversation.selfUser().id === added_ids[i]) {
+                              added_names.push(t('extra_special_message_type_4_to_1'));
+                            } else {
+                              added_names.push(userEntity.remark() ? userEntity.remark() : userEntity.name());
+                            }
+                          }
+                        });
+                      }
+                      this.cell_state({
+                        description:
+                          added_names[0] + t('conversationsSecondaryLinePersonAdded', added_names.slice(1).join(',')),
+                        icon: this.cell_state().icon,
+                      });
+                    } else if (BackendEvent.CONVERSATION.GROUP_CREATION === last.type) {
+                      //nothing
+                    }
+                    lastMessagesFromConversation[this.conversation.id] = true;
+                  }
+                });
+            }
           }
         }
       })
@@ -179,28 +234,6 @@ class ConversationListCell {
       cellStateObservable.dispose();
       this.isSelected.dispose();
     };
-
-    if (!lastMessagesFromConversation[this.conversation.id]) {
-      window.wire.app.repository.conversation.getPrecedingMessagesAsLast(conversation).then((events: any) => {
-        const last = events[0];
-        if (last) {
-          if (ClientEvent.CONVERSATION.MESSAGE_ADD === last.type) {
-            this.cell_state({icon: this.cell_state().icon, description: last.data.content ? last.data.content : ''});
-          } else if (BackendEvent.CONVERSATION.MEMBER_LEAVE === last.type) {
-            const desc = last.data.user_names
-              ? transDesc('conversationsSecondaryLinePersonLeft', last.data.user_names.join(','))
-              : '';
-            this.cell_state({icon: this.cell_state().icon, description: desc});
-          } else if (BackendEvent.CONVERSATION.MEMBER_JOIN === last.type) {
-            const desc = last.data.user_names
-              ? transDesc('conversationsSecondaryLinePersonAddedSelf', last.data.user_names.join(','))
-              : '';
-            this.cell_state({icon: this.cell_state().icon, description: desc});
-          }
-          lastMessagesFromConversation[this.conversation.id] = true;
-        }
-      });
-    }
   }
 }
 
