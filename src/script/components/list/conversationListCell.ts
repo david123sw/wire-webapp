@@ -38,8 +38,6 @@ import {NOTIFICATION_STATE} from '../../conversation/NotificationSetting';
 import {AssetPayload} from '../../entity/message/Asset';
 import {User} from '../../entity/User';
 
-const lastMessagesFromConversation: {[index: string]: boolean} = {};
-
 interface ConversationListCellProps {
   showJoinButton: boolean;
   conversation: Conversation;
@@ -65,6 +63,7 @@ class ConversationListCell {
   fakeUser: ko.Computed<User | boolean>;
   isInViewport: ko.Observable<boolean>;
   users: any;
+  refresh_lock: boolean;
   cell_state: ko.Observable<ReturnType<typeof generateCellState>>;
   ConversationStatusIcon: typeof ConversationStatusIcon;
   onClickJoinCall: (viewModel: ConversationListCell, event: MouseEvent) => void;
@@ -83,6 +82,7 @@ class ConversationListCell {
     element: HTMLElement,
   ) {
     this.conversation = conversation;
+    this.refresh_lock = false;
     // this.isSelected = ko.computed(() => is_selected(conversation));
     this.isSelected = ko.computed(() => {
       const status = is_selected(conversation);
@@ -157,74 +157,85 @@ class ConversationListCell {
         const next = generateCellState(this.conversation);
         if (NOTIFICATION_STATE.NOTHING === this.mutedState()) {
           if (this.isSelected()) {
-            next.icon = null;
-            this.cell_state(next);
+            if (next.description !== '' && next.description !== current) {
+              next.icon = null;
+              this.cell_state(next);
+              this.refresh_lock = true;
+            }
           } else {
-            next.description =
-              0 === this.conversation.unreadState().allMessages.length
-                ? next.description
-                : t('conversationsSecondaryLineSummaryMessage', this.conversation.unreadState().allMessages.length);
-            next.icon = null;
-            this.cell_state(next);
-          }
-        } else {
-          if (next.description !== '' && next.description !== current) {
-            this.cell_state(next);
-            lastMessagesFromConversation[this.conversation.id] = true;
-          } else {
-            if (!lastMessagesFromConversation[this.conversation.id]) {
-              window.wire.app.repository.conversation
-                .getPrecedingMessagesAsLast(this.conversation)
-                .then((events: any) => {
-                  const last = events[0];
-                  if (last) {
-                    if (ClientEvent.CONVERSATION.MESSAGE_ADD === last.type) {
-                      let prefix = '';
-                      if (this.conversation.isGroup()) {
-                        const user_from = this.conversation.allUserEntities.filter(userEntity => {
-                          return userEntity.id === last.from;
-                        });
-                        prefix = user_from[0].remark() ? user_from[0].remark() : user_from[0].name();
-                        prefix = `${prefix}: `;
-                      }
-                      this.cell_state({
-                        description: last.data.content ? `${prefix}${last.data.content}` : '',
-                        icon: this.cell_state().icon,
-                      });
-                    } else if (BackendEvent.CONVERSATION.MEMBER_LEAVE === last.type) {
-                      const desc = last.data.user_names
-                        ? transDesc('conversationsSecondaryLinePersonLeft', last.data.user_names.join(','))
-                        : '';
-                      this.cell_state({icon: this.cell_state().icon, description: desc});
-                    } else if (BackendEvent.CONVERSATION.MEMBER_JOIN === last.type) {
-                      const add_id = last.from;
-                      const added_ids = last.data.user_ids.slice(0);
-                      added_ids.unshift(add_id);
-                      const added_names = [];
-                      for (let i = 0; i < added_ids.length; ++i) {
-                        this.conversation.allUserEntities.map(userEntity => {
-                          if (userEntity.id === added_ids[i]) {
-                            if (this.conversation.selfUser().id === added_ids[i]) {
-                              added_names.push(t('extra_special_message_type_4_to_1'));
-                            } else {
-                              added_names.push(userEntity.remark() ? userEntity.remark() : userEntity.name());
-                            }
-                          }
-                        });
-                      }
-                      this.cell_state({
-                        description:
-                          added_names[0] + t('conversationsSecondaryLinePersonAdded', added_names.slice(1).join(',')),
-                        icon: this.cell_state().icon,
-                      });
-                    } else if (BackendEvent.CONVERSATION.GROUP_CREATION === last.type) {
-                      //nothing
-                    }
-                    lastMessagesFromConversation[this.conversation.id] = true;
-                  }
-                });
+            if (0 < this.conversation.unreadState().allMessages.length) {
+              next.description = t(
+                'conversationsSecondaryLineSummaryMessage',
+                this.conversation.unreadState().allMessages.length,
+              );
+              next.icon = null;
+              this.cell_state(next);
+              this.refresh_lock = true;
             }
           }
+        } else if (next.description !== '' && next.description !== current) {
+          this.cell_state(next);
+          this.refresh_lock = true;
+        }
+
+        if (!this.refresh_lock) {
+          window.wire.app.repository.conversation.getPrecedingMessagesAsLast(this.conversation).then((events: any) => {
+            const last = events[0];
+            if (last) {
+              let prefix = '';
+              if (this.conversation.isGroup()) {
+                const user_from = this.conversation.allUserEntities.filter(userEntity => {
+                  return userEntity.id === last.from;
+                });
+                prefix =
+                  this.conversation.selfUser().id === user_from[0].id
+                    ? `${t('extra_special_message_type_4_to_1')}: `
+                    : `${user_from[0].remark() ? user_from[0].remark() : user_from[0].name()}: `;
+              }
+
+              if (ClientEvent.CONVERSATION.MESSAGE_ADD === last.type) {
+                this.cell_state({
+                  description: last.data.content ? `${prefix}${last.data.content}` : '',
+                  icon: this.cell_state().icon,
+                });
+              } else if (BackendEvent.CONVERSATION.MEMBER_LEAVE === last.type) {
+                const desc = last.data.user_names
+                  ? transDesc('conversationsSecondaryLinePersonLeft', last.data.user_names.join(','))
+                  : '';
+                this.cell_state({icon: this.cell_state().icon, description: desc});
+              } else if (BackendEvent.CONVERSATION.MEMBER_JOIN === last.type) {
+                const add_id = last.from;
+                const added_ids = last.data.user_ids.slice(0);
+                added_ids.unshift(add_id);
+                const added_names: string[] = [];
+                for (let i = 0; i < added_ids.length; ++i) {
+                  this.conversation.allUserEntities.map(userEntity => {
+                    if (userEntity.id === added_ids[i]) {
+                      if (this.conversation.selfUser().id === added_ids[i]) {
+                        added_names.push(t('extra_special_message_type_4_to_1'));
+                      } else {
+                        added_names.push(userEntity.remark() ? userEntity.remark() : userEntity.name());
+                      }
+                    }
+                  });
+                }
+                this.cell_state({
+                  description:
+                    added_names[0] + t('conversationsSecondaryLinePersonAdded', added_names.slice(1).join(',')),
+                  icon: this.cell_state().icon,
+                });
+              } else if (
+                ClientEvent.CONVERSATION.VOICE_CHANNEL_ACTIVATE === last.type ||
+                ClientEvent.CONVERSATION.VOICE_CHANNEL_DEACTIVATE === last.type
+              ) {
+                this.cell_state({
+                  description: `${prefix}${t('conversationVoiceChannelDeactivate')}`,
+                  icon: this.cell_state().icon,
+                });
+              }
+              this.refresh_lock = true;
+            }
+          });
         }
       })
       .extend({rateLimit: 500});

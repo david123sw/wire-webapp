@@ -205,7 +205,7 @@ const _getStateGroupActivity = {
                   'conversationsSecondaryLinePersonAddedSelf',
                   remoteUserEntity.remark() ? remoteUserEntity.remark() : remoteUserEntity.name(),
                 )
-              : remoteUserEntity.senderName() +
+              : lastMessageEntity.senderName() +
                 t(
                   'conversationsSecondaryLinePersonAdded',
                   remoteUserEntity.remark() ? remoteUserEntity.remark() : remoteUserEntity.name(),
@@ -342,6 +342,8 @@ const _getStateUnreadMessage = {
         string = t('notificationSharedLocation');
       } else if (messageEntity.has_asset_image()) {
         string = t('notificationAssetAdd');
+      } else if (messageEntity.is_call()) {
+        string = t('conversationVoiceChannelDeactivate');
       }
 
       if (!!string) {
@@ -413,6 +415,8 @@ export const generateCellStateEx = conversationEntity => {
     string = t('notificationSharedLocation');
   } else if (messageEntity.has_asset_image()) {
     string = t('notificationAssetAdd');
+  } else if (messageEntity.is_call()) {
+    string = t('conversationVoiceChannelDeactivate');
   }
 
   if (!!string) {
