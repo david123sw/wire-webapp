@@ -512,9 +512,9 @@ export class UserRepository {
       .then(resolveArray => {
         const newUserEntities = flatten(resolveArray);
 
-        if (this.isTeam()) {
-          this.mapGuestStatus(newUserEntities);
-        }
+        // if (this.isTeam()) {
+        //   this.mapGuestStatus(newUserEntities);
+        // }
 
         return this.save_users(newUserEntities);
       })

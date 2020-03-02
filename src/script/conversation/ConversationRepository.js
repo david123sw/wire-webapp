@@ -860,7 +860,6 @@ export class ConversationRepository {
       return conversationEntity.participating_user_ids();
     });
     const userIds = flatten(mapOfUserIds);
-
     return this.user_repository
       .get_users_by_id(userIds)
       .then(() => conversationEntities.forEach(conversationEntity => this._fetch_users_and_events(conversationEntity)));
@@ -4142,6 +4141,47 @@ export class ConversationRepository {
    * @returns {Promise} Resolves when users have been update
    */
   _updateMessageUserEntities(messageEntity, isSupperGroup = false) {
+    if (isSupperGroup) {
+      const userEt = this.user_repository.findUserById(messageEntity.id);
+      if (userEt) {
+        messageEntity.user(userEt);
+      }
+
+      if (messageEntity.is_member() || messageEntity.userEntities) {
+        const _find_user = user_id => {
+          return this.user_repository.findUserById(user_id);
+        };
+        const existUsers = [];
+        messageEntity.userIds().map(user_id => {
+          const user = _find_user(user_id);
+          if (user) {
+            existUsers.push(user);
+          }
+        });
+        existUsers.sort((userA, userB) => sortByPriority(userA.first_name(), userB.first_name()));
+        messageEntity.userEntities(existUsers);
+      } else if (messageEntity.is_content()) {
+        const userIds = Object.keys(messageEntity.reactions());
+
+        const _find_user = user_id => {
+          return this.user_repository.findUserById(user_id);
+        };
+        messageEntity.reactions_user_ets.removeAll();
+        if (userIds.length) {
+          const existUsers = [];
+          userIds.map(user_id => {
+            const user = _find_user(user_id);
+            if (user) {
+              existUsers.push(user);
+            }
+          });
+          messageEntity.reactions_user_ets(existUsers);
+        }
+      }
+
+      return Promise.resolve(messageEntity);
+    }
+
     return this.user_repository.get_user_by_id(messageEntity.from).then(userEntity => {
       messageEntity.user(userEntity);
 
@@ -4153,9 +4193,7 @@ export class ConversationRepository {
             messageEntity.userEntities(userEntities);
             return messageEntity;
           });
-      }
-
-      if (messageEntity.is_content()) {
+      } else if (messageEntity.is_content()) {
         const userIds = Object.keys(messageEntity.reactions());
 
         messageEntity.reactions_user_ets.removeAll();
