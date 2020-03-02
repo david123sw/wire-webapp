@@ -314,6 +314,11 @@ export class ConversationRepository {
       this.conversations_cleared(conversationsCleared);
       this.conversations_sticky_on_top(conversationsUnarchivedStickyOnTop);
       this.conversations_unarchived(conversationsUnarchivedStickyOnTop.concat(conversationsUnarchived));
+
+      const current_conversation = this.active_conversation();
+      if (current_conversation) {
+        current_conversation.users_permissions();
+      }
     });
   }
 

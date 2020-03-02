@@ -60,6 +60,23 @@ const PUBLIC_FEATURES = {
   INVITE_TEAM_MEMBERS: 1 << bitsCounter++,
   CHAT_WITH_SERVICES: 1 << bitsCounter++,
   SEARCH_UNCONNECTED_USERS: 1 << bitsCounter++,
+
+  //Secret新增加的群用户操作权限
+  DISMISS_GROUP: 1 << bitsCounter++, //解散群
+  TRANSFER_GROUP: 1 << bitsCounter++, //转让群
+  PUBLISH_GROUP_ANNOUNCEMENT: 1 << bitsCounter++, //设置群公告
+  UPLOAD_GROUP_AVATAR: 1 << bitsCounter++, //上传群头像
+  ENABLE_BURN_AFTER_READ: 1 << bitsCounter++, //阅后即焚
+  UPGRADE_SUPER_GROUP: 1 << bitsCounter++, //升级万人群
+
+  ADD_GROUP_MEMBER: 1 << bitsCounter++, //添加群成员
+  SET_GROUP_NICKNAME: 1 << bitsCounter++, //设置群昵称
+  CHANGE_CHAT_BACKGROUND: 1 << bitsCounter++, //设置聊天背景
+  SET_MUTED_OR_NOT: 1 << bitsCounter++, //设置静音
+  SET_STICKY_OR_NOT: 1 << bitsCounter++, //设置置顶
+  ADD_TO_MENU_BAR: 1 << bitsCounter++, //添加至菜单栏
+  CLEAR_UP_GROUP: 1 << bitsCounter++, //清空群会话
+  EXIT_FROM_GROUP: 1 << bitsCounter++, //退群
 };
 // tslint:enable:object-literal-sort-keys
 
@@ -70,66 +87,19 @@ function teamPermissionsForRole(teamRole: ROLE): number {
     case ROLE.OWNER: {
       return combinePermissions([
         teamPermissionsForRole(ROLE.ADMIN),
-        TEAM_FEATURES.DELETE_TEAM,
-        TEAM_FEATURES.GET_BILLING,
-        TEAM_FEATURES.SET_BILLING,
+        PUBLIC_FEATURES.DISMISS_GROUP,
+        PUBLIC_FEATURES.TRANSFER_GROUP,
       ]);
     }
     case ROLE.ADMIN: {
-      return combinePermissions([
-        teamPermissionsForRole(ROLE.MEMBER),
-        TEAM_FEATURES.ADD_TEAM_MEMBER,
-        TEAM_FEATURES.REMOVE_TEAM_MEMBER,
-        TEAM_FEATURES.SET_MEMBER_PERMISSIONS,
-        TEAM_FEATURES.SET_TEAM_DATA,
-      ]);
+      return combinePermissions([teamPermissionsForRole(ROLE.MEMBER), PUBLIC_FEATURES.ADD_GROUP_MEMBER]);
     }
     case ROLE.MEMBER: {
-      return combinePermissions([
-        teamPermissionsForRole(ROLE.PARTNER),
-        TEAM_FEATURES.ADD_CONVERSATION_MEMBER,
-        TEAM_FEATURES.DELETE_CONVERSATION,
-        TEAM_FEATURES.GET_MEMBER_PERMISSIONS,
-        TEAM_FEATURES.REMOVE_CONVERSATION_MEMBER,
-      ]);
-    }
-    case ROLE.PARTNER: {
-      return combinePermissions([TEAM_FEATURES.CREATE_CONVERSATION, TEAM_FEATURES.GET_TEAM_CONVERSATIONS]);
+      return combinePermissions([teamPermissionsForRole(ROLE.PARTNER), PUBLIC_FEATURES.ADD_GROUP_MEMBER]);
     }
     default: {
       return 0;
     }
-  }
-}
-
-function publicPermissionsForRole(role: ROLE): number {
-  switch (role) {
-    case ROLE.OWNER:
-      return combinePermissions([publicPermissionsForRole(ROLE.ADMIN), PUBLIC_FEATURES.INVITE_TEAM_MEMBERS]);
-    case ROLE.ADMIN:
-      return combinePermissions([
-        publicPermissionsForRole(ROLE.MEMBER),
-        PUBLIC_FEATURES.MANAGE_SERVICES,
-        PUBLIC_FEATURES.MANAGE_TEAM,
-      ]);
-    case ROLE.MEMBER:
-      return combinePermissions([
-        publicPermissionsForRole(ROLE.NONE),
-        PUBLIC_FEATURES.CREATE_GROUP_CONVERSATION,
-        PUBLIC_FEATURES.CREATE_GUEST_ROOM,
-      ]);
-    case ROLE.NONE:
-      return combinePermissions([
-        PUBLIC_FEATURES.CREATE_GROUP_CONVERSATION,
-        PUBLIC_FEATURES.UPDATE_CONVERSATION_SETTINGS,
-        PUBLIC_FEATURES.UPDATE_GROUP_PARTICIPANTS,
-        PUBLIC_FEATURES.CHAT_WITH_SERVICES,
-        PUBLIC_FEATURES.SEARCH_UNCONNECTED_USERS,
-      ]);
-    case ROLE.PARTNER:
-      return 0;
-    default:
-      return 0;
   }
 }
 
@@ -187,7 +157,7 @@ export function generatePermissionHelpers(boundRole = ROLE.NONE): Record<string,
 }
 
 export function hasAccessToFeature(feature: number, role: ROLE): boolean {
-  const permissions = combinePermissions([teamPermissionsForRole(role), publicPermissionsForRole(role)]);
+  const permissions = combinePermissions([teamPermissionsForRole(role)]);
   return !!(feature & permissions);
 }
 

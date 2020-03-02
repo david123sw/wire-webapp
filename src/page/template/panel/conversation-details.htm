@@ -46,7 +46,7 @@
                 <span class="icon-camera conversation-details-group-avatar-camera"></span>
               </label>
             <!-- /ko -->
-            <div class="conversation-details__name conversation-details-group-name-static" data-bind="visible: !isEditingName(), click: z.userPermission().canUpdateConversationSettings() ? clickToEditGroupName: undefined, attr: {title: t('tooltipConversationDetailsRename')}" data-uie-name="status-name">
+            <div class="conversation-details__name conversation-details-group-name-static" data-bind="visible: !isEditingName(), click: has_modify_permissions() ? clickToEditGroupName: undefined, attr: {title: t('tooltipConversationDetailsRename')}" data-uie-name="status-name">
               <div class="conversation-details__name conversation-details-group-name-static" data-bind="text: activeConversation() && activeConversation().display_name()"></div>
 
             </div>
@@ -57,7 +57,7 @@
                       data-uie-name="enter-name">
             </textarea>
 
-            <!-- ko if: z.userPermission().canUpdateConversationSettings() -->
+            <!-- ko if: has_modify_permissions() -->
             <edit-icon class="conversation-details__name__edit-icon conversation-details-group-name-input-icon"></edit-icon>
             <!-- /ko -->
           <!-- /ko -->
@@ -129,7 +129,7 @@
                   </div>
                 </div>
               <!-- /ko -->
-              <!-- ko if: z.userPermission().canUpdateConversationSettings() -->
+              <!-- ko if: has_modify_permissions() -->
                 <!-- ko if: showOptionTimedMessages() -->
                   <div class="conversation-details__timed-messages">
                     <div class="panel__action-item" data-bind="click: clickOnTimedMessages" data-uie-name="go-timed-messages">

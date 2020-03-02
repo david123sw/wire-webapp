@@ -401,7 +401,6 @@ export const generateCellStateEx = conversationEntity => {
   } else if (messageEntity.has_asset()) {
     const assetEntity = messageEntity.get_first_asset();
     const isUploaded = assetEntity.status() === AssetTransferState.UPLOADED;
-
     if (isUploaded) {
       if (assetEntity.is_audio()) {
         string = t('notificationSharedAudio');
@@ -431,6 +430,9 @@ export const generateCellStateEx = conversationEntity => {
     return conversationEntity.isGroup() ? `${messageEntity.unsafeSenderName()}: ${stateText}` : stateText;
   }
 
+  if (!messageEntity.userEntities) {
+    return '';
+  }
   const userCount = messageEntity.userEntities().length;
   const hasUserCount = userCount >= 1;
 

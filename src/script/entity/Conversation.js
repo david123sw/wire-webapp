@@ -43,6 +43,7 @@ import {StatusType} from '../message/StatusType';
 import {ConnectionEntity} from '../connection/ConnectionEntity';
 import {HIDE_LEGAL_HOLD_MODAL} from '../view_model/content/LegalHoldModalViewModel';
 import {BackendEvent} from '../event/Backend';
+import {ROLE as TEAM_ROLE} from '../user/UserPermission';
 
 export class Conversation {
   static get TIMESTAMP_TYPE() {
@@ -418,8 +419,26 @@ export class Conversation {
       return '…';
     });
 
-    this.shouldPersistStateChanges = false;
     this.publishPersistState = debounce(() => amplify.publish(WebAppEvents.CONVERSATION.PERSIST_STATE, this), 100);
+
+    this.users_permissions = ko.pureComputed(() => {
+      const permissions = [];
+      if (this.isGroup()) {
+        this.allUserEntities.forEach(userEntity => {
+          if (userEntity.is_creator) {
+            userEntity.teamRole(TEAM_ROLE.OWNER);
+            permissions.push({id: userEntity.id, role: TEAM_ROLE.OWNER});
+          } else if (this.managers().some(user => user === userEntity.id)) {
+            userEntity.teamRole(TEAM_ROLE.ADMIN);
+            permissions.push({id: userEntity.id, role: TEAM_ROLE.ADMIN});
+          } else {
+            userEntity.teamRole(TEAM_ROLE.MEMBER);
+            permissions.push({id: userEntity.id, role: TEAM_ROLE.MEMBER});
+          }
+        });
+      }
+      return permissions;
+    });
 
     this._initSubscriptions();
   }

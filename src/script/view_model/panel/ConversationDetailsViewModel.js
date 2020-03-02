@@ -40,6 +40,7 @@ import {createRandomUuid} from 'Util/util';
 import {ParticipantAvatar} from 'Components/participantAvatar';
 import {modals, ModalsViewModel} from '../ModalsViewModel';
 import {validateProfileImageResolution} from 'Util/util';
+import {ROLE as TEAM_ROLE} from '../../user/UserPermission';
 
 export class ConversationDetailsViewModel extends BasePanelViewModel {
   static get CONFIG() {
@@ -123,6 +124,19 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
 
     this.firstParticipant = ko.pureComputed(() => {
       return this.activeConversation() && this.activeConversation().firstUserEntity();
+    });
+
+    this.has_modify_permissions = ko.pureComputed(() => {
+      return (
+        this.activeConversation() &&
+        this.activeConversation()
+          .users_permissions()
+          .some(
+            permission =>
+              permission.id === this.activeConversation().selfUser().id &&
+              (permission.role === TEAM_ROLE.OWNER || permission.role === TEAM_ROLE.ADMIN),
+          )
+      );
     });
 
     this.isSingleUserMode = conversationEntity => {
