@@ -338,7 +338,10 @@ export class ConversationRepository {
     const conversationEntity = this.find_conversation_by_id(updatedEvent.conversation);
     const replacedMessageEntity = this._replaceMessageInConversation(conversationEntity, oldEvent.id, updatedEvent);
     if (replacedMessageEntity) {
-      this._updateMessageUserEntities(replacedMessageEntity).then(messageEntity => {
+      this._updateMessageUserEntities(
+        replacedMessageEntity,
+        conversationEntity.type() === ConversationType.SUPER_GROUP,
+      ).then(messageEntity => {
         amplify.publish(WebAppEvents.CONVERSATION.MESSAGE.UPDATED, oldEvent.id, messageEntity);
       });
     }
@@ -736,7 +739,9 @@ export class ConversationRepository {
     return this.eventService
       .loadEventsWithCategory(conversationEntity.id, category)
       .then(events => this.event_mapper.mapJsonEvents(events, conversationEntity))
-      .then(messageEntities => this._updateMessagesUserEntities(messageEntities));
+      .then(messageEntities =>
+        this._updateMessagesUserEntities(messageEntities, conversationEntity.type() === ConversationType.SUPER_GROUP),
+      );
   }
 
   /**
@@ -754,7 +759,9 @@ export class ConversationRepository {
     return this.conversation_service
       .search_in_conversation(conversationEntity.id, query)
       .then(events => this.event_mapper.mapJsonEvents(events, conversationEntity))
-      .then(messageEntities => this._updateMessagesUserEntities(messageEntities))
+      .then(messageEntities =>
+        this._updateMessagesUserEntities(messageEntities, conversationEntity.type() === ConversationType.SUPER_GROUP),
+      )
       .then(messageEntities => ({messageEntities, query}));
   }
 
@@ -846,7 +853,12 @@ export class ConversationRepository {
    * @returns {undefined} No return value
    */
   updateConversations(conversationEntities) {
-    const mapOfUserIds = conversationEntities.map(conversationEntity => conversationEntity.participating_user_ids());
+    const mapOfUserIds = conversationEntities.map(conversationEntity => {
+      if (conversationEntity.type() === ConversationType.SUPER_GROUP) {
+        return [];
+      }
+      return conversationEntity.participating_user_ids();
+    });
     const userIds = flatten(mapOfUserIds);
 
     return this.user_repository
@@ -3560,7 +3572,9 @@ export class ConversationRepository {
   _on1to1Creation(conversationEntity, eventJson) {
     return this.event_mapper
       .mapJsonEvent(eventJson, conversationEntity)
-      .then(messageEntity => this._updateMessageUserEntities(messageEntity))
+      .then(messageEntity =>
+        this._updateMessageUserEntities(messageEntity, conversationEntity.type() === ConversationType.SUPER_GROUP),
+      )
       .then(messageEntity => {
         const userEntity = messageEntity.otherUser();
         const isOutgoingRequest = userEntity && userEntity.isOutgoingRequest();
@@ -3642,7 +3656,10 @@ export class ConversationRepository {
           messageEntity.memberMessageType = SystemMessageType.CONVERSATION_RESUME;
         }
 
-        return this._updateMessageUserEntities(messageEntity);
+        return this._updateMessageUserEntities(
+          messageEntity,
+          conversationEntity.type() === ConversationType.SUPER_GROUP,
+        );
       })
       .then(messageEntity => {
         if (conversationEntity && messageEntity) {
@@ -4010,7 +4027,9 @@ export class ConversationRepository {
   _initMessageEntity(conversationEntity, eventJson) {
     return this.event_mapper
       .mapJsonEvent(eventJson, conversationEntity, true)
-      .then(messageEntity => this._updateMessageUserEntities(messageEntity));
+      .then(messageEntity =>
+        this._updateMessageUserEntities(messageEntity, conversationEntity.type() === ConversationType.SUPER_GROUP),
+      );
   }
 
   _replaceMessageInConversation(conversationEntity, eventId, newData) {
@@ -4055,7 +4074,9 @@ export class ConversationRepository {
   _addEventsToConversation(events, conversationEntity, prepend = true) {
     return this.event_mapper
       .mapJsonEvents(events, conversationEntity, true)
-      .then(messageEntities => this._updateMessagesUserEntities(messageEntities))
+      .then(messageEntities =>
+        this._updateMessagesUserEntities(messageEntities, conversationEntity.type() === ConversationType.SUPER_GROUP),
+      )
       .then(messageEntities => this.ephemeralHandler.validateMessages(messageEntities))
       .then(messageEntities => {
         if (prepend && conversationEntity.messages().length) {
@@ -4106,8 +4127,10 @@ export class ConversationRepository {
     return Promise.resolve({conversationEntity});
   }
 
-  _updateMessagesUserEntities(messageEntities) {
-    return Promise.all(messageEntities.map(messageEntity => this._updateMessageUserEntities(messageEntity)));
+  _updateMessagesUserEntities(messageEntities, isSupperGroup) {
+    return Promise.all(
+      messageEntities.map(messageEntity => this._updateMessageUserEntities(messageEntity, isSupperGroup)),
+    );
   }
 
   /**
@@ -4115,18 +4138,21 @@ export class ConversationRepository {
    *
    * @private
    * @param {Message} messageEntity - Message to be updated
+   * @param {Message} isSupperGroup - Group is supper group
    * @returns {Promise} Resolves when users have been update
    */
-  _updateMessageUserEntities(messageEntity) {
+  _updateMessageUserEntities(messageEntity, isSupperGroup = false) {
     return this.user_repository.get_user_by_id(messageEntity.from).then(userEntity => {
       messageEntity.user(userEntity);
 
       if (messageEntity.is_member() || messageEntity.userEntities) {
-        return this.user_repository.get_users_by_id(messageEntity.userIds()).then(userEntities => {
-          userEntities.sort((userA, userB) => sortByPriority(userA.first_name(), userB.first_name()));
-          messageEntity.userEntities(userEntities);
-          return messageEntity;
-        });
+        return this.user_repository
+          .get_users_by_id(messageEntity.userIds(), false, !isSupperGroup)
+          .then(userEntities => {
+            userEntities.sort((userA, userB) => sortByPriority(userA.first_name(), userB.first_name()));
+            messageEntity.userEntities(userEntities);
+            return messageEntity;
+          });
       }
 
       if (messageEntity.is_content()) {
@@ -4134,7 +4160,7 @@ export class ConversationRepository {
 
         messageEntity.reactions_user_ets.removeAll();
         if (userIds.length) {
-          return this.user_repository.get_users_by_id(userIds).then(userEntities => {
+          return this.user_repository.get_users_by_id(userIds, false, !isSupperGroup).then(userEntities => {
             messageEntity.reactions_user_ets(userEntities);
             return messageEntity;
           });

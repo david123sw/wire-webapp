@@ -215,24 +215,28 @@ export class UserRepository {
   }
 
   loadUsers(): Promise<void> {
-    if (this.isTeam()) {
-      return this.user_service
-        .loadUserFromDb()
-        .then(users => {
-          if (users.length) {
-            this.logger.log(`Loaded state of '${users.length}' users from database`, users);
-
-            const mappingPromises = users.map(user => {
-              return this.get_user_by_id(user.id).then(userEntity => userEntity.availability(user.availability));
-            });
-
-            return Promise.all(mappingPromises);
-          }
-          return [];
-        })
-        .then(() => this.users().forEach(userEntity => userEntity.subscribeToChanges()));
-    }
-    return Promise.resolve();
+    // if (this.isTeam()) {
+    return this.user_service
+      .loadUserFromDb()
+      .then(users => {
+        if (users && users.length) {
+          // this.logger.log(`Loaded state of '${users.length}' users from database`, users);
+          //
+          // const mappingPromises = users.map(user => {
+          //   return this.get_user_by_id(user.id).then(userEntity => userEntity.availability(user.availability));
+          // });
+          //
+          // return Promise.all(mappingPromises);
+          return this.user_mapper.mapUsersFromJson(users);
+        }
+        return [];
+      })
+      .then(user_ets => {
+        return koArrayPushAll(this.users, user_ets);
+      })
+      .then(() => this.users().forEach(userEntity => userEntity.subscribeToChanges()));
+    // }
+    // return Promise.resolve();
   }
 
   /**
@@ -249,6 +253,9 @@ export class UserRepository {
    */
   saveUserInDb(userEntity: User): Promise<User> {
     return this.user_service.saveUserInDb(userEntity);
+  }
+  saveUsersInDb(users: Object[]): Promise<Object[]> {
+    return this.user_service.saveUsersInDb(users);
   }
 
   /**
@@ -475,16 +482,21 @@ export class UserRepository {
   /**
    * Get users from the backend.
    */
-  fetchUsersById(userIds: string[] = []): Promise<User[]> {
+  fetchUsersById(userIds: string[] = [], isSaveDB: boolean = true): Promise<User[]> {
     userIds = userIds.filter(userId => !!userId);
 
     if (!userIds.length) {
       return Promise.resolve([]);
     }
-
     const _getUsers = (chunkOfUserIds: string[]) => {
       return this.user_service
         .getUsers(chunkOfUserIds)
+        .then(response => {
+          if (isSaveDB) {
+            return this.saveUsersInDb(response);
+          }
+          return response;
+        })
         .then(response => (response ? this.user_mapper.mapUsersFromJson(response) : []))
         .catch(error => {
           const isNotFound = error.code === BackendClientError.STATUS_CODE.NOT_FOUND;
@@ -594,7 +606,7 @@ export class UserRepository {
    * Check for users locally and fetch them from the server otherwise.
    * @param offline - Should we only look for cached contacts
    */
-  get_users_by_id(user_ids: string[] = [], offline: boolean = false): Promise<User[]> {
+  get_users_by_id(user_ids: string[] = [], offline: boolean = false, is_save: boolean = true): Promise<User[]> {
     if (!user_ids.length) {
       return Promise.resolve([]);
     }
@@ -612,8 +624,7 @@ export class UserRepository {
       if (offline || !unknown_user_ids.length) {
         return known_user_ets;
       }
-
-      return this.fetchUsersById(unknown_user_ids).then(user_ets => known_user_ets.concat(user_ets));
+      return this.fetchUsersById(unknown_user_ids, is_save).then(user_ets => known_user_ets.concat(user_ets));
     });
   }
 
