@@ -349,6 +349,7 @@ class App {
           this.service.storage.dbName,
         );
       })
+      .then(() => this.repository.user.loadUsers())
       .then(() => {
         loadingView.updateProgress(10);
         telemetry.time_step(AppInitTimingsStep.INITIALIZED_CRYPTOGRAPHY);
@@ -370,7 +371,6 @@ class App {
 
         return this.repository.team.getTeam();
       })
-      .then(() => this.repository.user.loadUsers())
       .then(() => this.repository.event.initializeFromStream())
       .then(notificationsCount => {
         telemetry.time_step(AppInitTimingsStep.UPDATED_FROM_NOTIFICATIONS);
@@ -837,7 +837,9 @@ class App {
 
   /**
    * Redirect to the login page after internet connectivity has been verified.
-   * @param {SIGN_OUT_REASON} signOutReason - Redirect triggered by session expiration
+   * @param {SIGN_OUT_REASON} signOutReason - Redirect t
+
+   const redirectToLogin = signOutReason !== SIGN_OUT_REASON.NOTriggered by session expiration
    * @returns {undefined} No return value
    */
   _redirectToLogin(signOutReason) {

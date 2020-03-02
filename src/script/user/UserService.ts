@@ -66,11 +66,21 @@ export class UserService {
    */
   saveUserInDb(userEntity: User): Promise<User> {
     const userData = userEntity.serialize();
-
     return this.storageService.save(this.USER_STORE_NAME, userEntity.id, userData).then(primaryKey => {
       this.logger.info(`State of user '${primaryKey}' was stored`, userData);
       return userEntity;
     });
+  }
+
+  saveUsersInDb(users: Object[]): Promise<Object[]> {
+    return Promise.all(
+      users.map(user => {
+        return this.storageService.save(this.USER_STORE_NAME, (user as any).id, user).then(primaryKey => {
+          this.logger.info(`State of users '${primaryKey}' was stored`, user);
+          return user;
+        });
+      }),
+    );
   }
 
   //##############################################################################
