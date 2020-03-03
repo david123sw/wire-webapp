@@ -129,13 +129,12 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
     this.has_modify_permissions = ko.pureComputed(() => {
       return (
         this.activeConversation() &&
-        this.activeConversation()
-          .users_permissions()
-          .some(
-            permission =>
-              permission.id === this.activeConversation().selfUser().id &&
-              (permission.role === TEAM_ROLE.OWNER || permission.role === TEAM_ROLE.ADMIN),
-          )
+        (this.activeConversation()
+          .selfUser()
+          .teamRole() === TEAM_ROLE.OWNER ||
+          this.activeConversation()
+            .selfUser()
+            .teamRole().role === TEAM_ROLE.ADMIN)
       );
     });
 
@@ -463,7 +462,6 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
 
   clickOnChangePicture(files) {
     const [newUserPicture] = Array.from(files);
-
     this.setPicture(newUserPicture).catch(error => {
       const isInvalidUpdate = error.type === z.error.UserError.TYPE.INVALID_UPDATE;
       if (!isInvalidUpdate) {

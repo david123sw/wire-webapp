@@ -298,6 +298,10 @@ export class Conversation {
                 return messageEntity.visible() && !exclude2;
               }
 
+              if (messageEntity.from === BackendEvent.NOTIFY.SYSTEM_ID) {
+                return false;
+              }
+
               return messageEntity.visible();
             }),
       )
@@ -421,23 +425,19 @@ export class Conversation {
 
     this.publishPersistState = debounce(() => amplify.publish(WebAppEvents.CONVERSATION.PERSIST_STATE, this), 100);
 
-    this.users_permissions = ko.pureComputed(() => {
-      const permissions = [];
+    this.check_users_permissions = ko.pureComputed(() => {
       if (this.isGroup()) {
         this.allUserEntities.forEach(userEntity => {
           if (userEntity.is_creator) {
             userEntity.teamRole(TEAM_ROLE.OWNER);
-            permissions.push({id: userEntity.id, role: TEAM_ROLE.OWNER});
-          } else if (this.managers().some(user => user === userEntity.id)) {
+          } else if (this.managers().some(user_id => user_id === userEntity.id)) {
             userEntity.teamRole(TEAM_ROLE.ADMIN);
-            permissions.push({id: userEntity.id, role: TEAM_ROLE.ADMIN});
           } else {
             userEntity.teamRole(TEAM_ROLE.MEMBER);
-            permissions.push({id: userEntity.id, role: TEAM_ROLE.MEMBER});
           }
         });
       }
-      return permissions;
+      return true;
     });
 
     this._initSubscriptions();

@@ -355,7 +355,12 @@ const _getStateUnreadMessage = {
 
         const hasString = string && string !== true;
         const stateText = hasString ? string : messageEntity.get_first_asset().text;
-        return conversationEntity.isGroup() ? `${messageEntity.unsafeSenderName()}: ${stateText}` : stateText;
+        const isTextLink = messageEntity.get_first_asset().previews().length > 0;
+        return conversationEntity.isGroup()
+          ? `${messageEntity.unsafeSenderName()}: ${isTextLink ? t('notificationSharedLink') : stateText}`
+          : isTextLink
+          ? t('notificationSharedLink')
+          : stateText;
       }
     }
   },
@@ -427,7 +432,12 @@ export const generateCellStateEx = conversationEntity => {
 
     const hasString = string && string !== true;
     const stateText = hasString ? string : messageEntity.get_first_asset().text;
-    return conversationEntity.isGroup() ? `${messageEntity.unsafeSenderName()}: ${stateText}` : stateText;
+    const isTextLink = messageEntity.get_first_asset().previews().length > 0;
+    return conversationEntity.isGroup()
+      ? `${messageEntity.unsafeSenderName()}: ${isTextLink ? t('notificationSharedLink') : stateText}`
+      : isTextLink
+      ? t('notificationSharedLink')
+      : stateText;
   }
 
   if (!messageEntity.userEntities) {

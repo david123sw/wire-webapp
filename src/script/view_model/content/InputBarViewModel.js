@@ -265,7 +265,6 @@ z.viewModel.content.InputBarViewModel = class InputBarViewModel {
       return ConversationType.SUPER_GROUP === this.conversationEntity().type();
     });
 
-    ///added
     this.hasCall = ko.pureComputed(() => {
       const hasEntities = this.conversationEntity() && this.joinedCall();
       return hasEntities ? this.conversationEntity().id === this.joinedCall().conversationId : false;
@@ -289,7 +288,6 @@ z.viewModel.content.InputBarViewModel = class InputBarViewModel {
     this.supportsVideoCall = ko.pureComputed(() => {
       return this.conversationEntity() && this.conversationEntity().supportsVideoCall(true);
     });
-    //added
 
     const pingShortcut = Shortcut.getShortcutTooltip(ShortcutType.PING);
     this.pingTooltip = t('tooltipConversationPing', pingShortcut);

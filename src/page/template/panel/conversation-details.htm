@@ -39,11 +39,13 @@
                     <group-avatar params="conversation: activeConversation()"></group-avatar>
                   <!-- /ko -->
                 </div>
-                <input id="self-upload-file-input"
-                       type="file"
-                       data-bind="attr: {accept: GroupAvatarFileTypes}, file_select: clickOnChangePicture"
-                       data-uie-name="do-select-picture"/>
-                <span class="icon-camera conversation-details-group-avatar-camera"></span>
+                <!-- ko if: has_modify_permissions() -->
+                  <input id="self-upload-file-input"
+                         type="file"
+                         data-bind="attr: {accept: GroupAvatarFileTypes}, file_select: clickOnChangePicture"
+                         data-uie-name="do-select-picture"/>
+                  <span class="icon-camera conversation-details-group-avatar-camera"></span>
+                <!-- /ko -->
               </label>
             <!-- /ko -->
             <div class="conversation-details__name conversation-details-group-name-static" data-bind="visible: !isEditingName(), click: has_modify_permissions() ? clickToEditGroupName: undefined, attr: {title: t('tooltipConversationDetailsRename')}" data-uie-name="status-name">
@@ -53,12 +55,12 @@
             <textarea class="conversation-details__name conversation-details__name--input conversation-details-group-name-input"
                       dir="auto"
                       spellcheck="false"
-                      data-bind="attr: {maxlength: ConversationRepository.CONFIG.GROUP.MAX_NAME_LENGTH}, enter: renameConversation, resize, value: activeConversation() && activeConversation().display_name(), visible: isEditingName()"
+                      data-bind="attr: {readonly: !has_modify_permissions(), maxlength: ConversationRepository.CONFIG.GROUP.MAX_NAME_LENGTH}, enter: renameConversation, resize, value: activeConversation() && activeConversation().display_name(), visible: isEditingName()"
                       data-uie-name="enter-name">
             </textarea>
 
             <!-- ko if: has_modify_permissions() -->
-            <edit-icon class="conversation-details__name__edit-icon conversation-details-group-name-input-icon"></edit-icon>
+              <edit-icon class="conversation-details__name__edit-icon conversation-details-group-name-input-icon"></edit-icon>
             <!-- /ko -->
           <!-- /ko -->
           <!-- ko ifnot: isActiveGroupParticipant() -->

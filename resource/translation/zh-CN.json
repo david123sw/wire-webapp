@@ -722,6 +722,7 @@
   "notificationSharedFile": "分享了文件",
   "notificationSharedLocation": "分享了位置",
   "notificationSharedVideo": "分享了影片",
+  "notificationSharedLink": "分享了链接",
   "notificationTitleGroup": "{{user}}在{{conversation}}",
   "notificationVoiceChannelActivate": "正在呼叫",
   "notificationVoiceChannelDeactivate": "呼叫过您",

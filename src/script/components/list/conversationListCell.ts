@@ -195,7 +195,11 @@ class ConversationListCell {
 
               if (ClientEvent.CONVERSATION.MESSAGE_ADD === last.type) {
                 this.cell_state({
-                  description: last.data.content ? `${prefix}${last.data.content}` : '',
+                  description: last.data.content
+                    ? last.data.previews.length > 0
+                      ? `${prefix}${t('notificationSharedLink')}`
+                      : `${prefix}${last.data.content}`
+                    : '',
                   icon: this.cell_state().icon,
                 });
               } else if (BackendEvent.CONVERSATION.MEMBER_LEAVE === last.type) {
@@ -219,9 +223,13 @@ class ConversationListCell {
                     }
                   });
                 }
+                //系统消息单独处理，暂不显示
+                const desc =
+                  add_id === BackendEvent.NOTIFY.SYSTEM_ID
+                    ? ''
+                    : added_names[0] + t('conversationsSecondaryLinePersonAdded', added_names.slice(1).join(','));
                 this.cell_state({
-                  description:
-                    added_names[0] + t('conversationsSecondaryLinePersonAdded', added_names.slice(1).join(',')),
+                  description: desc,
                   icon: this.cell_state().icon,
                 });
               } else if (
@@ -230,6 +238,21 @@ class ConversationListCell {
               ) {
                 this.cell_state({
                   description: `${prefix}${t('conversationVoiceChannelDeactivate')}`,
+                  icon: this.cell_state().icon,
+                });
+              } else if (ClientEvent.CONVERSATION.ASSET_ADD === last.type) {
+                let asset = '';
+                if (last.data.content_type.startsWith('image')) {
+                  asset = t('notificationAssetAdd');
+                } else if (last.data.content_type.startsWith('video')) {
+                  asset = t('notificationSharedVideo');
+                } else if (last.data.content_type.startsWith('audio')) {
+                  asset = t('notificationSharedAudio');
+                } else {
+                  asset = t('notificationSharedFile');
+                }
+                this.cell_state({
+                  description: `${prefix}${asset}`,
                   icon: this.cell_state().icon,
                 });
               }

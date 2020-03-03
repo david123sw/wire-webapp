@@ -35,6 +35,7 @@ enum CONVERSATION {
   BGP_MESSAGE_ADD = 'conversation.bgp-message-add',
   UPDATE = 'conversation.update',
   GROUP_CREATION = 'conversation.group-creation',
+  GROUP_NOTIFY = 'conversation.conv-service-notify',
 }
 
 enum TEAM {
@@ -61,8 +62,13 @@ enum USER {
   UPDATE = 'user.update',
 }
 
+enum NOTIFY {
+  SYSTEM_ID = '00000000-0000-0000-0000-000000000002', //Secret 系统通知
+}
+
 const BackendEvent = {
   CONVERSATION,
+  NOTIFY,
   TEAM,
   USER,
 };
