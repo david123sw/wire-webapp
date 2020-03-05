@@ -326,10 +326,10 @@ export class ConversationService {
     });
   }
 
-  stickConversation(conversationId, sticky) {
+  stickConversation(conversationId, place_top) {
     return this.backendClient.sendJson({
       data: {
-        place_top: sticky,
+        place_top: place_top,
       },
       type: 'PUT',
       url: `${ConversationService.CONFIG.URL_CONVERSATIONS}/${conversationId}/self`,

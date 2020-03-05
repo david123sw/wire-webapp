@@ -36,6 +36,7 @@ enum CONVERSATION {
   UPDATE = 'conversation.update',
   GROUP_CREATION = 'conversation.group-creation',
   GROUP_NOTIFY = 'conversation.conv-service-notify',
+  USER_GROUP_ALIAS_UPDATE = 'conversation.update-aliasname',
 }
 
 enum TEAM {
@@ -63,7 +64,8 @@ enum USER {
 }
 
 enum NOTIFY {
-  SYSTEM_ID = '00000000-0000-0000-0000-000000000002', //Secret 系统通知
+  SYSTEM_SECRET_ID = '00000000-0000-0000-0000-000000000002', //Secret账号 系统通知
+  SYSTEM_NEW_DEVICE_ID = '00000000-0000-0000-0000-000000000003', //新设备添加 系统通知
 }
 
 const BackendEvent = {

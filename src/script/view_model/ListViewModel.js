@@ -331,11 +331,11 @@ z.viewModel.ListViewModel = class ListViewModel {
   onContextMenu(conversationEntity, event) {
     const entries = [];
     if (true) {
-      const sticky = conversationEntity.stickyOnTop();
+      const place_top = conversationEntity.place_top();
       entries.push({
         click: () => this.clickToStickOnTopOrNot(conversationEntity),
-        label: sticky ? t('conversationsPopoverUnstickyOnTop') : t('conversationsPopoverStickyOnTop'),
-        title: sticky ? t('conversationsPopoverUnstickyOnTop') : t('conversationsPopoverStickyOnTop'),
+        label: place_top ? t('conversationsPopoverUnstickyOnTop') : t('conversationsPopoverStickyOnTop'),
+        title: place_top ? t('conversationsPopoverUnstickyOnTop') : t('conversationsPopoverStickyOnTop'),
       });
     }
 

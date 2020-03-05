@@ -108,7 +108,7 @@
         <!-- /ko -->
         <!-- ko if: showTopActions() -->
           <div class="conversation-details-top-actions">
-            <!-- ko if: z.userPermission().canUpdateGroupParticipants() && showActionAddParticipants() -->
+            <!-- ko if: showActionAddParticipants() -->
               <div class="conversation-details__participant-options">
                 <div class="panel__action-item" data-bind="click: clickOnAddParticipants, attr:{'title': addPeopleTooltip}" data-uie-name="go-add-people">
                   <plus-icon class="panel__action-item__icon"></plus-icon>

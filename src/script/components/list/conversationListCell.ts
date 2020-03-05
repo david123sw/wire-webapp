@@ -58,7 +58,7 @@ class ConversationListCell {
   isGroup: boolean;
   is1To1: boolean;
   isInTeam: boolean;
-  stickyOnTop: ko.Computed<boolean>;
+  place_top: ko.Computed<boolean>;
   mutedState: ko.Computed<number | boolean>;
   fakeUser: ko.Computed<User | boolean>;
   isInViewport: ko.Observable<boolean>;
@@ -83,7 +83,6 @@ class ConversationListCell {
   ) {
     this.conversation = conversation;
     this.refresh_lock = false;
-    // this.isSelected = ko.computed(() => is_selected(conversation));
     this.isSelected = ko.computed(() => {
       const status = is_selected(conversation);
       return status;
@@ -96,7 +95,7 @@ class ConversationListCell {
     this.isGroup = conversation.isGroup();
     this.is1To1 = conversation.is1to1();
     this.isInTeam = conversation.selfUser().inTeam();
-    this.stickyOnTop = ko.computed(() => conversation.stickyOnTop());
+    this.place_top = ko.computed(() => conversation.place_top());
     this.mutedState = ko.computed(() => conversation.mutedState());
     this.fakeUser = ko.computed(() => {
       const preview = conversation.previewPictureResource();
@@ -187,10 +186,12 @@ class ConversationListCell {
                 const user_from = this.conversation.allUserEntities.filter(userEntity => {
                   return userEntity.id === last.from;
                 });
-                prefix =
-                  this.conversation.selfUser().id === user_from[0].id
-                    ? `${t('extra_special_message_type_4_to_1')}: `
-                    : `${user_from[0].remark() ? user_from[0].remark() : user_from[0].name()}: `;
+                if (0 < user_from.length) {
+                  prefix =
+                    this.conversation.selfUser().id === user_from[0].id
+                      ? `${t('extra_special_message_type_4_to_1')}: `
+                      : `${user_from[0].remark() ? user_from[0].remark() : user_from[0].name()}: `;
+                }
               }
 
               if (ClientEvent.CONVERSATION.MESSAGE_ADD === last.type) {
@@ -225,7 +226,7 @@ class ConversationListCell {
                 }
                 //系统消息单独处理，暂不显示
                 const desc =
-                  add_id === BackendEvent.NOTIFY.SYSTEM_ID
+                  add_id === BackendEvent.NOTIFY.SYSTEM_SECRET_ID
                     ? ''
                     : added_names[0] + t('conversationsSecondaryLinePersonAdded', added_names.slice(1).join(','));
                 this.cell_state({
@@ -325,7 +326,7 @@ ko.components.register('conversation-list-cell', {
             <span class="conversation-list-cell-badge cell-badge-light" data-bind="text: conversation.unreadState().allMessages.length" data-uie-name="status-unread"></span>
           <!-- /ko -->
         <!-- /ko -->
-        <!-- ko if: stickyOnTop() -->
+        <!-- ko if: place_top() -->
           <span class="conversation-list-cell-badge cell-badge-dark-new conversation-muted" data-uie-name="status-sticky"><sticky-icon class="svg-icon"></sticky-icon></span>
         <!-- /ko -->
         <!-- ko if: mutedState() -->

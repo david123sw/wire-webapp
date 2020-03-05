@@ -188,18 +188,18 @@ ko.bindingHandlers.relative_timestamp = (function() {
     }
 
     if (current_day === today) {
-      return date.local().format('LT');
+      return date.local().format('HH:mm');
     }
 
     if (current_day === yesterday) {
-      return `${t('conversationYesterday')} ${date.local().format('LT')}`;
+      return `${t('conversationYesterday')} ${date.local().format('HH:mm')}`;
     }
 
     if (moment().diff(date, 'days') < 7) {
-      return date.local().format('dddd LT');
+      return date.local().format('dddd HH:mm');
     }
 
-    return date.local().format(`${LLDM}, LT`);
+    return date.local().format(`${LLDM}, HH:mm`);
   };
 
   const calculate_timestamp_day = function(date) {
@@ -224,18 +224,18 @@ ko.bindingHandlers.relative_timestamp = (function() {
     }
 
     if (current_day === today) {
-      return `${t('conversationToday')} ${date.local().format('LT')}`;
+      return `${t('conversationToday')} ${date.local().format('HH:mm')}`;
     }
 
     if (current_day === yesterday) {
-      return `${t('conversationYesterday')} ${date.local().format('LT')}`;
+      return `${t('conversationYesterday')} ${date.local().format('HH:mm')}`;
     }
 
     if (moment().diff(date, 'days') < 7) {
-      return date.local().format('dddd LT');
+      return date.local().format('dddd HH:mm');
     }
 
-    return date.local().format(`dddd, ${LLDM}, LT`);
+    return date.local().format(`dddd, ${LLDM}, HH:mm`);
   };
 
   // should be fine to update every minute

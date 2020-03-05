@@ -118,7 +118,7 @@ setStrings(strings);
 
   document.getElementsByTagName('html')[0].setAttribute('lang', locale);
 
-  moment.locale([locale, DEFAULT_LOCALE]);
+  moment.locale([locale === 'zh' ? 'zh-cn' : locale, DEFAULT_LOCALE]);
 
   if (z.string[locale]) {
     Object.assign(z.string, z.string[DEFAULT_LOCALE], z.string[locale]);

@@ -84,7 +84,7 @@ import {BaseError} from '../error/BaseError';
  * @property {string=} otr_muted_ref
  * @property {object=} previewPictureResource
  * @property {number=} muted_state
- * @property {boolean=} sticky_on_top
+ * @property {boolean=} place_top
  * @property {number=} status
  * @property {number=} verification_state
  */
@@ -149,12 +149,22 @@ export class ConversationMapper {
    * @returns {Conversation} Updated conversation entity
    */
   updateAppendedProperties(conversationEntity, conversationData) {
-    const hasAsset = conversationData.assets && conversationData.assets.length;
+    const hasAsset = conversationData.data && conversationData.data.assets && conversationData.data.assets.length;
     if (hasAsset) {
       if (conversationData.assets[0] && conversationData.assets[1]) {
         conversationEntity.previewPictureResource(conversationData.assets[0]);
         conversationEntity.mediumPictureResource(conversationData.assets[1]);
       }
+    }
+
+    const member_alias = conversationData.data && conversationData.data.alias_name_ref;
+    if (member_alias) {
+      const members = conversationEntity.members();
+      members.others.forEach(member => {
+        if (member.id === conversationData.from) {
+          member.aliasname = member_alias;
+        }
+      });
     }
     return conversationEntity;
   }
@@ -185,8 +195,8 @@ export class ConversationMapper {
         last_server_timestamp,
         legal_hold_status,
         muted_timestamp,
+        place_top,
         previewPictureResource,
-        sticky_on_top,
         receipt_mode,
         status,
         verification_state,
@@ -197,8 +207,8 @@ export class ConversationMapper {
         conversationEntity.archivedState(selfState.archived_state);
       }
 
-      if (sticky_on_top !== undefined) {
-        conversationEntity.stickyOnTop(sticky_on_top);
+      if (place_top !== undefined) {
+        conversationEntity.place_top(place_top);
       }
 
       if (mediumPictureResource !== undefined && previewPictureResource !== undefined) {
@@ -306,12 +316,14 @@ export class ConversationMapper {
       forumid,
       id,
       manager,
+      mediumPictureResource,
       memberjoin_confirm,
       members,
       msg_only_to_manager,
       name,
       orator,
       others,
+      previewPictureResource,
       show_invitor_list,
       type,
       url_invite,
@@ -339,9 +351,15 @@ export class ConversationMapper {
     conversationEntity.orator(orator);
     conversationEntity.managers(manager);
     conversationEntity.advisory(advisory);
+    conversationEntity.members(members);
 
     const selfState = members ? members.self : conversationData;
     conversationEntity = this.updateSelfStatus(conversationEntity, selfState);
+
+    if (mediumPictureResource !== undefined && previewPictureResource !== undefined) {
+      conversationEntity.mediumPictureResource(mediumPictureResource);
+      conversationEntity.previewPictureResource(previewPictureResource);
+    }
 
     if (!conversationEntity.last_event_timestamp() && initialTimestamp) {
       conversationEntity.last_event_timestamp(initialTimestamp);
@@ -399,6 +417,7 @@ export class ConversationMapper {
    * @returns {Array<Object>} Merged conversation data
    */
   mergeConversation(localConversations, remoteConversations) {
+    // console.log('dav333 remoteConversations', remoteConversations);
     localConversations = localConversations.filter(conversationData => conversationData);
 
     return remoteConversations.map((remoteConversationData, index) => {
@@ -446,15 +465,16 @@ export class ConversationMapper {
         manager,
         mediumPictureResource: assets[1],
         memberjoin_confirm,
+        members: members,
         message_timer,
         msg_only_to_manager,
         name,
         orator,
+        place_top: selfState.place_top,
         previewPictureResource: assets[0],
         receipt_mode,
         show_invitor_list,
         status: selfState.status,
-        sticky_on_top: selfState.place_top,
         team_id: team,
         type,
         url_invite,

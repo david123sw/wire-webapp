@@ -299,11 +299,11 @@ export class ConversationRepository {
         } else if (conversationEntity.is_archived()) {
           conversationsArchived.push(conversationEntity);
         } else {
-          if (!conversationEntity.stickyOnTop() && !this.conversations_sticky_on_top_index[conversationEntity.id]) {
+          if (!conversationEntity.place_top() && !this.conversations_sticky_on_top_index[conversationEntity.id]) {
             conversationsUnarchived.push(conversationEntity);
           }
 
-          if (conversationEntity.stickyOnTop() && !this.conversations_sticky_on_top_index[conversationEntity.id]) {
+          if (conversationEntity.place_top() && !this.conversations_sticky_on_top_index[conversationEntity.id]) {
             conversationsUnarchivedStickyOnTop.push(conversationEntity);
             this.conversations_sticky_on_top_index[conversationEntity.id] = true;
           }
@@ -359,8 +359,8 @@ export class ConversationRepository {
   }
 
   stickConversationOnTop(currentConversationEntity, stickyEntity) {
-    currentConversationEntity.stickyOnTop(stickyEntity.sticky);
-    if (!stickyEntity.sticky) {
+    currentConversationEntity.place_top(stickyEntity.place_top);
+    if (!stickyEntity.place_top) {
       const conversationsUnarchivedStickyOnTop = this.conversations_sticky_on_top();
       conversationsUnarchivedStickyOnTop.forEach((item, index, array) => {
         if (item.id === currentConversationEntity.id) {
@@ -1748,14 +1748,14 @@ export class ConversationRepository {
    * @returns {Promise} Resolves when the conversation was stuck on top
    */
   stickConversation(conversationEntity) {
-    const sticky = conversationEntity.stickyOnTop();
+    const place_top = conversationEntity.place_top();
     return this.conversation_service
-      .stickConversation(conversationEntity.id, !sticky)
+      .stickConversation(conversationEntity.id, !place_top)
       .then(() => {
         this.logger.info(
-          `Conversation '${conversationEntity.id}' '${sticky ? 'unsticky' : 'sticky'}' on top succeeded`,
+          `Conversation '${conversationEntity.id}' '${place_top ? 'unsticky' : 'sticky'}' on top succeeded`,
         );
-        this.stickConversationOnTop(conversationEntity, {sticky: !sticky});
+        this.stickConversationOnTop(conversationEntity, {place_top: !place_top});
       })
       .catch(() => {
         this.logger.error(`Conversation '${conversationEntity.id}' stick on top failed`);
@@ -2171,22 +2171,6 @@ export class ConversationRepository {
             eventInfoEntity.updateOptions({recipients});
             return eventInfoEntity;
           });
-      // TODODAV
-      // let conversationEntity;
-      // this.get_conversation_by_id(conversationId)
-      //   .then(entity => {
-      //     conversationEntity = entity;
-      //   })
-      //   .catch(error => {
-      //     this.logger.warn(`Get conversation info failed, ${error.message}`);
-      //   });
-      // return recipientsPromise.then((infoEntity) => {
-      //   if(conversationEntity) {
-      //     infoEntity.genericMessage.convtype = conversationEntity.type();
-      //     infoEntity.options.convtype = conversationEntity.type();
-      //   }
-      //   this._sendGenericMessage(infoEntity)
-      // });
       return recipientsPromise.then(infoEntity => this._sendGenericMessage(infoEntity));
     });
   }
@@ -3239,6 +3223,8 @@ export class ConversationRepository {
     const conversationId = (eventData && eventData.conversationId) || conversation;
     this.logger.info(`Handling event '${type}' in conversation '${conversationId}' (Source: ${eventSource})`);
 
+    //todo:new device system notify check
+
     const inSelfConversation = conversationId === this.self_conversation() && this.self_conversation().id;
     if (inSelfConversation) {
       const typesInSelfConversation = [
@@ -3406,6 +3392,9 @@ export class ConversationRepository {
 
       case BackendEvent.CONVERSATION.RENAME:
         return this._onRename(conversationEntity, eventJson);
+
+      case BackendEvent.CONVERSATION.USER_GROUP_ALIAS_UPDATE:
+        return this._onUpdate(conversationEntity, eventJson);
 
       case BackendEvent.CONVERSATION.UPDATE:
         return this._onUpdate(conversationEntity, eventJson);
@@ -3777,11 +3766,12 @@ export class ConversationRepository {
   _onMemberUpdate(conversationEntity, eventJson) {
     const {conversation: conversationId, data: eventData, from} = eventJson;
 
-    //conversation-update:place_top
-    if (JSON.stringify({place_top: true}) === JSON.stringify(eventData)) {
-      return this.stickConversationOnTop(conversationEntity, {sticky: true});
-    } else if (JSON.stringify({place_top: false}) === JSON.stringify(eventData)) {
-      return this.stickConversationOnTop(conversationEntity, {sticky: false});
+    //会话消息置顶
+    if (
+      JSON.stringify({place_top: true}) === JSON.stringify(eventData) ||
+      JSON.stringify({place_top: false}) === JSON.stringify(eventData)
+    ) {
+      return this.stickConversationOnTop(conversationEntity, eventData);
     }
 
     const isBackendEvent = eventData.otr_archived_ref || eventData.otr_muted_ref;
@@ -3976,7 +3966,7 @@ export class ConversationRepository {
   }
 
   /**
-   * A conversation was updated.
+   * A conversation was updated with secret properties.
    *
    * @private
    * @param {Conversation} conversationEntity - Conversation entity that will be renamed
@@ -3984,10 +3974,7 @@ export class ConversationRepository {
    * @returns {Promise} Resolves when the event was handled
    */
   _onUpdate(conversationEntity, eventJson) {
-    const conversationEntityUpdated = this.conversationMapper.updateAppendedProperties(
-      conversationEntity,
-      eventJson.data,
-    );
+    const conversationEntityUpdated = this.conversationMapper.updateAppendedProperties(conversationEntity, eventJson);
     return {conversationEntityUpdated};
   }
 

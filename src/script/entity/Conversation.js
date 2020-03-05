@@ -169,9 +169,10 @@ export class Conversation {
     this.last_read_timestamp = ko.observable(0);
     this.last_server_timestamp = ko.observable(0);
     this.mutedTimestamp = ko.observable(0);
-    this.stickyOnTop = ko.observable(false);
+    this.place_top = ko.observable(false);
     this.previewPictureResource = ko.observable();
     this.mediumPictureResource = ko.observable();
+    this.members = ko.observable();
 
     // Conversation states for view
     this.notificationState = ko.pureComputed(() => {
@@ -298,7 +299,7 @@ export class Conversation {
                 return messageEntity.visible() && !exclude2;
               }
 
-              if (messageEntity.from === BackendEvent.NOTIFY.SYSTEM_ID) {
+              if (messageEntity.from === BackendEvent.NOTIFY.SYSTEM_SECRET_ID) {
                 return false;
               }
 
@@ -441,6 +442,7 @@ export class Conversation {
     });
 
     this._initSubscriptions();
+    // console.log('dav333 conv', this);
   }
 
   _isInitialized() {
@@ -453,6 +455,7 @@ export class Conversation {
       this.archivedState,
       this.archivedTimestamp,
       this.cleared_timestamp,
+      this.members,
       this.messageTimer,
       this.isGuest,
       this.last_event_timestamp,
@@ -461,7 +464,7 @@ export class Conversation {
       this.mediumPictureResource,
       this.mutedState,
       this.mutedTimestamp,
-      this.stickyOnTop,
+      this.place_top,
       this.name,
       this.participating_user_ids,
       this.previewPictureResource,
@@ -882,14 +885,15 @@ export class Conversation {
       last_server_timestamp: this.last_server_timestamp(),
       legal_hold_status: this.legalHoldStatus(),
       mediumPictureResource: this.mediumPictureResource(),
+      members: this.members(),
       muted_state: this.mutedState(),
       muted_timestamp: this.mutedTimestamp(),
       name: this.name(),
       others: this.participating_user_ids(),
+      place_top: this.place_top(),
       previewPictureResource: this.previewPictureResource(),
       receipt_mode: this.receiptMode(),
       status: this.status(),
-      sticky_on_top: this.stickyOnTop(),
       team_id: this.team_id,
       type: this.type(),
       verification_state: this.verification_state(),
