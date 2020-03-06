@@ -26,7 +26,7 @@ import {errors as ProteusErrors} from '@wireapp/proteus';
 import {GenericMessage} from '@wireapp/protocol-messaging';
 
 import {getLogger} from 'Util/Logger';
-import {arrayToBase64, base64ToArray, isTemporaryClientAndNonPersistent, zeroPadding} from 'Util/util';
+import {arrayToBase64, base64ToArray, isTemporaryClientAndNonPersistent, zeroPadding, base64ToString} from 'Util/util';
 
 import {CryptographyMapper} from './CryptographyMapper';
 import {CryptographyService} from './CryptographyService';
@@ -294,6 +294,22 @@ export class CryptographyRepository {
 
         return messagePayload;
       });
+  }
+
+  //不加密转换base64字符串
+  ecryptMessage(generic_message) {
+    return {
+      sender: this.currentClient().id,
+      text: arrayToBase64(GenericMessage.encode(generic_message).finish()),
+    };
+  }
+  decodeMessage(event) {
+    return new Promise(resolve => {
+      if (event.data && event.data.text) {
+        event.data = JSON.parse(base64ToString(event.data.text));
+      }
+      resolve(event);
+    });
   }
 
   /**

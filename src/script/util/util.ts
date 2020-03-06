@@ -218,6 +218,10 @@ export const base64ToBlob = (base64: string): Blob => {
   return new Blob([bytes], {type: mimeType});
 };
 
+export const stringToBase64 = (str: string): string => Encoder.toBase64(str).asString;
+
+export const base64ToString = (base64: string): string => Decoder.fromBase64(base64).asString;
+
 /**
  * Downloads blob using a hidden link element.ƒ
  */

@@ -469,6 +469,16 @@ export class ConversationService {
     }
   }
 
+  post_big_group_message(conversation_id, payload) {
+    // console.log('----发送万人群消息--', payload);
+    const url = `${ConversationService.CONFIG.URL_CONVERSATIONS}/${conversation_id}/bgp/messages`;
+    return this.backendClient.sendJson({
+      data: payload,
+      type: 'POST',
+      url: url,
+    });
+  }
+
   /**
    * Add users to an existing conversation.
    *
