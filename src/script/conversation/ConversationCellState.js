@@ -355,7 +355,10 @@ const _getStateUnreadMessage = {
 
         const hasString = string && string !== true;
         const stateText = hasString ? string : messageEntity.get_first_asset().text;
-        const isTextLink = messageEntity.get_first_asset().previews().length > 0;
+        const isTextLink =
+          messageEntity.get_first_asset &&
+          messageEntity.get_first_asset().previews &&
+          messageEntity.get_first_asset().previews().length > 0;
         return conversationEntity.isGroup()
           ? `${messageEntity.unsafeSenderName()}: ${isTextLink ? t('notificationSharedLink') : stateText}`
           : isTextLink
@@ -432,7 +435,10 @@ export const generateCellStateEx = conversationEntity => {
 
     const hasString = string && string !== true;
     const stateText = hasString ? string : messageEntity.get_first_asset().text;
-    const isTextLink = messageEntity.get_first_asset().previews().length > 0;
+    const isTextLink =
+      messageEntity.get_first_asset &&
+      messageEntity.get_first_asset().previews &&
+      messageEntity.get_first_asset().previews().length > 0;
     return conversationEntity.isGroup()
       ? `${messageEntity.unsafeSenderName()}: ${isTextLink ? t('notificationSharedLink') : stateText}`
       : isTextLink

@@ -67,9 +67,9 @@ ko.components.register('image-asset', {
     <div class="image-asset" data-bind="
       attr: {'data-uie-visible': message.visible() && !message.isObfuscated(), 'data-uie-status': imageUrl() ? 'loaded' : 'loading'},
       click: onClick,
-      css: {'bg-color-ephemeral': message.isObfuscated(), 'loading-dots': isIdle(), 'image-asset--no-image': !imageUrl()}"
+      css: {'bg-color-ephemeral': message.isObfuscated(), 'loading-dots': !imageUrl(), 'image-asset--no-image': !imageUrl()}"
       data-uie-name="go-image-detail">
-      <!-- ko if: uploadProgress() > -1 -->
+      <!-- ko if: uploadProgress() > 100 -->
         <asset-loader params="loadProgress: uploadProgress, onCancel: () => cancelUpload(message)"></asset-loader>
       <!-- /ko -->
       <!-- ko if: message.isObfuscated() -->

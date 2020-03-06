@@ -346,6 +346,7 @@ export class CryptographyMapper {
       id: genericMessage.messageId,
       status: event.status,
       time: event.time,
+      type: event.type,
     };
 
     return Object.assign(genericContent, specificContent);

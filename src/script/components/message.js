@@ -190,6 +190,15 @@ class Message {
     return iconComponents[message.system_message_type];
   }
 
+  isSystemMessageForTimerUpdate(message) {
+    return SystemMessageType.CONVERSATION_MESSAGE_TIMER_UPDATE === message.system_message_type;
+  }
+
+  getSystemMessageForTimerNow(message) {
+    const timer = Math.floor(message.message_timer / 1000);
+    return `${timer}${t('ephemeralUnitsSecond')}`;
+  }
+
   showDevice(messageEntity) {
     const topic = messageEntity.isSelfClient() ? WebAppEvents.PREFERENCES.MANAGE_DEVICES : WebAppEvents.SHORTCUT.PEOPLE;
     amplify.publish(topic);
@@ -504,7 +513,14 @@ const systemTemplate = `
     </div>
     <div class="message-header-label">
       <span class="message-header-sender-name" data-bind='text: message.unsafeSenderName()'></span>
-      <span class="ellipsis" data-bind="text: message.caption()"></span>
+      <!-- ko if: isSystemMessageForTimerUpdate(message) -->
+        <span class="ellipsis" data-bind="text: message.caption()"></span>
+        <span class="system-message-timer" data-bind='text: getSystemMessageForTimerNow(message)'></span>
+      <!-- /ko -->
+      
+      <!-- ko ifnot: isSystemMessageForTimerUpdate(message) -->
+        <span class="ellipsis" data-bind="text: message.caption()"></span>
+      <!-- /ko -->
       <hr class="message-header-line" />
     </div>
     <div class="message-body-actions">

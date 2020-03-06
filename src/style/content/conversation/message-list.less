@@ -188,6 +188,12 @@
     font-weight: @font-weight-bold;
   }
 
+  .system-message-timer {
+    margin-left: 5px;
+    font-weight: @font-weight-bold;
+    text-transform: capitalize;
+  }
+
   .message-header-sender-name {
     font-weight: @font-weight-bold;
     text-transform: capitalize;
@@ -365,15 +371,15 @@
   }
 
   .image_content_background {
-    max-width: 45% !important;
+    width: 45% !important;
   }
 
   .file_content_background {
-    max-width: 100% !important;
+    max-width: 45% !important;
   }
 
   .audio_content_background {
-    width: 80%;
+    width: 100%;
     padding: 6px 6px;
     border-radius: 5px;
     box-shadow: 1px 1px 1px 1px rgba(140, 140, 140, 0.25);
@@ -506,11 +512,12 @@ image-asset {
 
     .image-element {
       position: relative;
-      max-width: 100%;
-      max-height: 80vh;
+      width: 100% !important;
+      max-width: fit-content;
+      height: 100% !important;
+      max-height: 100%;
 
-      margin-top: 0px;
-      margin-bottom: 0px;
+      margin: 0px;
 
       &.image-ephemeral {
         cursor: default;

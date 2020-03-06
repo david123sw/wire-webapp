@@ -279,27 +279,14 @@ export class Conversation {
         !this.id
           ? []
           : this.messages().filter((messageEntity, index, array) => {
-              const checks = [
-                BackendEvent.CONVERSATION.MEMBER_LEAVE,
-                BackendEvent.CONVERSATION.MEMBER_JOIN,
-                BackendEvent.CONVERSATION.RENAME,
-              ];
               const previous = index >= 1 ? array[index - 1] : undefined;
-              const include = checks.includes(messageEntity.type);
-
-              const same1 = previous && previous.type === messageEntity.type && previous.from === messageEntity.from;
-              const exclude1 = same1 && include;
-              if (same1) {
-                return messageEntity.visible() && !exclude1;
+              if (previous && previous.primary_key === messageEntity.primary_key) {
+                return false;
               }
 
-              const same2 = previous && previous.name === messageEntity.name && previous.from === messageEntity.from;
-              const exclude2 = same2 && include;
-              if (same2) {
-                return messageEntity.visible() && !exclude2;
-              }
-
-              if (messageEntity.from === BackendEvent.NOTIFY.SYSTEM_SECRET_ID) {
+              //check2
+              const systemNotifies = [BackendEvent.NOTIFY.SYSTEM_SECRET_ID, BackendEvent.NOTIFY.SYSTEM_NEW_DEVICE_ID];
+              if (systemNotifies.includes(messageEntity.from)) {
                 return false;
               }
 
@@ -442,7 +429,6 @@ export class Conversation {
     });
 
     this._initSubscriptions();
-    // console.log('dav333 conv', this);
   }
 
   _isInitialized() {

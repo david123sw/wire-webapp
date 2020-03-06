@@ -319,6 +319,7 @@ export class ConversationMapper {
       mediumPictureResource,
       memberjoin_confirm,
       members,
+      message_timer,
       msg_only_to_manager,
       name,
       orator,
@@ -352,6 +353,8 @@ export class ConversationMapper {
     conversationEntity.managers(manager);
     conversationEntity.advisory(advisory);
     conversationEntity.members(members);
+    conversationEntity.globalMessageTimer(message_timer);
+    conversationEntity.localMessageTimer(message_timer);
 
     const selfState = members ? members.self : conversationData;
     conversationEntity = this.updateSelfStatus(conversationEntity, selfState);

@@ -503,27 +503,27 @@ class App {
     }
 
     if (navigator.onLine) {
-      // switch (type) {
-      //   case z.error.AccessTokenError.TYPE.NOT_FOUND_IN_CACHE:
-      //   case z.error.AccessTokenError.TYPE.RETRIES_EXCEEDED:
-      //   case z.error.AccessTokenError.TYPE.REQUEST_FORBIDDEN: {
-      //     this.logger.warn(`Redirecting to login: ${error.message}`, error);
-      //     return this._redirectToLogin(SIGN_OUT_REASON.NOT_SIGNED_IN);
-      //   }
-      //
-      //   default: {
-      //     this.logger.error(`Caused by: ${(error ? error.message : undefined) || error}`, error);
-      //
-      //     const isAccessTokenError = error instanceof z.error.AccessTokenError;
-      //     if (isAccessTokenError) {
-      //       this.logger.error(`Could not get access token: ${error.message}. Logging out user.`, error);
-      //     } else {
-      //       Raygun.send(error);
-      //     }
-      //
-      //     return this.logout(SIGN_OUT_REASON.APP_INIT);
-      //   }
-      // }
+      switch (type) {
+        case z.error.AccessTokenError.TYPE.NOT_FOUND_IN_CACHE:
+        case z.error.AccessTokenError.TYPE.RETRIES_EXCEEDED:
+        case z.error.AccessTokenError.TYPE.REQUEST_FORBIDDEN: {
+          this.logger.warn(`Redirecting to login: ${error.message}`, error);
+          return this._redirectToLogin(SIGN_OUT_REASON.NOT_SIGNED_IN);
+        }
+
+        default: {
+          this.logger.error(`Caused by: ${(error ? error.message : undefined) || error}`, error);
+
+          const isAccessTokenError = error instanceof z.error.AccessTokenError;
+          if (isAccessTokenError) {
+            this.logger.error(`Could not get access token: ${error.message}. Logging out user.`, error);
+          } else {
+            Raygun.send(error);
+          }
+
+          return this.logout(SIGN_OUT_REASON.APP_INIT);
+        }
+      }
     }
 
     this.logger.warn('No connectivity. Trigger reload on regained connectivity.', error);
