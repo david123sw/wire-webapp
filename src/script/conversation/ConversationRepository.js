@@ -1279,7 +1279,11 @@ export class ConversationRepository {
     const eventInfoEntity = new EventInfoEntity(genericMessage, this.self_conversation().id, {
       convtype: conversationEntity.type(),
     });
-    this.sendGenericMessageToConversation(eventInfoEntity, conversationEntity.type() === ConversationType.SUPER_GROUP)
+    this.sendGenericMessageToConversation(
+      conversationEntity.id,
+      eventInfoEntity,
+      conversationEntity.type() === ConversationType.SUPER_GROUP,
+    )
       .then(() => {
         amplify.publish(WebAppEvents.NOTIFICATION.REMOVE_READ);
         this.logger.info(`Marked conversation '${conversationId}' as read on '${new Date(timestamp).toISOString()}'`);
@@ -1500,6 +1504,7 @@ export class ConversationRepository {
 
       const eventInfoEntity = new EventInfoEntity(genericMessage, this.self_conversation().id);
       this.sendGenericMessageToConversation(
+        conversationEntity.id,
         eventInfoEntity,
         conversationEntity.type() === ConversationType.SUPER_GROUP,
       ).then(() => {
@@ -1952,6 +1957,7 @@ export class ConversationRepository {
           convtype: conversationEntity.type(),
         });
         return this.sendGenericMessageToConversation(
+          conversationEntity.id,
           eventInfoEntity,
           conversationEntity.type() === ConversationType.SUPER_GROUP,
         );
@@ -2299,6 +2305,7 @@ export class ConversationRepository {
 
     const eventInfoEntity = new EventInfoEntity(genericMessage, conversationEntity.id);
     return this.sendGenericMessageToConversation(
+      conversationEntity.id,
       eventInfoEntity,
       conversationEntity.type() === ConversationType.SUPER_GROUP,
     );
@@ -2572,10 +2579,10 @@ export class ConversationRepository {
     });
   }
 
-  sendGenericMessageToConversation(eventInfoEntity, isSuperGroup = false) {
+  sendGenericMessageToConversation(conversationId, eventInfoEntity, isSuperGroup = false) {
     if (isSuperGroup) {
       return this.messageSender.queueMessage(() => {
-        return this.sendBigGroupMessage(eventInfoEntity.conversationId, eventInfoEntity.genericMessage);
+        return this.sendBigGroupMessage(conversationId, eventInfoEntity.genericMessage);
       });
     }
 
@@ -2589,12 +2596,11 @@ export class ConversationRepository {
 
   sendBigGroupMessage(conversationId, genericMessage) {
     const send_msg = this.cryptography_repository.ecryptMessage(genericMessage);
-    // send_msg.name = this.selfUser().name();
     send_msg.asset = {
       avatar_key: this.selfUser().previewPictureResource() ? this.selfUser().previewPictureResource().identifier : '',
       name: this.selfUser().name(),
     };
-    // console.log('发送万人群消息--', send_msg)
+    // console.log('发送万人群消息--', conversationId, send_msg);
     return this.conversation_service.post_big_group_message(conversationId, send_msg);
   }
 
@@ -2627,6 +2633,7 @@ export class ConversationRepository {
         });
         eventInfoEntity.setTimestamp(injectedEvent.time);
         return this.sendGenericMessageToConversation(
+          conversationEntity.id,
           eventInfoEntity,
           conversationEntity.type() === ConversationType.SUPER_GROUP,
         ).then(sentPayload => ({
@@ -3211,6 +3218,7 @@ export class ConversationRepository {
           convtype: conversationEntity.type(),
         });
         return this.sendGenericMessageToConversation(
+          conversationEntity.id,
           eventInfoEntity,
           conversationEntity.type() === ConversationType.SUPER_GROUP,
         );
