@@ -298,6 +298,22 @@ export class EventMapper {
     messageEntity.timestamp(new Date(time).getTime());
     messageEntity.type = type;
     messageEntity.version = version || 1;
+    messageEntity.user().id = messageEntity.from;
+    messageEntity.user().is_me = messageEntity.from === conversationEntity.selfUser().id;
+
+    if (event.asset) {
+      const asset = event.asset;
+      if (asset) {
+        if (asset.name) {
+          messageEntity.user().name(asset.name);
+        }
+
+        if (asset.avatar_key) {
+          const assetRemoteData = AssetRemoteData.v3(asset.avatar_key, true);
+          messageEntity.user().previewPictureResource(assetRemoteData);
+        }
+      }
+    }
 
     if (data) {
       messageEntity.legalHoldStatus = data.legal_hold_status;

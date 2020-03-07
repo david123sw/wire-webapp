@@ -62,7 +62,6 @@ export class CryptographyMapper {
     if (!genericMessage) {
       return Promise.reject(new z.error.CryptographyError(z.error.CryptographyError.TYPE.NO_GENERIC_MESSAGE));
     }
-
     return Promise.resolve()
       .then(() => (genericMessage.external ? this._unwrapExternal(genericMessage.external, event) : genericMessage))
       .then(unwrappedGenericMessage => this._mapGenericMessage(unwrappedGenericMessage, event));
@@ -350,6 +349,15 @@ export class CryptographyMapper {
       time: event.time,
       type: event.type,
     };
+
+    if (event.data) {
+      if (event.data.name) {
+        genericContent.name = event.data.name;
+      }
+      if (event.data.asset) {
+        genericContent.asset = event.data.asset;
+      }
+    }
 
     return Object.assign(genericContent, specificContent);
   }
