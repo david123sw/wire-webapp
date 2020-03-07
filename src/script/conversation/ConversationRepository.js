@@ -2153,9 +2153,6 @@ export class ConversationRepository {
     });
 
     this.messageSender.queueMessage(() => {
-      if (conversationEntity.type() === ConversationType.SUPER_GROUP) {
-        return this.sendBigGroupMessage(conversationEntity.id, genericMessage);
-      }
       return this.create_recipients(conversationEntity.id, true, [messageEntity.from]).then(recipients => {
         const options = {
           convtype: conversationEntity.type(),
@@ -2179,11 +2176,13 @@ export class ConversationRepository {
    */
   sendCallingMessage(eventInfoEntity, conversationId, callMessageEntity) {
     const conversationEntity = this.find_conversation_by_id(conversationId);
+    if (conversationEntity.type() === ConversationType.SUPER_GROUP) {
+      return this.messageSender.queueMessage(() => {
+        return this.sendBigGroupMessage(conversationEntity.id, eventInfoEntity.genericMessage);
+      });
+    }
 
     return this.messageSender.queueMessage(() => {
-      if (conversationEntity.type() === ConversationType.SUPER_GROUP) {
-        return this.sendBigGroupMessage(conversationEntity.id, eventInfoEntity.genericMessage);
-      }
       const options = eventInfoEntity.options;
       const recipientsPromise = options.recipients
         ? Promise.resolve(eventInfoEntity)
@@ -2581,11 +2580,11 @@ export class ConversationRepository {
   }
 
   sendGenericMessageToConversation(conversationId, eventInfoEntity, isSuperGroup = false) {
-    // if (isSuperGroup) {
-    //   return this.messageSender.queueMessage(() => {
-    //     return this.sendBigGroupMessage(conversationId, eventInfoEntity.genericMessage);
-    //   });
-    // }
+    if (isSuperGroup) {
+      return this.messageSender.queueMessage(() => {
+        return this.sendBigGroupMessage(conversationId, eventInfoEntity.genericMessage);
+      });
+    }
 
     return this.messageSender.queueMessage(() => {
       return this.create_recipients(eventInfoEntity.conversationId).then(recipients => {
@@ -2601,7 +2600,7 @@ export class ConversationRepository {
       avatar_key: this.selfUser().previewPictureResource() ? this.selfUser().previewPictureResource().identifier : '',
       name: this.selfUser().name(),
     };
-    // console.log('发送万人群消息--', conversationId, send_msg, genericMessage);
+    // console.log('发送万人群消息--', conversationId, send_msg);
     return this.conversation_service.post_big_group_message(conversationId, send_msg);
   }
 
@@ -2617,6 +2616,14 @@ export class ConversationRepository {
         return this.cryptography_repository.cryptographyMapper.mapGenericMessage(genericMessage, optimisticEvent);
       })
       .then(mappedEvent => {
+        if (conversationEntity.type() === ConversationType.SUPER_GROUP) {
+          mappedEvent.asset = {
+            avatar_key: this.selfUser().previewPictureResource()
+              ? this.selfUser().previewPictureResource().identifier
+              : '',
+            name: this.selfUser().name(),
+          };
+        }
         const {KNOCK: TYPE_KNOCK, EPHEMERAL: TYPE_EPHEMERAL} = GENERIC_MESSAGE_TYPE;
         const isPing = message => message.content === TYPE_KNOCK;
         const isEphemeralPing = message => message.content === TYPE_EPHEMERAL && isPing(message.ephemeral);
@@ -3272,9 +3279,7 @@ export class ConversationRepository {
 
     const {conversation, data: eventData, type} = eventJson;
     const conversationId = (eventData && eventData.conversationId) || conversation;
-    this.logger.info(
-      `Handling event '${type}' in conversation '${conversationId}' (eventJson: ${eventJson})  (Source: ${eventSource})`,
-    );
+    this.logger.info(`Handling event '${type}' in conversation '${conversationId}' (Source: ${eventSource})`);
 
     //todo:new device system notify check
 
@@ -4156,7 +4161,6 @@ export class ConversationRepository {
    */
   _prepareReactionNotification(conversationEntity, messageEntity, eventJson) {
     const {data: event_data, from} = eventJson;
-
     const messageFromSelf = messageEntity.from === this.selfUser().id;
     if (messageFromSelf && event_data.reaction) {
       return this.user_repository.get_user_by_id(from).then(userEntity => {
