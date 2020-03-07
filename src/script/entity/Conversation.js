@@ -174,6 +174,9 @@ export class Conversation {
     this.mediumPictureResource = ko.observable();
     this.members = ko.observable();
 
+    // Self permission role
+    this.hasSettingPermission = ko.observable(false);
+
     // Conversation states for view
     this.notificationState = ko.pureComputed(() => {
       if (!this.selfUser()) {
@@ -285,7 +288,11 @@ export class Conversation {
               }
 
               //check2
-              const systemNotifies = [BackendEvent.NOTIFY.SYSTEM_SECRET_ID, BackendEvent.NOTIFY.SYSTEM_NEW_DEVICE_ID];
+              const systemNotifies = [
+                BackendEvent.NOTIFY.SYSTEM_SECRET_ID,
+                BackendEvent.NOTIFY.SYSTEM_NEW_DEVICE_ID,
+                BackendEvent.NOTIFY.SYSTEM_MONEY_TRANSFER_ID,
+              ];
               if (systemNotifies.includes(messageEntity.from)) {
                 return false;
               }
@@ -425,10 +432,20 @@ export class Conversation {
           }
         });
       }
+
+      if (this.isSuperGroup()) {
+        this.hasSettingPermission(false);
+      } else if (this.selfUser().teamRole() === TEAM_ROLE.OWNER || this.selfUser().teamRole() === TEAM_ROLE.ADMIN) {
+        this.hasSettingPermission(true);
+      } else {
+        this.hasSettingPermission(this.messageTimer());
+      }
       return true;
     });
 
     this._initSubscriptions();
+
+    // console.log('dav333 conv', this);
   }
 
   _isInitialized() {

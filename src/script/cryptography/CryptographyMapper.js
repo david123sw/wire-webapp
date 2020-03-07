@@ -241,7 +241,6 @@ export class CryptographyMapper {
 
   async _mapGenericMessage(genericMessage, event) {
     let specificContent;
-
     switch (genericMessage.content) {
       case GENERIC_MESSAGE_TYPE.ASSET: {
         specificContent = addMetadata(this._mapAsset(genericMessage.asset), genericMessage.asset);
@@ -293,7 +292,7 @@ export class CryptographyMapper {
       }
 
       case GENERIC_MESSAGE_TYPE.EPHEMERAL: {
-        specificContent = this._mapEphemeral(genericMessage, event);
+        specificContent = await this._mapEphemeral(genericMessage, event);
         break;
       }
 
@@ -329,6 +328,9 @@ export class CryptographyMapper {
 
       case GENERIC_MESSAGE_TYPE.TEXT: {
         specificContent = addMetadata(this._mapText(genericMessage.text), genericMessage.text);
+        if (undefined !== genericMessage.expireAfterMillis) {
+          specificContent.ephemeral_expires = genericMessage.expireAfterMillis;
+        }
         break;
       }
 
@@ -501,7 +503,6 @@ export class CryptographyMapper {
 
     const embeddedMessage = this._mapGenericMessage(genericMessage.ephemeral, event);
     embeddedMessage.ephemeral_expires = ConversationEphemeralHandler.validateTimer(messageTimer);
-
     return embeddedMessage;
   }
 
