@@ -150,8 +150,9 @@ export const formatDurationCaption = (duration: number): string => {
       break;
     }
   }
-  const joiner = ` ${t('and')} `;
-  return `${validUnitStrings.join(joiner)} ${t('ephemeralRemaining')}`;
+  // const joiner = ` ${t('and')} `;
+  const joiner = ` `;
+  return `${t('ephemeralRemaining')} ${validUnitStrings.join(joiner)}`;
 };
 
 /**

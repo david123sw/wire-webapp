@@ -44,8 +44,12 @@ export class Message {
     this.id = id;
     this.super_type = super_type;
     this.ephemeral_caption = ko.pureComputed(() => {
-      const remainingTime = this.ephemeral_remaining();
-      return remainingTime ? formatDurationCaption(remainingTime) : '';
+      while (this.ephemeral_remaining() > 0) {
+        const remainingTime = this.ephemeral_expires() - Date.now();
+        this.ephemeral_remaining(remainingTime);
+        return remainingTime ? formatDurationCaption(remainingTime) : '';
+      }
+      return '';
     });
     this.ephemeral_duration = ko.observable(0);
     this.ephemeral_remaining = ko.observable(0);

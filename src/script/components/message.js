@@ -45,6 +45,7 @@ import {createRandomUuid} from 'Util/util';
 
 import {ConversationType} from '../conversation/ConversationType';
 import {BackendEvent} from '../event/Backend';
+import {formatDuration} from 'Util/TimeUtil';
 
 class Message {
   static PREVIOUS_MSG_FROM_USER = '';
@@ -195,8 +196,7 @@ class Message {
   }
 
   getSystemMessageForTimerNow(message) {
-    const timer = Math.floor(message.message_timer / 1000);
-    return `${timer}${t('ephemeralUnitsSecond')}`;
+    return !message.message_timer ? '' : formatDuration(message.message_timer).text;
   }
 
   showDevice(messageEntity) {
@@ -330,7 +330,7 @@ const normalTemplate = `
   
   <div class="message-body" data-bind="attr: {'title': message.ephemeral_caption()}, css: {'message-body-self-special': !shouldShowAvatar}">
     <!-- ko if: message.ephemeral_status() === EphemeralStatusType.ACTIVE -->
-      <ephemeral-timer class="message-ephemeral-timer" params="message: message"></ephemeral-timer>
+      <ephemeral-timer class="message-ephemeral-timer" data-bind="css: {'message-ephemeral-timer-self': !shouldShowAvatar}" params="message: message"></ephemeral-timer>
     <!-- /ko -->
 
     <!-- ko foreach: {data: message.assets, as: 'asset', noChildContext: true} -->
@@ -456,8 +456,8 @@ const normalTemplate = `
       <!-- /ko -->
       ${receiptStatusTemplate}
     </div>
-
   </div>
+  
   <!-- ko if: message.other_likes().length -->
     <div class="message-footer">
       <div class="message-footer-icon">
@@ -470,6 +470,10 @@ const normalTemplate = `
         <span class="font-size-xs text-foreground" data-bind="text: message.like_caption(), attr: {'data-uie-value': message.reactions_user_ids()}"  data-uie-name="message-liked-names"></span>
       </div>
     </div>
+  <!-- /ko -->
+  
+  <!-- ko if: message.ephemeral_status() === EphemeralStatusType.ACTIVE -->
+    <span data-bind="text: message.ephemeral_caption(), css: {'timed-message-remaining-left': shouldShowAvatar, 'timed-message-remaining-right': !shouldShowAvatar}"></span>
   <!-- /ko -->
   `;
 

@@ -461,8 +461,14 @@
   }
   .message-ephemeral-timer {
     position: absolute;
-    top: 2px;
+    top: -3px;
     left: 32px;
+  }
+
+  .message-ephemeral-timer-self {
+    position: absolute;
+    top: -3px;
+    right: 14px;
   }
 }
 
@@ -488,6 +494,22 @@
   bottom: unset;
   left: unset;
   width: 36px;
+}
+
+.timed-message-remaining-left {
+  position: absolute;
+  bottom: -2px;
+  left: 0px;
+  margin-left: 120px;
+  font-size: 5px;
+}
+
+.timed-message-remaining-right {
+  position: absolute;
+  right: 0px;
+  bottom: -2px;
+  margin-right: 68px;
+  font-size: 5px;
 }
 
 image-asset {
