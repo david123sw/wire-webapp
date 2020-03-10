@@ -436,17 +436,15 @@ export class Conversation {
 
       if (this.isSuperGroup()) {
         this.hasSettingPermission(false);
-      } else if (this.selfUser().teamRole() === TEAM_ROLE.OWNER || this.selfUser().teamRole() === TEAM_ROLE.ADMIN) {
-        this.hasSettingPermission(true);
-      } else {
+      } else if (this.messageTimer()) {
         this.hasSettingPermission(this.messageTimer());
+      } else if (this.selfUser().teamRole() === TEAM_ROLE.OWNER || this.selfUser().teamRole() === TEAM_ROLE.ADMIN) {
+        this.hasSettingPermission(false);
       }
       return true;
     });
 
     this._initSubscriptions();
-
-    // console.log('dav333 conv', this);
   }
 
   _isInitialized() {

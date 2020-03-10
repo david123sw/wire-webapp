@@ -432,7 +432,6 @@ export class ConversationMapper {
    * @returns {Array<Object>} Merged conversation data
    */
   mergeConversation(localConversations, remoteConversations) {
-    // console.log('dav333 remoteConversations', remoteConversations);
     localConversations = localConversations.filter(conversationData => conversationData);
 
     return remoteConversations.map((remoteConversationData, index) => {

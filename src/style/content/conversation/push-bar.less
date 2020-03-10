@@ -19,28 +19,22 @@
 
 .conversation-push-bar {
   .flex-center;
-
-  position: relative;
+  position: absolute;
+  top: @content-title-bar-height;
   width: 100%;
   height: @content-title-bar-height * 0.68;
   background-color: var(--app-bg-secondary);
-
-  //-webkit-linear-gradient(top, transparent, var(--app-bg-secondary));
-  //-moz-linear-gradient(top, transparent, var(--app-bg-secondary));
-  //-o-linear-gradient(top, transparent, var(--app-bg-secondary));
+  transition: height 1.168s cubic-bezier(0.19, 1, 0.22, 1) 0s;
 }
 
 .conversation-push-bar-text-content {
   display: flex;
-  overflow: hidden;
   width: calc(100% - 100px);
   height: 100%;
   flex-grow: 1;
   align-items: center;
   justify-content: flex-start;
-  text-overflow: ellipsis;
   user-select: none;
-  white-space: nowrap;
 }
 
 .conversation-push-bar-text-content-announcement {

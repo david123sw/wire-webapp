@@ -112,12 +112,6 @@
           <!-- /ko -->
       </div>
 
-      <!--<div class="controls-left">-->
-        <!--&lt;!&ndash; ko if: input().length &ndash;&gt;-->
-          <!--<participant-avatar class="cursor-default" params="participant: selfUser, size: ParticipantAvatar.SIZE.X_SMALL"></participant-avatar>-->
-        <!--&lt;!&ndash; /ko &ndash;&gt;-->
-      <!--</div>-->
-
       <!-- ko if: !conversationEntity().removed_from_conversation() -->
         <div class="controls-center" data-bind="template: {afterRender: setElements}">
           <textarea id="conversation-input-bar-text"
