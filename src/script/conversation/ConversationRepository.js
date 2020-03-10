@@ -103,6 +103,9 @@ import {BackendClientError} from '../error/BackendClientError';
 import {showLegalHoldWarning} from '../legal-hold/LegalHoldWarning';
 import * as LegalHoldEvaluator from '../legal-hold/LegalHoldEvaluator';
 import {DeleteConversationMessage} from '../entity/message/DeleteConversationMessage';
+
+import {UserExtra} from '../entity/UserExtra';
+import {User} from '../entity/User';
 // import {ConversationService} from '../conversation/ConversationService';
 
 // Conversation repository for all conversation interactions with the conversation service
@@ -609,7 +612,9 @@ export class ConversationRepository {
         : new Date(conversationEntity.get_latest_timestamp(this.serverTimeHandler.toServerTimestamp()) + 1);
     return this.eventService
       .loadPrecedingEvents(conversationEntity.id, new Date(0), upperBound, z.config.MESSAGES_FETCH_LIMIT)
-      .then(events => this._addPrecedingEventsToConversation(events, conversationEntity))
+      .then(events => {
+        return this._addPrecedingEventsToConversation(events, conversationEntity);
+      })
       .then(mappedMessageEntities => {
         conversationEntity.is_pending(false);
         return mappedMessageEntities;
@@ -623,7 +628,6 @@ export class ConversationRepository {
    */
   getPrecedingMessagesAsLast(conversationEntity) {
     conversationEntity.is_pending(true);
-
     const firstMessageEntity = conversationEntity.getFirstMessage();
     const upperBound = firstMessageEntity
       ? new Date(firstMessageEntity.timestamp())
@@ -692,20 +696,17 @@ export class ConversationRepository {
    * @param {number} [padding=30] - Number of messages to load around the targeted message
    * @returns {Promise} Resolves with the message
    */
-  getMessagesWithOffset(conversationEntity, messageEntity, padding = 30) {
+  getMessagesWithOffset(conversationEntity, messageEntity, padding = 15) {
     const messageDate = new Date(messageEntity.timestamp());
     const conversationId = conversationEntity.id;
-
     conversationEntity.is_pending(true);
-
-    return this.eventService
-      .loadPrecedingEvents(conversationId, new Date(0), messageDate, Math.floor(padding / 2))
-      .then(precedingMessages => {
-        return this.eventService
-          .loadFollowingEvents(conversationEntity.id, messageDate, padding - precedingMessages.length)
-          .then(followingMessages => precedingMessages.concat(followingMessages));
+    return Promise.all([
+      this.eventService.loadPrecedingEvents(conversationId, new Date(0), messageDate, padding),
+      this.eventService.loadFollowingEvents(conversationEntity.id, messageDate, padding),
+    ])
+      .then(([older_events, newer_events]) => {
+        return this._addEventsToConversation(older_events.concat(newer_events), conversationEntity);
       })
-      .then(messages => this._addEventsToConversation(messages, conversationEntity))
       .then(mappedMessageEntities => {
         conversationEntity.is_pending(false);
         return mappedMessageEntities;
@@ -723,7 +724,6 @@ export class ConversationRepository {
   getSubsequentMessages(conversationEntity, messageEntity, includeMessage) {
     const messageDate = new Date(messageEntity.timestamp());
     conversationEntity.is_pending(true);
-
     return this.eventService
       .loadFollowingEvents(conversationEntity.id, messageDate, z.config.MESSAGES_FETCH_LIMIT, includeMessage)
       .then(events => this._addEventsToConversation(events, conversationEntity))
@@ -786,7 +786,6 @@ export class ConversationRepository {
 
     if (lower_bound < upper_bound) {
       conversationEntity.is_pending(true);
-
       return this.eventService
         .loadPrecedingEvents(conversationEntity.id, lower_bound, upper_bound)
         .then(events => {
@@ -1265,6 +1264,9 @@ export class ConversationRepository {
    * @returns {undefined} No return value
    */
   markAsRead(conversationEntity) {
+    if (conversationEntity.type() === ConversationType.SUPER_GROUP) {
+      return;
+    }
     const conversationId = conversationEntity.id;
     const timestamp = conversationEntity.last_read_timestamp();
     const protoLastRead = new LastRead({
@@ -1354,6 +1356,13 @@ export class ConversationRepository {
    * @returns {Promise} Resolves when users have been updated
    */
   updateParticipatingUserEntities(conversationEntity, offline = false, updateGuests = false) {
+    if (conversationEntity.type() === ConversationType.SUPER_GROUP) {
+      this.upadateCurGroupTempUsers(conversationEntity);
+      return new Promise((resolve, reject) => {
+        const conversationEt = this.updateUserExtraInfo(conversationEntity);
+        resolve(conversationEt);
+      });
+    }
     return this.user_repository
       .get_users_by_id(conversationEntity.participating_user_ids(), offline)
       .then(userEntities => {
@@ -1366,6 +1375,51 @@ export class ConversationRepository {
 
         return conversationEntity;
       });
+  }
+  updateUserExtraInfo(conversationEntity) {
+    if (conversationEntity.isGroup()) {
+      const us = conversationEntity.participating_user_aliasnames();
+      const user_extras = [];
+      us.forEach(extra => {
+        const extra_es = new UserExtra(extra.id);
+        extra_es.aliasname(extra.remark ? extra.remark : '');
+        user_extras.push(extra_es);
+      });
+      conversationEntity.aliasnames(user_extras);
+    }
+    return conversationEntity;
+  }
+  upadateCurGroupTempUsers(conversationEntity, isRequest = false) {
+    return;
+    if (conversationEntity.type() === ConversationType.SUPER_GROUP) {
+      if (!isRequest && conversationEntity.tempUsers().length > 0) {
+        return;
+      }
+      if (!conversationEntity.isRequestingUsers) {
+        conversationEntity.isRequestingUsers = true;
+        this.conversation_service
+          .get_converstation_members(conversationEntity.id, 4)
+          .then(infos => {
+            conversationEntity.tempUsers.removeAll();
+            const members = infos.conversations;
+            for (let i = 0; i < members.length; ++i) {
+              const user = new User();
+              const info = members[i];
+              user.id = info.id;
+              user.name(info.alias_name_ref ? info.alias_name_ref : info.name);
+              if (info.asset) {
+                const assetRemoteData = AssetRemoteData.v3(info.asset, true);
+                user.previewPictureResource(assetRemoteData);
+              }
+              conversationEntity.tempUsers.push(user);
+            }
+            conversationEntity.isRequestingUsers = false;
+          })
+          .catch(() => {
+            conversationEntity.isRequestingUsers = false;
+          });
+      }
+    }
   }
 
   //##############################################################################
@@ -1387,6 +1441,7 @@ export class ConversationRepository {
       .then(response => {
         if (response) {
           this.eventRepository.injectEvent(response, EventRepository.SOURCE.BACKEND_RESPONSE);
+          this.upadateCurGroupTempUsers(conversationEntity, true);
         }
       })
       .catch(error => this._handleAddToConversationError(error, conversationEntity, userIds));
@@ -1538,6 +1593,18 @@ export class ConversationRepository {
       this.eventRepository.injectEvent(event, EventRepository.SOURCE.BACKEND_RESPONSE);
       return event;
     });
+  }
+
+  removeMemberFromTempUser(conversation_et, userId) {
+    if (conversation_et.type() === ConversationType.SUPER_GROUP) {
+      const tempUsers = conversation_et.tempUsers();
+      for (let i = 0; i < tempUsers.length; ++i) {
+        if (tempUsers[i].id === userId) {
+          this.upadateCurGroupTempUsers(conversation_et, true);
+          break;
+        }
+      }
+    }
   }
 
   /**
@@ -4202,39 +4269,6 @@ export class ConversationRepository {
       if (userEt) {
         messageEntity.user(userEt);
       }
-
-      if (messageEntity.is_member() || messageEntity.userEntities) {
-        const _find_user = user_id => {
-          return this.user_repository.findUserById(user_id);
-        };
-        const existUsers = [];
-        messageEntity.userIds().map(user_id => {
-          const user = _find_user(user_id);
-          if (user) {
-            existUsers.push(user);
-          }
-        });
-        existUsers.sort((userA, userB) => sortByPriority(userA.first_name(), userB.first_name()));
-        messageEntity.userEntities(existUsers);
-      } else if (messageEntity.is_content()) {
-        const userIds = Object.keys(messageEntity.reactions());
-
-        const _find_user = user_id => {
-          return this.user_repository.findUserById(user_id);
-        };
-        messageEntity.reactions_user_ets.removeAll();
-        if (userIds.length) {
-          const existUsers = [];
-          userIds.map(user_id => {
-            const user = _find_user(user_id);
-            if (user) {
-              existUsers.push(user);
-            }
-          });
-          messageEntity.reactions_user_ets(existUsers);
-        }
-      }
-
       return Promise.resolve(messageEntity);
     }
 

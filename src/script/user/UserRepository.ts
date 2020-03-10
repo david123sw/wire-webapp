@@ -492,10 +492,10 @@ export class UserRepository {
       return this.user_service
         .getUsers(chunkOfUserIds)
         .then(response => {
-          if (isSaveDB) {
-            return this.saveUsersInDb(response);
-          }
-          return response;
+          // if (isSaveDB) {
+          return this.saveUsersInDb(response);
+          // }
+          // return response;
         })
         .then(response => (response ? this.user_mapper.mapUsersFromJson(response) : []))
         .catch(error => {

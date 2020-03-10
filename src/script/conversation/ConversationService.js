@@ -478,6 +478,19 @@ export class ConversationService {
     });
   }
 
+  get_converstation_members(conversation_id, size, start = null) {
+    const data = {size: size};
+    if (start) {
+      data.start = start;
+    }
+    const url = `${ConversationService.CONFIG.URL_CONVERSATIONS}/${conversation_id}/members`;
+    return this.backendClient.sendJson({
+      data: data,
+      type: 'GET',
+      url: url,
+    });
+  }
+
   /**
    * Add users to an existing conversation.
    *

@@ -240,7 +240,7 @@ export class ContentViewModel {
         this._releaseContent(this.state());
 
         this.state(ContentViewModel.STATE.CONVERSATION);
-        this.mainViewModel.list.openConversations();
+        // this.mainViewModel.list.openConversations();
 
         if (!isActiveConversation) {
           this.conversationRepository.active_conversation(conversationEntity);
@@ -253,11 +253,9 @@ export class ContentViewModel {
         if (conversationEntity.is_cleared()) {
           conversationEntity.cleared_timestamp(0);
         }
-
         const unarchivePromise = conversationEntity.is_archived()
           ? this.conversationRepository.unarchiveConversation(conversationEntity)
           : Promise.resolve();
-
         unarchivePromise.then(() => {
           this.messageList.changeConversation(conversationEntity, messageEntity).then(() => {
             this._showContent(ContentViewModel.STATE.CONVERSATION);
@@ -274,7 +272,7 @@ export class ContentViewModel {
           this.mainViewModel.modals.showModal(ModalsViewModel.TYPE.ACKNOWLEDGE, {
             text: {
               message: t('conversationNotFoundMessage'),
-              title: t('conversationNotFoundTitle', Config.BRAND_NAME),
+              title: t('conversationNotFoundTitle', Config.getConfig().BRAND_NAME),
             },
           });
         } else {

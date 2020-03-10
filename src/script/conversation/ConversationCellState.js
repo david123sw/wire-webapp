@@ -395,12 +395,10 @@ export const generateCellState = conversationEntity => {
 };
 
 export const generateCellStateEx = conversationEntity => {
-  const readMessages = conversationEntity.messages_visible();
-  if (0 === readMessages.length || !readMessages) {
+  const messageEntity = conversationEntity.getLastMessage();
+  if (!messageEntity) {
     return '';
   }
-
-  const messageEntity = readMessages[readMessages.length - 1];
   let string;
   if (messageEntity.is_ping()) {
     string = t('notificationPing');

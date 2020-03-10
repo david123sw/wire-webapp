@@ -667,7 +667,9 @@ class App {
     }
 
     const router = new Router({
-      '/conversation/:conversationId': conversationId => mainView.content.showConversation(conversationId),
+      '/conversation/:conversationId': conversationId => {
+        return mainView.content.showConversation(conversationId);
+      },
       '/user/:userId': userId => {
         mainView.content.userModal.showUser(userId, () => router.navigate('/'));
       },

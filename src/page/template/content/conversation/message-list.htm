@@ -1,23 +1,25 @@
- <div id="message-list" class="message-list" data-bind="style:{'background-color':'#e1dfdb'}, with: $root.messageList, fadingscrollbar, infinite_scroll: {onHitBottom: () => $root.messageList.loadFollowingMessages(), onHitTop: () => $root.messageList.loadPrecedingMessages(), onInit: $root.messageList.onMessageContainerInitiated}">
-  <div class="messages"
-        data-bind="css: {'flex-center': verticallyCenterMessage},
+<div id="message-list" class="message-list" data-bind="style:{'background-color':'#e1dfdb'}">
+  <div class="messages-background"></div>
+  <div class="messages-wrap" data-bind="with: $root.messageList, fadingscrollbar, infinite_scroll: {onHitBottom: () => $root.messageList.loadFollowingMessages(), onHitTop: () => $root.messageList.loadPrecedingMessages(), onInit: $root.messageList.onMessageContainerInitiated}">
+    <div class="messages"
+         data-bind="css: {'flex-center': verticallyCenterMessage},
                    foreach: {data: conversation().messages_visible, as: 'message', noChildContext: true}">
-    <div class="message"
-         data-bind="in_viewport: {onVisible: getInViewportCallback(conversation(), message), container: getMessagesContainer()},
+      <div class="message"
+           data-bind="in_viewport: {onVisible: getInViewportCallback(conversation(), message), container: getMessagesContainer()},
                     attr: {'data-uie-uid': message.id, 'data-uie-value': message.super_type, 'data-uie-expired-status': message.ephemeral_expires, 'data-uie-send-status': message.status}"
-         data-uie-name="item-message">
+           data-uie-name="item-message">
 
-      <div class="message-header message-timestamp" data-bind="css: get_timestamp_class(message)">
-        <div class="message-header-icon" data-bind="style: {'width': selfUser().id === message.from ? '0' : 'auto'}">
-          <span class="message-unread-dot"></span>
+        <div class="message-header message-timestamp" data-bind="css: get_timestamp_class(message)">
+          <div class="message-header-icon" data-bind="style: {'width': selfUser().id === message.from ? '0' : 'auto'}">
+            <span class="message-unread-dot"></span>
+          </div>
+          <div class="message-header-label">
+            <time data-timestamp-type="normal" class="label-xs label-xs-self-special" data-bind="relative_timestamp: message.timestamp(), attr: {'data-timestamp': message.timestamp}, showAllTimestamps"></time>
+            <time data-timestamp-type="day" class="label-bold-xs label-bold-xs-self-special" data-bind="relative_timestamp: message.timestamp(), relative_timestamp_day: true, attr: {'data-timestamp': message.timestamp}, showAllTimestamps"></time>
+          </div>
         </div>
-        <div class="message-header-label">
-          <time data-timestamp-type="normal" class="label-xs label-xs-self-special" data-bind="relative_timestamp: message.timestamp(), attr: {'data-timestamp': message.timestamp}, showAllTimestamps"></time>
-          <time data-timestamp-type="day" class="label-bold-xs label-bold-xs-self-special" data-bind="relative_timestamp: message.timestamp(), relative_timestamp_day: true, attr: {'data-timestamp': message.timestamp}, showAllTimestamps"></time>
-        </div>
-      </div>
 
-      <message params="
+        <message params="
           message: message,
           conversation: conversation,
           shouldShowAvatar: !should_hide_user_avatar(message),
@@ -41,7 +43,8 @@
           onLike: click_on_like,
           onMessageMarked: onMessageMarked,
           actionsViewModel: actionsViewModel"
-        data-bind="css: {'message-isreplying': message.id && message.id === $root.inputBar.replyMessageId()}"></message>
+                 data-bind="css: {'message-isreplying': message.id && message.id === $root.inputBar.replyMessageId()}"></message>
+      </div>
     </div>
   </div>
 </div>

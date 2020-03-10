@@ -99,6 +99,16 @@ export class Conversation {
     this.participating_user_ids = ko.observableArray([]); // Does not include self user
     this.selfUser = ko.observable();
 
+    //ranjun
+    this.isRequestingUsers = false;
+    this.tempUsers = ko.observableArray([]);
+    this.participating_user_aliasnames = ko.observableArray([]);
+    this.aliasnames = ko.observableArray([]);
+    this.alias_name = ko.observable(false);
+    this.alias_name_ref = ko.observable();
+
+    this.last_message = ko.observable(false);
+
     this.hasCreationMessage = false;
 
     this.firstUserEntity = ko.pureComputed(() => this.participating_user_ets()[0]);
@@ -270,17 +280,22 @@ export class Conversation {
     this.hasGlobalMessageTimer = ko.pureComputed(() => this.globalMessageTimer() > 0);
 
     this.messages_unordered = ko.observableArray();
-    this.messages = ko.pureComputed(() =>
-      this.messages_unordered().sort((message_a, message_b) => {
+    this.messages = ko.pureComputed(() => {
+      const msgs = this.messages_unordered().sort((message_a, message_b) => {
         return message_a.timestamp() - message_b.timestamp();
-      }),
-    );
+      });
+      if (msgs[msgs.length - 1]) {
+        this.last_message(msgs[msgs.length - 1]);
+      }
+      return msgs;
+    });
 
     this.hasAdditionalMessages = ko.observable(true);
 
     this.messages_visible = ko
-      .pureComputed(() =>
-        !this.id
+      .pureComputed(() => {
+        // console.log('--sss--', this.messages_unordered().length);
+        return !this.id
           ? []
           : this.messages().filter((messageEntity, index, array) => {
               const previous = index >= 1 ? array[index - 1] : undefined;
@@ -299,8 +314,8 @@ export class Conversation {
               }
 
               return messageEntity.visible();
-            }),
-      )
+            });
+      })
       .extend({trackArrayChanges: true});
 
     // Calling
@@ -579,7 +594,6 @@ export class Conversation {
         break;
       }
     }
-
     koArrayPushAll(this.messages_unordered, message_ets);
   }
 
@@ -777,7 +791,7 @@ export class Conversation {
    * @returns {Message|undefined} Last message entity or undefined
    */
   getLastMessage() {
-    return this.messages()[this.messages().length - 1];
+    return this.last_message();
   }
 
   /**
