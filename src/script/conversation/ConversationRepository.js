@@ -2676,7 +2676,6 @@ export class ConversationRepository {
       avatar_key: this.selfUser().previewPictureResource() ? this.selfUser().previewPictureResource().identifier : '',
       name: this.selfUser().name(),
     };
-    // console.log('发送万人群消息--', conversationId, send_msg);
     return this.conversation_service.post_big_group_message(conversationId, send_msg);
   }
 
@@ -3353,11 +3352,19 @@ export class ConversationRepository {
       return Promise.reject(new Error('Conversation Repository Event Handling: Event missing'));
     }
 
+    //todo:secret system notify ignore
+    const systemNotifies = [
+      BackendEvent.NOTIFY.SYSTEM_SECRET_ID,
+      BackendEvent.NOTIFY.SYSTEM_NEW_DEVICE_ID,
+      BackendEvent.NOTIFY.SYSTEM_MONEY_TRANSFER_ID,
+    ];
+    if (eventJson.data && systemNotifies.includes(eventJson.data.conversationId)) {
+      return Promise.reject(new Error('Conversation System Event Handling: Temporary Ignored'));
+    }
+
     const {conversation, data: eventData, type} = eventJson;
     const conversationId = (eventData && eventData.conversationId) || conversation;
     this.logger.info(`Handling event '${type}' in conversation '${conversationId}' (Source: ${eventSource})`);
-
-    //todo:new device system notify check
 
     const inSelfConversation = conversationId === this.self_conversation() && this.self_conversation().id;
     if (inSelfConversation) {

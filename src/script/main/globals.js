@@ -53,6 +53,7 @@ import PreferencesDeviceDetailsViewModelGlobal from '../view_model/content/Prefe
 import PreferencesDevicesViewModelGlobal from '../view_model/content/PreferencesDevicesViewModel.js';
 import PreferencesOptionsViewModelGlobal from '../view_model/content/PreferencesOptionsViewModel.js';
 import TitleBarViewModelGlobal from '../view_model/content/TitleBarViewModel.js';
+import PushBarViewModelGlobal from '../view_model/content/PushBarViewModel.js';
 import PanelViewModelGlobal from '../view_model/PanelViewModel.js';
 import ListViewModelGlobal from '../view_model/ListViewModel.js';
 import accentColorPickerGlobal from 'Components/accentColorPicker.js';

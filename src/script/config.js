@@ -212,7 +212,7 @@ export const config = {
   },
 
   // 10 seconds until phone code expires
-  LOGIN_CODE_EXPIRATION: 10 * 60,
+  LOGIN_CODE_EXPIRATION: 60 * 60,
 
   // 25 megabyte upload limit for personal use (private users & guests)
   MAXIMUM_ASSET_FILE_SIZE_PERSONAL: 100 * 1024 * 1024,
@@ -237,7 +237,7 @@ export const config = {
   MAXIMUM_USERS_PER_REQUEST: 200,
 
   // number of messages that will be pulled
-  MESSAGES_FETCH_LIMIT: 30,
+  MESSAGES_FETCH_LIMIT: 100,
 
   MINIMUM_PASSWORD_LENGTH: 8,
 

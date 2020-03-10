@@ -60,7 +60,9 @@
   <div class="conversation-input-bar__input" data-bind="template: {afterRender: triggerInputChangeEvent}, css: {'conversation-input-bar__input--editing': isEditing()}, style: {'position': 'relative', 'min-height': '132px', 'box-sizing': 'content-box', 'flex-direction': 'column'}">
     <!-- ko if: conversationEntity() && !conversationEntity().connection().isOutgoingRequest() -->
       <div class="controls-right">
-          <message-timer-button params="conversation: conversationEntity"></message-timer-button>
+          <!-- ko if: conversationEntity().hasSettingPermission() -->
+            <message-timer-button params="conversation: conversationEntity"></message-timer-button>
+          <!-- /ko -->
 
           <label id="conversation-input-bar-photo" class="controls-right-button button-icon-large">
             <image-icon></image-icon>
@@ -109,12 +111,6 @@
             </span>
           <!-- /ko -->
       </div>
-
-      <!--<div class="controls-left">-->
-        <!--&lt;!&ndash; ko if: input().length &ndash;&gt;-->
-          <!--<participant-avatar class="cursor-default" params="participant: selfUser, size: ParticipantAvatar.SIZE.X_SMALL"></participant-avatar>-->
-        <!--&lt;!&ndash; /ko &ndash;&gt;-->
-      <!--</div>-->
 
       <!-- ko if: !conversationEntity().removed_from_conversation() -->
         <div class="controls-center" data-bind="template: {afterRender: setElements}">

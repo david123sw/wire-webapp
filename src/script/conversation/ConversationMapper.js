@@ -75,6 +75,7 @@ import {BaseError} from '../error/BaseError';
  * @property {number=} ephemeral_timer
  * @property {object=} mediumPictureResource
  * @property {number=} message_timer
+ * @property {boolean=} has_announcement_shown
  * @property {number=} last_event_timestamp
  * @property {number=} last_read_timestamp
  * @property {number=} last_server_timestamp
@@ -165,6 +166,12 @@ export class ConversationMapper {
           member.aliasname = member_alias;
         }
       });
+    }
+
+    const advisory = conversationData.data && conversationData.data.advisory;
+    if (advisory) {
+      conversationEntity.advisory(advisory);
+      conversationEntity.has_announcement_shown(false);
     }
     return conversationEntity;
   }
@@ -315,6 +322,7 @@ export class ConversationMapper {
       creator,
       forumid,
       id,
+      has_announcement_shown,
       manager,
       mediumPictureResource,
       memberjoin_confirm,
@@ -358,6 +366,10 @@ export class ConversationMapper {
 
     const selfState = members ? members.self : conversationData;
     conversationEntity = this.updateSelfStatus(conversationEntity, selfState);
+
+    if (has_announcement_shown !== undefined) {
+      conversationEntity.has_announcement_shown(has_announcement_shown);
+    }
 
     if (mediumPictureResource !== undefined && previewPictureResource !== undefined) {
       conversationEntity.mediumPictureResource(mediumPictureResource);
@@ -420,7 +432,6 @@ export class ConversationMapper {
    * @returns {Array<Object>} Merged conversation data
    */
   mergeConversation(localConversations, remoteConversations) {
-    // console.log('dav333 remoteConversations', remoteConversations);
     localConversations = localConversations.filter(conversationData => conversationData);
 
     return remoteConversations.map((remoteConversationData, index) => {

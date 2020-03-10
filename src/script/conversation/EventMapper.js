@@ -328,8 +328,12 @@ export class EventMapper {
     }
 
     if (event.ephemeral_expires) {
-      messageEntity.ephemeral_expires(event.ephemeral_expires);
-      messageEntity.ephemeral_started(event.ephemeral_started || '0');
+      const tm_expired =
+        'string' === typeof event.ephemeral_expires ? parseInt(event.ephemeral_expires) : event.ephemeral_expires;
+      const tm_started =
+        'string' === typeof event.ephemeral_started ? parseInt(event.ephemeral_started) : event.ephemeral_started;
+      messageEntity.ephemeral_expires(tm_started ? tm_expired - tm_started : tm_expired);
+      messageEntity.ephemeral_started(tm_started || '0');
     }
 
     if (isNaN(messageEntity.timestamp())) {

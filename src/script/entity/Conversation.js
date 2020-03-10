@@ -184,6 +184,10 @@ export class Conversation {
     this.mediumPictureResource = ko.observable();
     this.members = ko.observable();
 
+    this.has_announcement_shown = ko.observable(false);
+    // Self permission role
+    this.hasSettingPermission = ko.observable(false);
+
     // Conversation states for view
     this.notificationState = ko.pureComputed(() => {
       if (!this.selfUser()) {
@@ -300,7 +304,11 @@ export class Conversation {
               }
 
               //check2
-              const systemNotifies = [BackendEvent.NOTIFY.SYSTEM_SECRET_ID, BackendEvent.NOTIFY.SYSTEM_NEW_DEVICE_ID];
+              const systemNotifies = [
+                BackendEvent.NOTIFY.SYSTEM_SECRET_ID,
+                BackendEvent.NOTIFY.SYSTEM_NEW_DEVICE_ID,
+                BackendEvent.NOTIFY.SYSTEM_MONEY_TRANSFER_ID,
+              ];
               if (systemNotifies.includes(messageEntity.from)) {
                 return false;
               }
@@ -440,6 +448,14 @@ export class Conversation {
           }
         });
       }
+
+      if (this.isSuperGroup()) {
+        this.hasSettingPermission(false);
+      } else if (this.messageTimer()) {
+        this.hasSettingPermission(this.messageTimer());
+      } else if (this.selfUser().teamRole() === TEAM_ROLE.OWNER || this.selfUser().teamRole() === TEAM_ROLE.ADMIN) {
+        this.hasSettingPermission(false);
+      }
       return true;
     });
 
@@ -459,6 +475,7 @@ export class Conversation {
       this.members,
       this.messageTimer,
       this.isGuest,
+      this.has_announcement_shown,
       this.last_event_timestamp,
       this.last_read_timestamp,
       this.last_server_timestamp,
@@ -877,6 +894,7 @@ export class Conversation {
       cleared_timestamp: this.cleared_timestamp(),
       ephemeral_timer: this.localMessageTimer(),
       global_message_timer: this.globalMessageTimer(),
+      has_announcement_shown: this.has_announcement_shown(),
       id: this.id,
       is_guest: this.isGuest(),
       is_managed: this.isManaged,
