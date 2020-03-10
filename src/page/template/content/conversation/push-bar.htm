@@ -1,0 +1,11 @@
+<div id="conversation-push-bar" class="conversation-push-bar" data-bind="with: $root.pushBar">
+    <!-- ko if: conversationEntity() -->
+    <div class="conversation-push-bar-content">
+        <service-icon class="conversation-push-bar-board conversation-push-bar-board--remind"></service-icon>
+        <div class="conversation-push-bar-text-content" data-bind="clickOrDrag: clickOnDetails">
+            <span class="conversation-push-bar-text-content-announcement" data-bind="text: conversationEntity().advisory()"></span>
+        </div>
+        <close-icon class="conversation-push-bar-board conversation-push-bar-board--close" data-bind="clickOrDrag: onClose" data-uie-name="do-close"></close-icon>
+    </div>
+    <!-- /ko -->
+</div>

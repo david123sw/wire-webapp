@@ -88,6 +88,13 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
     this.selectedService = ko.observable();
 
     this.isEditingAnnouncement = ko.observable(false);
+    this.enableDisplayAnnouncement = ko.pureComputed(() => {
+      if (this.activeConversation().isCreator()) {
+      } else {
+        return true;
+      }
+    });
+
     ko.computed(() => {
       if (this.activeConversation()) {
         this.serviceParticipants.removeAll();
@@ -448,6 +455,7 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
   onAnnounceCancel() {
     const isEditing = this.isEditingAnnouncement();
     if (!isEditing) {
+      $('.conversation-details__announcement').focus();
       this.preAnnouncementText = this.activeConversation().advisory();
     } else {
       this.activeConversation().advisory(this.preAnnouncementText);

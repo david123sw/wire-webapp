@@ -39,26 +39,29 @@
     flex-direction: row;
   }
   &__announcement-inner {
-    padding: 0 16px;
+    padding: 0px;
   }
   &__announcement {
     display: flex;
     min-height: 100px;
     padding: 0;
     font-size: 20px;
-    word-break: break-word;
+    resize: none;
+    word-break: break-all;
     &--input {
       width: 100%;
-      padding: 0 5px;
+      padding: 0 16px;
       border: 1px solid transparent;
       &:focus {
         outline: none;
       }
     }
     &-a {
-      border: 1px solid #eee;
+      width: 100%;
+      padding: 0 16px;
+      border: none; //1px solid #eee;
       &:focus {
-        border: 1px solid #999;
+        border: none; //1px solid #999;
       }
     }
   }
@@ -67,10 +70,10 @@
     display: flex;
     justify-content: space-between;
     &-c {
-      padding: 3px 5px;
+      padding: 3px 16px;
     }
     &-d {
-      padding: 3px 5px;
+      padding: 3px 16px;
       color: #999;
       pointer-events: none;
     }

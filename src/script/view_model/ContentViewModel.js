@@ -96,6 +96,12 @@ export class ContentViewModel {
       this,
       repositories,
     );
+    this.pushBar = new z.viewModel.content.PushBarViewModel(
+      mainViewModel.calling,
+      mainViewModel.panel,
+      this,
+      repositories,
+    );
 
     this.preferencesAbout = new z.viewModel.content.PreferencesAboutViewModel(mainViewModel, this, repositories);
     this.preferencesAccount = new z.viewModel.content.PreferencesAccountViewModel(mainViewModel, this, repositories);
@@ -122,6 +128,7 @@ export class ContentViewModel {
         case ContentViewModel.STATE.CONVERSATION:
           this.inputBar.addedToView();
           this.titleBar.addedToView();
+          this.pushBar.addedToView();
           break;
         case ContentViewModel.STATE.PREFERENCES_ACCOUNT:
           this.preferencesAccount.popNotification();
@@ -138,6 +145,7 @@ export class ContentViewModel {
         default:
           this.inputBar.removedFromView();
           this.titleBar.removedFromView();
+          this.pushBar.removedFromView();
       }
     });
 

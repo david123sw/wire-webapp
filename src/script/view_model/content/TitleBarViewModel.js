@@ -25,8 +25,8 @@ import {CONV_TYPE, CALL_TYPE} from '@wireapp/avs';
 
 import {ConversationVerificationState} from '../../conversation/ConversationVerificationState';
 import {WebAppEvents} from '../../event/WebApp';
-import {Shortcut} from '../../ui/Shortcut';
-import {ShortcutType} from '../../ui/ShortcutType';
+// import {Shortcut} from '../../ui/Shortcut';
+// import {ShortcutType} from '../../ui/ShortcutType';
 import {ContentViewModel} from '../ContentViewModel';
 
 window.z = window.z || {};
@@ -97,8 +97,8 @@ z.viewModel.content.TitleBarViewModel = class TitleBarViewModel {
       return this.conversationEntity() && this.conversationEntity().supportsVideoCall(true);
     });
 
-    const shortcut = Shortcut.getShortcutTooltip(ShortcutType.PEOPLE);
-    this.peopleTooltip = t('tooltipConversationPeople', shortcut);
+    // const shortcut = Shortcut.getShortcutTooltip(ShortcutType.PEOPLE);
+    this.peopleTooltip = ''; //t('tooltipConversationPeople', shortcut);
   }
 
   addedToView() {
