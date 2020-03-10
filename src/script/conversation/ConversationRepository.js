@@ -603,9 +603,10 @@ export class ConversationRepository {
     conversationEntity.is_pending(true);
 
     const firstMessageEntity = conversationEntity.getFirstMessage();
-    const upperBound = firstMessageEntity
-      ? new Date(firstMessageEntity.timestamp())
-      : new Date(conversationEntity.get_latest_timestamp(this.serverTimeHandler.toServerTimestamp()) + 1);
+    const upperBound =
+      firstMessageEntity && firstMessageEntity.timestamp()
+        ? new Date(firstMessageEntity.timestamp())
+        : new Date(conversationEntity.get_latest_timestamp(this.serverTimeHandler.toServerTimestamp()) + 1);
     return this.eventService
       .loadPrecedingEvents(conversationEntity.id, new Date(0), upperBound, z.config.MESSAGES_FETCH_LIMIT)
       .then(events => this._addPrecedingEventsToConversation(events, conversationEntity))
