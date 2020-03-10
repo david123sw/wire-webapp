@@ -3351,7 +3351,7 @@ export class ConversationRepository {
       BackendEvent.NOTIFY.SYSTEM_MONEY_TRANSFER_ID,
     ];
     if (eventJson.data && systemNotifies.includes(eventJson.data.conversationId)) {
-      return Promise.reject(new Error('Conversation System Event Handling: Temporary Ignored'));
+      return Promise.resolve();
     }
 
     const {conversation, data: eventData, type} = eventJson;
