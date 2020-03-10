@@ -45,6 +45,7 @@ export class ConversationListViewModel {
    * @param {Function} onJoinCall - Callback called when the user wants to join a call
    */
   constructor(mainViewModel, listViewModel, repositories, onJoinCall) {
+    this.clickOnConversation = this.clickOnConversation.bind(this);
     this.isSelectedConversation = this.isSelectedConversation.bind(this);
 
     this.audioRepository = repositories.audio;
@@ -185,6 +186,12 @@ export class ConversationListViewModel {
     };
 
     this._initSubscriptions();
+  }
+
+  clickOnConversation(conversationEntity) {
+    if (!this.isSelectedConversation(conversationEntity)) {
+      this.contentViewModel.showConversation(conversationEntity);
+    }
   }
 
   _initSubscriptions() {

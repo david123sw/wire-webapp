@@ -1,5 +1,5 @@
 /*
- * Secret
+ * Wire
  * Copyright (C) 2018 Wire Swiss GmbH
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,6 @@
  *
  */
 
-import moment from 'moment';
 import $ from 'jquery';
 import {groupBy} from 'underscore';
 
@@ -25,6 +24,7 @@ import {getLogger} from 'Util/Logger';
 import {scrollEnd, scrollToBottom, scrollBy} from 'Util/scroll-helpers';
 import {t} from 'Util/LocalizerUtil';
 import {safeWindowOpen, safeMailOpen} from 'Util/SanitizationUtil';
+import {isSameDay, differenceInMinutes} from 'Util/TimeUtil';
 
 import {Conversation} from '../../entity/Conversation';
 import {ModalsViewModel} from '../ModalsViewModel';
@@ -45,7 +45,6 @@ class MessageListViewModel {
     this.click_on_cancel_request = this.click_on_cancel_request.bind(this);
     this.click_on_like = this.click_on_like.bind(this);
     this.clickOnInvitePeople = this.clickOnInvitePeople.bind(this);
-    this.get_timestamp_class = this.get_timestamp_class.bind(this);
     this.handleClickOnMessage = this.handleClickOnMessage.bind(this);
     this.is_last_delivered_message = this.is_last_delivered_message.bind(this);
     this.on_session_reset_click = this.on_session_reset_click.bind(this);
@@ -77,7 +76,7 @@ class MessageListViewModel {
 
     amplify.subscribe(WebAppEvents.INPUT.RESIZE, this._handleInputResize.bind(this));
 
-    this.conversationLoaded = ko.observable(false);
+    // this.conversationLoaded = ko.observable(false);
     // Store last read to show until user switches conversation
     this.conversation_last_read_timestamp = undefined;
 
@@ -167,6 +166,13 @@ class MessageListViewModel {
    * @returns {Promise} Resolves when conversation was changed
    */
   changeConversation(conversationEntity, messageEntity) {
+    // Clean up old conversation
+    // this.conversationLoaded(false);
+    if (this.conversation()) {
+      this.release_conversation(this.conversation());
+    }
+
+    // Update new conversation
     this.conversation(conversationEntity);
 
     // Keep last read timestamp to render unread when entering conversation
@@ -174,12 +180,22 @@ class MessageListViewModel {
       this.conversation_last_read_timestamp = this.conversation().last_read_timestamp();
     }
 
-    conversationEntity.is_loaded(false);
-    return this._loadConversation(conversationEntity, messageEntity)
-      .then(() => this._renderConversation(conversationEntity, messageEntity))
+    if (conversationEntity.is_loaded()) {
+      return this._renderConversation(conversationEntity);
+    }
+
+    // conversationEntity.is_loaded(false);
+    return this.conversation_repository
+      .updateParticipatingUserEntities(conversationEntity, false, true)
+      .then(_conversationEntity => {
+        return messageEntity
+          ? this.conversation_repository.getMessagesWithOffset(_conversationEntity, messageEntity)
+          : this.conversation_repository.getPrecedingMessages(_conversationEntity);
+      })
       .then(() => {
         conversationEntity.is_loaded(true);
-        this.conversationLoaded(true);
+        // this.conversationLoaded(true);
+        return this._renderConversation(conversationEntity, messageEntity);
       });
   }
 
@@ -209,13 +225,12 @@ class MessageListViewModel {
    */
   _renderConversation(conversationEntity, messageEntity) {
     const messages_container = this.getMessagesContainer();
-
     const is_current_conversation = conversationEntity === this.conversation();
     if (!is_current_conversation) {
       this.logger.info(`Skipped re-loading current conversation '${conversationEntity.display_name()}'`);
       return Promise.resolve();
     }
-
+    $('.conversation').css({opacity: 0});
     return new Promise(resolve => {
       window.setTimeout(() => {
         // Reset scroll position
@@ -227,7 +242,6 @@ class MessageListViewModel {
           const unread_message = $('.message-timestamp-unread');
           if (unread_message.length) {
             const unreadMarkerPosition = unread_message.parents('.message').position();
-
             scrollBy(messages_container, unreadMarkerPosition.top);
           } else {
             scrollToBottom(messages_container);
@@ -236,23 +250,10 @@ class MessageListViewModel {
 
         window.addEventListener('resize', this._adjustScroll);
 
-        let shouldStickToBottomOnMessageAdd;
-
-        this.messagesBeforeChangeSubscription = conversationEntity.messages_visible.subscribe(
-          () => {
-            // we need to keep track of the scroll position before the message array has changed
-            shouldStickToBottomOnMessageAdd = this._shouldStickToBottom();
-          },
-          null,
-          'beforeChange',
-        );
-
+        $('.conversation').css({opacity: 1});
         // Subscribe for incoming messages
         this.messagesChangeSubscription = conversationEntity.messages_visible.subscribe(
-          changedMessages => {
-            this._scrollAddedMessagesIntoView(changedMessages, shouldStickToBottomOnMessageAdd);
-            shouldStickToBottomOnMessageAdd = undefined;
-          },
+          this._scrollAddedMessagesIntoView,
           null,
           'arrayChange',
         );
@@ -269,13 +270,17 @@ class MessageListViewModel {
    */
   _scrollAddedMessagesIntoView(changedMessages, shouldStickToBottom) {
     const messages_container = this.getMessagesContainer();
-    const lastAddedItem = changedMessages
-      .slice()
-      .reverse()
-      .find(changedMessage => changedMessage.status === 'added');
+    const lastAddedItem = changedMessages[changedMessages.length - 1];
+    // const lastAddedItem = changedMessages
+    //   .slice()
+    //   .reverse()
+    //   .find(changedMessage => changedMessage.status === 'added');
 
     // We are only interested in items that were added
     if (!lastAddedItem) {
+      return;
+    }
+    if (lastAddedItem.status !== 'added') {
       return;
     }
 
@@ -420,7 +425,7 @@ class MessageListViewModel {
    * @returns {undefined} No return value
    */
   show_detail(message_et, event) {
-    if (message_et.is_expired() || $(event.currentTarget).hasClass('image-loading')) {
+    if (message_et.is_expired() || $(event.currentTarget).hasClass('image-asset--no-image')) {
       return;
     }
 
@@ -434,7 +439,7 @@ class MessageListViewModel {
     });
   }
 
-  get_timestamp_class(messageEntity) {
+  get_timestamp_class = messageEntity => {
     const previousMessage = this.conversation().get_previous_message(messageEntity);
     if (!previousMessage || messageEntity.is_call()) {
       return '';
@@ -448,17 +453,17 @@ class MessageListViewModel {
       return 'message-timestamp-visible message-timestamp-unread';
     }
 
-    const last = moment(previousMessage.timestamp());
-    const current = moment(messageEntity.timestamp());
+    const last = previousMessage.timestamp();
+    const current = messageEntity.timestamp();
 
-    if (!last.isSame(current, 'day')) {
+    if (!isSameDay(last, current)) {
       return 'message-timestamp-visible message-timestamp-day';
     }
 
-    if (current.diff(last, 'minutes') > 60) {
+    if (differenceInMinutes(current, last) > 60) {
       return 'message-timestamp-visible';
     }
-  }
+  };
 
   /**
    * Checks its older neighbor in order to see if the avatar should be rendered or not
@@ -528,9 +533,9 @@ class MessageListViewModel {
       conversationEntity.setTimestamp(messageEntity.timestamp(), Conversation.TIMESTAMP_TYPE.LAST_READ);
     };
 
-    const startTimer = () => {
+    const startTimer = async () => {
       if (messageEntity.conversation_id === conversationEntity.id) {
-        this.conversation_repository.checkMessageTimer(messageEntity);
+        await this.conversation_repository.checkMessageTimer(messageEntity);
       }
     };
 

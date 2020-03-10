@@ -179,21 +179,23 @@ export class EventService {
     toDate = new Date(),
     limit = Number.MAX_SAFE_INTEGER,
   ) {
-    const includeParams = {
-      includeFrom: true,
-      includeTo: false,
-    };
-
-    try {
-      const events = await this._loadEventsInDateRange(conversationId, fromDate, toDate, limit, includeParams);
-      return this.storageService.db
-        ? events.reverse().sortBy('time')
-        : events.reverse().sort((a, b) => a.time - b.time);
-    } catch (error) {
-      const message = `Failed to load events for conversation '${conversationId}' from database: '${error.message}'`;
-      this.logger.error(message);
-      throw error;
+    if (!_.isDate(fromDate) || !_.isDate(toDate)) {
+      throw new Error(`Lower bound (${typeof fromDate}) and upper bound (${typeof toDate}) must be of type 'Date'.`);
+    } else if (fromDate.getTime() > toDate.getTime()) {
+      throw new Error(`Lower bound (${fromDate.getTime()}) cannot be greater than upper bound (${toDate.getTime()}).`);
     }
+    return this.storageService.db[this.EVENT_STORE_NAME]
+      .where('[conversation+time]')
+      .between([conversationId, fromDate.toISOString()], [conversationId, toDate.toISOString()], true, false)
+      .reverse()
+      .limit(limit)
+      .toArray()
+      .catch(error => {
+        this.logger.error(
+          `Failed to load events for conversation '${conversationId}' from database: '${error.message}'`,
+        );
+        throw error;
+      });
   }
 
   /**
@@ -206,18 +208,15 @@ export class EventService {
    * @returns {Promise} Resolves with the retrieved records
    */
   async loadFollowingEvents(conversationId, fromDate, limit = Number.MAX_SAFE_INTEGER, includeFrom = true) {
-    const includeParams = {
-      includeFrom,
-      includeTo: true,
-    };
-    if (!(fromDate instanceof Date)) {
-      const errorMessage = `fromDate ('${typeof fromDate}') must be of type 'Date'.`;
-      throw new Error(errorMessage);
+    if (!_.isDate(fromDate)) {
+      throw new Error(`Upper bound (${typeof fromDate}) must be of type 'Date'.`);
     }
-    const toDate = new Date(Math.max(fromDate.getTime() + 1, Date.now()));
 
-    const events = await this._loadEventsInDateRange(conversationId, fromDate, toDate, limit, includeParams);
-    return this.storageService.db ? events.sortBy('time') : events.sort((a, b) => a.time - b.time);
+    return this.storageService.db[this.EVENT_STORE_NAME]
+      .where('[conversation+time]')
+      .between([conversationId, fromDate.toISOString()], [conversationId, new Date().toISOString()], includeFrom, true)
+      .limit(limit)
+      .toArray();
   }
 
   /**
