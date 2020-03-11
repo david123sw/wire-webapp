@@ -92,11 +92,11 @@ const _cleanup = () => {
   _removeListeners();
 };
 
-const _build = (entries, defaultIdentifier) => {
+const _build = (entries, defaultIdentifier, current_message_timer, current_user_accent_color) => {
   const menu = document.createElement('div');
   menu.classList.add('ctx-menu');
 
-  entries.forEach(({title, label, click, identifier, icon, isSeparator, isDisabled, isChecked}) => {
+  entries.forEach(({title, label, click, identifier, icon, isSeparator, isDisabled, isChecked}, index) => {
     const element = document.createElement('div');
     if (isSeparator) {
       element.classList.add('ctx-menu-separator');
@@ -107,6 +107,11 @@ const _build = (entries, defaultIdentifier) => {
     element.classList.add('ctx-menu-item');
     const itemText = document.createElement('span');
     itemText.innerText = label;
+    if (label === current_message_timer.text && current_user_accent_color) {
+      itemText.style = `color: ${current_user_accent_color};`;
+    } else if (current_message_timer.text === undefined && 0 === index) {
+      itemText.style = `color: ${current_user_accent_color};`;
+    }
     element.appendChild(itemText);
 
     if (isDisabled) {
@@ -151,9 +156,11 @@ export const Context = {
    * @param {Event} event - menu will appear at currentTarget position
    * @param {Array} entries - configuration to build the menu {label: 'label', click: function() {}}
    * @param {string} identifier - data-uie-name added to all entries
+   * @param {Object} current_message_timer - current message timer object
+   * @param {string} current_user_accent_color - current message timer color
    * @returns {undefined} No return value
    */
-  from: (event, entries, identifier) => {
+  from: (event, entries, identifier, current_message_timer = {}, current_user_accent_color = '') => {
     event.preventDefault();
     event.stopPropagation();
 
@@ -165,7 +172,7 @@ export const Context = {
     const windowWidth = window.innerWidth;
     const windowHeight = window.innerHeight;
 
-    const menu = _build(entries, identifier);
+    const menu = _build(entries, identifier, current_message_timer, current_user_accent_color);
     menu.style.visibility = 'hidden';
     document.body.appendChild(menu);
 

@@ -67,6 +67,25 @@
     background-color: var(--app-bg);
   }
 
+  .timed-message-remaining-background {
+    position: relative;
+    display: flex;
+    width: 100%;
+    height: fit-content;
+    align-items: center;
+    opacity: 1;
+
+    &--left {
+      justify-content: flex-start;
+    }
+
+    &--right {
+      justify-content: flex-end;
+    }
+  }
+
+  &.hover .timed-message-remaining-background,
+  &:hover .timed-message-remaining-background,
   &.hover .time,
   &:hover .time,
   &.hover .context-menu,
@@ -101,6 +120,14 @@
   &:not(:hover) {
     .message-status {
       opacity: 1;
+    }
+  }
+
+  &:not(:hover) {
+    .timed-message-remaining-background {
+      width: 0px;
+      height: 0px;
+      opacity: 0;
     }
   }
 
@@ -513,20 +540,32 @@
   width: 36px;
 }
 
+.timed-message-remaining-background-for-last {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: fit-content;
+  align-items: center;
+
+  &--left {
+    justify-content: flex-start;
+  }
+
+  &--right {
+    justify-content: flex-end;
+  }
+}
+
 .timed-message-remaining-left {
-  position: absolute;
-  bottom: -2px;
-  left: 0px;
-  margin-left: 120px;
-  font-size: 5px;
+  position: relative;
+  margin-left: 30px;
+  font-size: 4px !important;
 }
 
 .timed-message-remaining-right {
-  position: absolute;
-  right: 0px;
-  bottom: -2px;
-  margin-right: 68px;
-  font-size: 5px;
+  position: relative;
+  margin-right: 14px;
+  font-size: 4px !important;
 }
 
 image-asset {
@@ -976,7 +1015,6 @@ image-asset {
   }
 }
 
-// TODO make generic class
 .ephemeral-message-obfuscated {
   color: var(--accent-color);
   font-family: @font-family-ephemeral;

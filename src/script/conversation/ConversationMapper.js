@@ -338,14 +338,13 @@ export class ConversationMapper {
       url_invite,
       viewmem,
       view_chg_mem_notify,
+      ephemeral_timer,
     } = conversationData;
-    let conversationEntity = new Conversation(id);
 
+    let conversationEntity = new Conversation(id);
     conversationEntity.creator = creator;
     conversationEntity.type(type);
     conversationEntity.name(name ? name : '');
-
-    //secret
     conversationEntity.url_invite(url_invite);
     conversationEntity.confirm(confirm);
     conversationEntity.member_join_confirm(memberjoin_confirm);
@@ -362,7 +361,7 @@ export class ConversationMapper {
     conversationEntity.advisory(advisory);
     conversationEntity.members(members);
     conversationEntity.globalMessageTimer(message_timer);
-    conversationEntity.localMessageTimer(message_timer);
+    conversationEntity.localMessageTimer(ephemeral_timer);
 
     const selfState = members ? members.self : conversationData;
     conversationEntity = this.updateSelfStatus(conversationEntity, selfState);
@@ -433,11 +432,10 @@ export class ConversationMapper {
    */
   mergeConversation(localConversations, remoteConversations) {
     localConversations = localConversations.filter(conversationData => conversationData);
-
+    // console.log('dav333 remoteConversations', remoteConversations);
     return remoteConversations.map((remoteConversationData, index) => {
       const conversationId = remoteConversationData.id;
       const localConversationData = localConversations.find(({id}) => id === conversationId) || {id: conversationId};
-
       const {
         access,
         access_role,
@@ -498,6 +496,10 @@ export class ConversationMapper {
 
       if (typeof localConversationData.receipt_mode === 'number') {
         updates.receipt_mode = localConversationData.receipt_mode;
+      }
+
+      if (typeof localConversationData.ephemeral_timer === 'number') {
+        updates.ephemeral_timer = localConversationData.ephemeral_timer;
       }
 
       const mergedConversation = Object.assign({}, localConversationData, updates);

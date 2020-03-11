@@ -60,7 +60,7 @@
   <div class="conversation-input-bar__input" data-bind="template: {afterRender: triggerInputChangeEvent}, css: {'conversation-input-bar__input--editing': isEditing()}, style: {'position': 'relative', 'min-height': '132px', 'box-sizing': 'content-box', 'flex-direction': 'column'}">
     <!-- ko if: conversationEntity() && !conversationEntity().connection().isOutgoingRequest() -->
       <div class="controls-right">
-          <!-- ko if: conversationEntity().hasSettingPermission() -->
+          <!-- ko ifnot: conversationEntity().isSuperGroup() -->
             <message-timer-button params="conversation: conversationEntity"></message-timer-button>
           <!-- /ko -->
 

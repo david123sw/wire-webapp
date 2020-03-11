@@ -33,8 +33,7 @@ export class TimedMessagesViewModel extends BasePanelViewModel {
     this.currentMessageTimer = ko.observable(0);
 
     ko.pureComputed(() => {
-      const hasGlobalMessageTimer = this.activeConversation() && this.activeConversation().hasGlobalMessageTimer();
-      return hasGlobalMessageTimer ? this.activeConversation().messageTimer() : 0;
+      return this.activeConversation() ? this.activeConversation().messageTimer() : 0;
     }).subscribe(timer => {
       this.currentMessageTimer(timer);
     });

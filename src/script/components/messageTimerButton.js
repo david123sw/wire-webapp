@@ -62,7 +62,15 @@ class MessageTimerButton {
       }),
     );
 
-    Context.from(event, entries, 'message-timer-menu');
+    Context.from(
+      event,
+      entries,
+      'message-timer-menu',
+      this.duration(),
+      this.conversationEntity()
+        .selfUser()
+        .accent_color(),
+    );
   }
 }
 
