@@ -608,7 +608,7 @@ export class ConversationRepository {
     const firstMessageEntity = conversationEntity.getFirstMessage();
     const upperBound =
       firstMessageEntity && firstMessageEntity.timestamp()
-        ? new Date(firstMessageEntity.timestamp() ? firstMessageEntity.timestamp() : Date.now())
+        ? new Date(firstMessageEntity.timestamp())
         : new Date(conversationEntity.get_latest_timestamp(this.serverTimeHandler.toServerTimestamp()) + 1);
     return this.eventService
       .loadPrecedingEvents(conversationEntity.id, new Date(0), upperBound, z.config.MESSAGES_FETCH_LIMIT)
@@ -628,7 +628,6 @@ export class ConversationRepository {
    */
   getPrecedingMessagesAsLast(conversationEntity) {
     conversationEntity.is_pending(true);
-
     const firstMessageEntity = conversationEntity.getFirstMessage();
     const upperBound = firstMessageEntity
       ? new Date(firstMessageEntity.timestamp())
@@ -3352,7 +3351,7 @@ export class ConversationRepository {
       BackendEvent.NOTIFY.SYSTEM_MONEY_TRANSFER_ID,
     ];
     if (eventJson.data && systemNotifies.includes(eventJson.data.conversationId)) {
-      return Promise.reject(new Error('Conversation System Event Handling: Temporary Ignored'));
+      return Promise.resolve();
     }
 
     const {conversation, data: eventData, type} = eventJson;
