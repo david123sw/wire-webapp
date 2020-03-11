@@ -201,11 +201,7 @@ export class ContentViewModel {
    * @returns {undefined} No return value
    */
   showConversation = (conversation, options = {}) => {
-    const {
-      exposeMessage: exposeMessageEntity,
-      openFirstSelfMention = false,
-      openNotificationSettings = false,
-    } = options;
+    const {openNotificationSettings = false} = options;
 
     if (!conversation) {
       return this.switchContent(ContentViewModel.STATE.CONNECTION_REQUESTS);
@@ -246,10 +242,6 @@ export class ContentViewModel {
           this.conversationRepository.active_conversation(conversationEntity);
         }
 
-        const messageEntity = openFirstSelfMention
-          ? conversationEntity.getFirstUnreadSelfMention()
-          : exposeMessageEntity;
-
         if (conversationEntity.is_cleared()) {
           conversationEntity.cleared_timestamp(0);
         }
@@ -257,7 +249,7 @@ export class ContentViewModel {
           ? this.conversationRepository.unarchiveConversation(conversationEntity)
           : Promise.resolve();
         unarchivePromise.then(() => {
-          this.messageList.changeConversation(conversationEntity, messageEntity).then(() => {
+          this.messageList.changeConversation(conversationEntity).then(() => {
             this._showContent(ContentViewModel.STATE.CONVERSATION);
             this.previousConversation = this.conversationRepository.active_conversation();
             if (openNotificationSettings) {
