@@ -608,13 +608,8 @@ export class ConversationRepository {
     const firstMessageEntity = conversationEntity.getFirstMessage();
     const upperBound =
       firstMessageEntity && firstMessageEntity.timestamp()
-        ? new Date(firstMessageEntity.timestamp())
+        ? new Date(firstMessageEntity.timestamp() ? firstMessageEntity.timestamp() : Date.now())
         : new Date(conversationEntity.get_latest_timestamp(this.serverTimeHandler.toServerTimestamp()) + 1);
-    // console.log('-----getPrecedingMessages----', Date.now(), upperBound, this.serverTimeHandler.toServerTimestamp());
-    if (firstMessageEntity) {
-      // console.log('-----getPrecedingMessages-1111---', firstMessageEntity.timestamp());
-    }
-
     return this.eventService
       .loadPrecedingEvents(conversationEntity.id, new Date(0), upperBound, z.config.MESSAGES_FETCH_LIMIT)
       .then(events => {
@@ -633,8 +628,6 @@ export class ConversationRepository {
    */
   getPrecedingMessagesAsLast(conversationEntity) {
     conversationEntity.is_pending(true);
-
-    // console.log('-----loadPrecedingEvents---231231')
 
     const firstMessageEntity = conversationEntity.getFirstMessage();
     const upperBound = firstMessageEntity
