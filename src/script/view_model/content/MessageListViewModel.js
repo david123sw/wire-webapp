@@ -108,6 +108,8 @@ class MessageListViewModel {
         this.conversation().isActiveParticipant() && this.conversation().inTeam() && this.conversation().isGuestRoom()
       );
     });
+
+    this.hasCurrentMessageListScrollHeightDecreased = false;
   }
 
   onMessageContainerInitiated(messagesContainer) {
@@ -167,7 +169,6 @@ class MessageListViewModel {
    */
   changeConversation(conversationEntity, messageEntity) {
     // Clean up old conversation
-    // this.conversationLoaded(false);
     if (this.conversation()) {
       this.release_conversation(this.conversation());
     }
@@ -184,7 +185,6 @@ class MessageListViewModel {
       return this._renderConversation(conversationEntity);
     }
 
-    // conversationEntity.is_loaded(false);
     return this.conversation_repository
       .updateParticipatingUserEntities(conversationEntity, false, true)
       .then(_conversationEntity => {
@@ -194,7 +194,6 @@ class MessageListViewModel {
       })
       .then(() => {
         conversationEntity.is_loaded(true);
-        // this.conversationLoaded(true);
         return this._renderConversation(conversationEntity, messageEntity);
       });
   }
@@ -293,8 +292,10 @@ class MessageListViewModel {
       }
 
       // Scroll to bottom if self user send the message
-      if (lastMessage.from === this.selfUser().id) {
-        window.requestAnimationFrame(() => scrollToBottom(messages_container));
+      if (this.conversation().id === this.conversation_repository.active_conversation().id) {
+        if (!this.hasCurrentMessageListScrollHeightDecreased || lastMessage.from === this.selfUser().id) {
+          window.requestAnimationFrame(() => scrollToBottom(messages_container));
+        }
         return;
       }
     }
@@ -331,6 +332,8 @@ class MessageListViewModel {
    * @returns {Promise<any>} A promise that resolves when the loading is done
    */
   loadFollowingMessages() {
+    this.hasCurrentMessageListScrollHeightDecreased = false;
+
     const lastMessage = this.conversation().getLastMessage();
 
     if (lastMessage) {
@@ -344,6 +347,16 @@ class MessageListViewModel {
       }
     }
     return Promise.resolve();
+  }
+
+  /**
+   * Inspect messages list scroll-y change
+   * @param {number} height - container height
+   * @returns {boolean} current container scroll up
+   */
+  getCurrentMessageListScrollHeight(height) {
+    this.hasCurrentMessageListScrollHeightDecreased = height + 108 < this.getMessagesContainer().scrollHeight;
+    return this.hasCurrentMessageListScrollHeightDecreased;
   }
 
   /**

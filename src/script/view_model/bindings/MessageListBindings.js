@@ -82,7 +82,7 @@ ko.bindingHandlers.showAllTimestamps = {
 
 ko.bindingHandlers.infinite_scroll = {
   init(scrollingElement, params) {
-    const {onHitTop, onHitBottom, onInit} = params();
+    const {onScrolling, onHitTop, onHitBottom, onInit} = params();
     onInit(scrollingElement);
 
     const onScroll = ({target: element}) => {
@@ -97,6 +97,8 @@ ko.bindingHandlers.infinite_scroll = {
         onHitTop();
       } else if (hitBottom) {
         onHitBottom();
+      } else {
+        onScrolling(scrollEnd);
       }
     };
 
