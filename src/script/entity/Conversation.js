@@ -459,8 +459,6 @@ export class Conversation {
     });
 
     this._initSubscriptions();
-
-    // console.log('dav333 this', this);
   }
 
   _isInitialized() {

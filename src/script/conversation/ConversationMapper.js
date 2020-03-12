@@ -432,7 +432,6 @@ export class ConversationMapper {
    */
   mergeConversation(localConversations, remoteConversations) {
     localConversations = localConversations.filter(conversationData => conversationData);
-    // console.log('dav333 remoteConversations', remoteConversations);
     return remoteConversations.map((remoteConversationData, index) => {
       const conversationId = remoteConversationData.id;
       const localConversationData = localConversations.find(({id}) => id === conversationId) || {id: conversationId};
