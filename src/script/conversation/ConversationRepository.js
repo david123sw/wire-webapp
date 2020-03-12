@@ -317,10 +317,6 @@ export class ConversationRepository {
       this.conversations_cleared(conversationsCleared);
       this.conversations_sticky_on_top(conversationsUnarchivedStickyOnTop);
       this.conversations_unarchived(conversationsUnarchivedStickyOnTop.concat(conversationsUnarchived));
-
-      if (this.active_conversation()) {
-        this.active_conversation().check_users_permissions();
-      }
     });
   }
 

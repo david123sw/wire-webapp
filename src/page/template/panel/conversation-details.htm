@@ -133,7 +133,7 @@
                   </div>
                 </div>
               <!-- /ko -->
-              <!-- ko if: has_modify_permissions() -->
+              <!-- ko ifnot: activeConversation().isSuperGroup() -->
                 <!-- ko if: showOptionTimedMessages() -->
                   <div class="conversation-details__timed-messages">
                     <div class="panel__action-item" data-bind="click: clickOnTimedMessages" data-uie-name="go-timed-messages">

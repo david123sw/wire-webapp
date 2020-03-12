@@ -117,6 +117,12 @@ class Message {
       return false;
     });
 
+    this.is_last_ephemeral_message = ko.computed(() => {
+      const conversation_ref = 'function' === typeof this.conversation ? this.conversation() : this.conversation;
+      const messages = conversation_ref.visible_timed_messages();
+      return 0 === messages.length ? false : this.message.id === messages[messages.length - 1].id;
+    });
+
     this.onClickImage = onClickImage;
     this.onClickInvitePeople = onClickInvitePeople;
     this.onClickAvatar = onClickAvatar;
@@ -328,7 +334,7 @@ const normalTemplate = `
     </div>
   <!-- /ko -->
   
-  <div class="message-body" data-bind="attr: {'title': message.ephemeral_caption()}, css: {'message-body-self-special': !shouldShowAvatar}">
+  <div class="message-body" data-bind="attr: {'title': ''}, css: {'message-body-self-special': !shouldShowAvatar}">
     <!-- ko if: message.ephemeral_status() === EphemeralStatusType.ACTIVE -->
       <ephemeral-timer class="message-ephemeral-timer" data-bind="css: {'message-ephemeral-timer-self': !shouldShowAvatar}" params="message: message"></ephemeral-timer>
     <!-- /ko -->
@@ -427,24 +433,18 @@ const normalTemplate = `
       <!-- /ko -->
     <!-- /ko -->
     
-    <!-- ko if: true -->
-      <div id="message-body-like-preview" class="message-body-like" data-bind="css: {'message-body-like-self-special': !shouldShowAvatar}">
-        <span class="message-body-like-icon like-button message-show-on-hover" data-bind="attr: {'data-ui-value': message.is_liked()}, css: {'like-button-liked': message.is_liked()}, style: {opacity: message.is_liked() ? 1 : ''}, click: () => onLike(message)">
-          <span class="icon-like-small"></span>
-          <span class="icon-liked-small"></span>
-        </span>
-        <!-- ko if: shouldShowAvatar -->
-          <div class="text_content_bubble_left">
-            <img class="text_content_bubble_left" width="12px" height="18px" src="data:img/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAeCAQAAAAIwb+cAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAAHdElNRQfiCQ8QKQcEL8s2AAACVElEQVQ4y52VS2vUUBTHfye5ed0k9mEfjE5fKm2tMNbC2IJ1obSdoogoFYuKogiuDAgiiH6EWc3aD+HGbyL4BVwIiuBWOxMXuZmO7TTNeC6BkJzzO4+b3L80+S8TIM1uVbFncuhJS5AuIiU9FtEXYGMhQJsOHVJrYIDCxUfj4bxYe7kDAyAMwCMkJkLvXvY+cXGARlqChcJDE+IiNxYnPjDEbGmEAfhoImKczZWzTTRIWURLsA0gJkY3rs+/FRegVBVmDxwDiAjvPqo+Q8zrSuKqEgCFQ0BIROTG91+PNHocrPZUMSIfYYAmJpypbr7XtQMup1RBeDaBbA8iwvV67Z06echtUh0JsLDNRxQSWuGdx6efYPfx7FtFnt8lyABz1WtvovoRySZUn/Asv2cAenv7XGLFRzb8TxUCWNg4uPgEhOiF2SuvotXCiXeryLJbKJM/QA8NNx5O7kpAsY2qnuIVDl4GUGHjxsxzNcHxNqy6w3Pw8AkI3HBja/qpO10i3CDy/n0Cgsr4+s74PVUpGQ6g1X4bt6+O7wYb4g0QDoC9hRmk/eO7/7X9pfNN/lix+Q/LmCfN/VFmy0ahVmaqS/F5veDO25PHIH5JU7qt9F42KoOdGVtcHqnpmnfBCvsifkoTMMd6DsuBOUqhUI5bX6jUTlzyl5y57mkB8FkOSFEvrBdlasLBmRpdXh1b03U72/aPUqBmvai8wQyjENo3p6duuQ/SRIoFMQFaeWUWgm2WkLLHb/Zolzh+k5RMP9stYc/MSoBOpmYDCWKSktJp5ZpqhPkvjptXLfZHihwAAAAASUVORK5CYII=">
-          </div>
-        <!-- /ko -->
-        <!-- ko ifnot: shouldShowAvatar -->
-          <div class="text_content_bubble_right">
-            <img class="text_content_bubble_right" width="12px" height="18px" src="data:img/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAeCAMAAACVFoclAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAABwlBMVEWMjIzm9tCMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIzg78zl9M+MjIyMjIyMjIzk9M/h8MyMjIyMjIyMjIzl9c/m9tDa6MeMjIyMjIyMjIyMjIzl9c/W48SMjIyMjIyMjIyMjIzl9c/W48SNjo2MjIyMjIyMjIzm9tDa6MeVlpOMjIyMjIyMjIyMjIyMjIzm9tDe7MqfopqMjIyMjIyMjIyMjIzm9tDi8c2xuKiMjIyMjIyMjIyMjIyMjIzm9tDm9tDl9M/H0bmMjIyMjIyMjIzi8c3V4sOTlJGMjIyMjIzk9M7f7suts6WMjIyMjIzl9M/l9M/L1ryNjo3l9c/e7Mqus6WMjIzl9c/S38GXmZSMjIzl9M/i8c3H0bmNjo2MjIzl9c/g78zEzraMjIzl9c/h8MzN2b2WmJPl9c/k9M/b6cjDzLWMjIzl9c/m9tDi8s3c68nW48TM17y1vKvl9c/m9tDh8c3b6sjT4MLDzbafoprj887c68nT38HByrSanZeMjIyMjIzl9c/l9c/g78zY5sbM17ywtqeMjIzl9c/h8c3X5cXCy7WYmpXi8s3m9tDl9M/b6sivtabR3cDm9tAAAAB3Zje+AAAAlHRSTlMAAAECAwQHCQgFEH0NERAwdxYdF07+figqJRtukjYzKRyOpUA3Egqsvkg4Kx8UC8zTUDotIQbm42M7MCMYDwH694U9MicWr0QVDC3WXDkuRfaNPl7NWRn3nkIgf+WAOh6N2ncOl9yDNpruokoapv3eto9iNZ7727OJXjTouotbMyQTf/rSpXVEJlzUnGM1GfXJcC8NPlJ8fwAAAAFiS0dElQhgeoMAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAAHdElNRQfiCQ8QJQuhLMgRAAABw0lEQVQoz3WT51fTYBjFs5NCEmmKpGW1QFtA2jpoQWkrIivsPUQBpSqgZToAF6CAAwSF5w/mTZpDafrmfr2/Z55zCQKJoijCXiRJ0QzD0BSZEY6gWY4XHAxlSxQUCqIki4KJYIgbUORUFJdsIhiiGG6WqG5PqSywFJ4oA4DyikqvT+J1BENUIQKqa/xuJRB00DiiViegrv5WQygccdD5nyFvGwTcuXuvMeoUY0weQjZlCGi+/6AlnkiifS3Ew1aTgEdtj9s7SqWgdVInZNXVXeEOaT1c7qTeawT09Q8MxhMyn9Nm6DoBwyOj7aoSFjk2y4xBrsYn/I3xSSmSParMQsDU9JNK74wrGUSMAT2FPD2bnWvpmHcixpj1HDB6seAf9Chaylj5JWD16vWiOq+l9MOXwEbLb96m9fcRK1h7dW19Y/OdK8mzNPHean74uLW980mNh9KabNycs8fnL1+/7ap7M75J576civDGMd9N88fB4dFP96+oktbNnqAQc7C08djf+tQ/xyd/vag0oUkZE+Xn6uunZ//+n+95or5EWO/LoUpLAskLTgxo4UAqIsRYhsbkk6SYmMCjWjOYdrlFtXa5vQQm18+Kam2pUgAAAABJRU5ErkJggg==">
-          </div>
-        <!-- /ko -->
-      </div>
-    <!-- /ko -->
+    <div id="message-body-like-preview" class="message-body-like" data-bind="css: {'message-body-like-self-special': !shouldShowAvatar}, click: () => onLike(message)">
+      <!-- ko if: shouldShowAvatar -->
+        <div class="text_content_bubble_left">
+          <img class="text_content_bubble_left" width="12px" height="18px" src="data:img/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAeCAQAAAAIwb+cAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAAHdElNRQfiCQ8QKQcEL8s2AAACVElEQVQ4y52VS2vUUBTHfye5ed0k9mEfjE5fKm2tMNbC2IJ1obSdoogoFYuKogiuDAgiiH6EWc3aD+HGbyL4BVwIiuBWOxMXuZmO7TTNeC6BkJzzO4+b3L80+S8TIM1uVbFncuhJS5AuIiU9FtEXYGMhQJsOHVJrYIDCxUfj4bxYe7kDAyAMwCMkJkLvXvY+cXGARlqChcJDE+IiNxYnPjDEbGmEAfhoImKczZWzTTRIWURLsA0gJkY3rs+/FRegVBVmDxwDiAjvPqo+Q8zrSuKqEgCFQ0BIROTG91+PNHocrPZUMSIfYYAmJpypbr7XtQMup1RBeDaBbA8iwvV67Z06echtUh0JsLDNRxQSWuGdx6efYPfx7FtFnt8lyABz1WtvovoRySZUn/Asv2cAenv7XGLFRzb8TxUCWNg4uPgEhOiF2SuvotXCiXeryLJbKJM/QA8NNx5O7kpAsY2qnuIVDl4GUGHjxsxzNcHxNqy6w3Pw8AkI3HBja/qpO10i3CDy/n0Cgsr4+s74PVUpGQ6g1X4bt6+O7wYb4g0QDoC9hRmk/eO7/7X9pfNN/lix+Q/LmCfN/VFmy0ahVmaqS/F5veDO25PHIH5JU7qt9F42KoOdGVtcHqnpmnfBCvsifkoTMMd6DsuBOUqhUI5bX6jUTlzyl5y57mkB8FkOSFEvrBdlasLBmRpdXh1b03U72/aPUqBmvai8wQyjENo3p6duuQ/SRIoFMQFaeWUWgm2WkLLHb/Zolzh+k5RMP9stYc/MSoBOpmYDCWKSktJp5ZpqhPkvjptXLfZHihwAAAAASUVORK5CYII=">
+        </div>
+      <!-- /ko -->
+      <!-- ko ifnot: shouldShowAvatar -->
+        <div class="text_content_bubble_right">
+          <img class="text_content_bubble_right" width="12px" height="18px" src="data:img/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAeCAMAAACVFoclAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAABwlBMVEWMjIzm9tCMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIzg78zl9M+MjIyMjIyMjIzk9M/h8MyMjIyMjIyMjIzl9c/m9tDa6MeMjIyMjIyMjIyMjIzl9c/W48SMjIyMjIyMjIyMjIzl9c/W48SNjo2MjIyMjIyMjIzm9tDa6MeVlpOMjIyMjIyMjIyMjIyMjIzm9tDe7MqfopqMjIyMjIyMjIyMjIzm9tDi8c2xuKiMjIyMjIyMjIyMjIyMjIzm9tDm9tDl9M/H0bmMjIyMjIyMjIzi8c3V4sOTlJGMjIyMjIzk9M7f7suts6WMjIyMjIzl9M/l9M/L1ryNjo3l9c/e7Mqus6WMjIzl9c/S38GXmZSMjIzl9M/i8c3H0bmNjo2MjIzl9c/g78zEzraMjIzl9c/h8MzN2b2WmJPl9c/k9M/b6cjDzLWMjIzl9c/m9tDi8s3c68nW48TM17y1vKvl9c/m9tDh8c3b6sjT4MLDzbafoprj887c68nT38HByrSanZeMjIyMjIzl9c/l9c/g78zY5sbM17ywtqeMjIzl9c/h8c3X5cXCy7WYmpXi8s3m9tDl9M/b6sivtabR3cDm9tAAAAB3Zje+AAAAlHRSTlMAAAECAwQHCQgFEH0NERAwdxYdF07+figqJRtukjYzKRyOpUA3Egqsvkg4Kx8UC8zTUDotIQbm42M7MCMYDwH694U9MicWr0QVDC3WXDkuRfaNPl7NWRn3nkIgf+WAOh6N2ncOl9yDNpruokoapv3eto9iNZ7727OJXjTouotbMyQTf/rSpXVEJlzUnGM1GfXJcC8NPlJ8fwAAAAFiS0dElQhgeoMAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAAHdElNRQfiCQ8QJQuhLMgRAAABw0lEQVQoz3WT51fTYBjFs5NCEmmKpGW1QFtA2jpoQWkrIivsPUQBpSqgZToAF6CAAwSF5w/mTZpDafrmfr2/Z55zCQKJoijCXiRJ0QzD0BSZEY6gWY4XHAxlSxQUCqIki4KJYIgbUORUFJdsIhiiGG6WqG5PqSywFJ4oA4DyikqvT+J1BENUIQKqa/xuJRB00DiiViegrv5WQygccdD5nyFvGwTcuXuvMeoUY0weQjZlCGi+/6AlnkiifS3Ew1aTgEdtj9s7SqWgdVInZNXVXeEOaT1c7qTeawT09Q8MxhMyn9Nm6DoBwyOj7aoSFjk2y4xBrsYn/I3xSSmSParMQsDU9JNK74wrGUSMAT2FPD2bnWvpmHcixpj1HDB6seAf9Chaylj5JWD16vWiOq+l9MOXwEbLb96m9fcRK1h7dW19Y/OdK8mzNPHean74uLW980mNh9KabNycs8fnL1+/7ap7M75J576civDGMd9N88fB4dFP96+oktbNnqAQc7C08djf+tQ/xyd/vag0oUkZE+Xn6uunZ//+n+95or5EWO/LoUpLAskLTgxo4UAqIsRYhsbkk6SYmMCjWjOYdrlFtXa5vQQm18+Kam2pUgAAAABJRU5ErkJggg==">
+        </div>
+      <!-- /ko -->
+    </div>
 
     <div class="message-body-actions" data-bind="css: {'message-body-actions-self-special': !shouldShowAvatar}">
       <span class="context-menu icon-more font-size-xs" data-bind="click: (data, event) => showContextMenu(message, event)"></span>
@@ -456,8 +456,23 @@ const normalTemplate = `
       <!-- /ko -->
       ${receiptStatusTemplate}
     </div>
+    
   </div>
   
+  <!-- ko if: message.ephemeral_status() === EphemeralStatusType.ACTIVE -->
+    <!-- ko if: is_last_ephemeral_message() -->
+      <div class="timed-message-remaining-background-for-last" data-bind="css: {'timed-message-remaining-background-for-last--left': shouldShowAvatar, 'timed-message-remaining-background-for-last--right': !shouldShowAvatar}">
+        <span data-bind="text: message.ephemeral_caption(), css: {'timed-message-remaining-left': shouldShowAvatar, 'timed-message-remaining-right': !shouldShowAvatar}"></span>
+      </div>
+    <!-- /ko -->
+    
+    <!-- ko ifnot: is_last_ephemeral_message() -->
+      <div class="timed-message-remaining-background" data-bind="css: {'timed-message-remaining-background--left': shouldShowAvatar, 'timed-message-remaining-background--right': !shouldShowAvatar}">
+        <span data-bind="text: message.ephemeral_caption(), css: {'timed-message-remaining-left': shouldShowAvatar, 'timed-message-remaining-right': !shouldShowAvatar}"></span>
+      </div>
+    <!-- /ko -->
+  <!-- /ko -->
+    
   <!-- ko if: message.other_likes().length -->
     <div class="message-footer">
       <div class="message-footer-icon">
@@ -472,9 +487,7 @@ const normalTemplate = `
     </div>
   <!-- /ko -->
   
-  <!-- ko if: message.ephemeral_status() === EphemeralStatusType.ACTIVE -->
-    <span data-bind="text: message.ephemeral_caption(), css: {'timed-message-remaining-left': shouldShowAvatar, 'timed-message-remaining-right': !shouldShowAvatar}"></span>
-  <!-- /ko -->
+
   `;
 
 const missedTemplate = `

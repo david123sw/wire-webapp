@@ -224,7 +224,9 @@ export const formatDurationCaption = (duration: number): string => {
     }
   }
   const joiner = ` `;
-  return `${t('ephemeralRemaining')} ${validUnitStrings.join(joiner)}`;
+  return 0 === validUnitStrings.length
+    ? `${t('ephemeralRemaining')} 0 ${t('ephemeralUnitsSecond')}`
+    : `${t('ephemeralRemaining')} ${validUnitStrings.join(joiner)}`;
 };
 
 /**

@@ -33,8 +33,7 @@ export class TimedMessagesViewModel extends BasePanelViewModel {
     this.currentMessageTimer = ko.observable(0);
 
     ko.pureComputed(() => {
-      const hasGlobalMessageTimer = this.activeConversation() && this.activeConversation().hasGlobalMessageTimer();
-      return hasGlobalMessageTimer ? this.activeConversation().messageTimer() : 0;
+      return this.activeConversation() ? this.activeConversation().messageTimer() : 0;
     }).subscribe(timer => {
       this.currentMessageTimer(timer);
     });
@@ -69,8 +68,13 @@ export class TimedMessagesViewModel extends BasePanelViewModel {
     if (this.activeConversation()) {
       const timer = parseInt(event.target.value, 10);
       const finalTimer = timer === 0 ? null : timer;
-      this.activeConversation().globalMessageTimer(finalTimer);
-      this.conversationRepository.updateConversationMessageTimer(this.activeConversation(), finalTimer);
+      const hasGlobalTimer = this.activeConversation().hasGlobalMessageTimer();
+      if (hasGlobalTimer) {
+        this.activeConversation().globalMessageTimer(finalTimer);
+        this.conversationRepository.updateConversationMessageTimer(this.activeConversation(), finalTimer);
+      } else {
+        this.activeConversation().localMessageTimer(finalTimer);
+      }
     }
   }
 

@@ -44,10 +44,10 @@ export class Message {
     this.id = id;
     this.super_type = super_type;
     this.ephemeral_caption = ko.pureComputed(() => {
-      while (this.ephemeral_remaining() > 0) {
+      while (this.ephemeral_remaining() >= 0) {
         const remainingTime = this.ephemeral_expires() - Date.now();
         this.ephemeral_remaining(remainingTime);
-        return remainingTime ? formatDurationCaption(remainingTime) : '';
+        return formatDurationCaption(remainingTime);
       }
       return '';
     });

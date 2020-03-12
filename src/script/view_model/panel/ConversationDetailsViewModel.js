@@ -40,7 +40,6 @@ import {createRandomUuid} from 'Util/util';
 import {ParticipantAvatar} from 'Components/participantAvatar';
 import {modals, ModalsViewModel} from '../ModalsViewModel';
 import {validateProfileImageResolution} from 'Util/util';
-import {ROLE as TEAM_ROLE} from '../../user/UserPermission';
 import {ConversationType} from '../../conversation/ConversationType';
 
 export class ConversationDetailsViewModel extends BasePanelViewModel {
@@ -145,15 +144,7 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
     });
 
     this.has_modify_permissions = ko.pureComputed(() => {
-      return (
-        this.activeConversation() &&
-        (this.activeConversation()
-          .selfUser()
-          .teamRole() === TEAM_ROLE.OWNER ||
-          this.activeConversation()
-            .selfUser()
-            .teamRole().role === TEAM_ROLE.ADMIN)
-      );
+      return this.activeConversation() && this.activeConversation().hasSettingPermission();
     });
 
     this.isSingleUserMode = conversationEntity => {
@@ -247,7 +238,18 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
       return this.hasAdvancedNotifications() && !this.activeConversation().isGroup();
     });
 
-    this.showOptionTimedMessages = this.isSuperGroup;
+    this.showOptionTimedMessages = ko.pureComputed(() => {
+      if (this.activeConversation().is1to1()) {
+        return true;
+      } else if (this.activeConversation().isGroup()) {
+        if (this.activeConversation().hasSettingPermission()) {
+          return true;
+        }
+        return !this.activeConversation().hasGlobalMessageTimer();
+      }
+
+      return false;
+    });
 
     this.showSectionOptions = ko.pureComputed(() => {
       return this.showOptionGuests() || this.showOptionNotificationsGroup() || this.showOptionTimedMessages();
@@ -277,7 +279,7 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
 
     this.timedMessagesText = ko.pureComputed(() => {
       if (this.activeConversation()) {
-        const hasTimer = this.activeConversation().messageTimer() && this.activeConversation().hasGlobalMessageTimer();
+        const hasTimer = this.activeConversation().messageTimer();
         if (hasTimer) {
           return formatDuration(this.activeConversation().messageTimer()).text;
         }

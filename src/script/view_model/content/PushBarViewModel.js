@@ -42,7 +42,7 @@ z.viewModel.content.PushBarViewModel = class PushBarViewModel {
 
     this.panelIsVisible = this.panelViewModel.isVisible;
 
-    // TODO remove the titlebar for now to ensure that buttons are clickable in macOS wrappers
+    // TODO remove the pushbar for now to ensure that buttons are clickable in macOS wrappers
     window.setTimeout(() => $('.pushbar').remove(), TIME_IN_MILLIS.SECOND);
 
     this.conversationEntity = this.conversationRepository.active_conversation;
@@ -65,4 +65,6 @@ z.viewModel.content.PushBarViewModel = class PushBarViewModel {
   addedToView() {
     //blank
   }
+
+  removedFromView() {}
 };

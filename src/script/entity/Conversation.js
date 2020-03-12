@@ -44,6 +44,7 @@ import {ConnectionEntity} from '../connection/ConnectionEntity';
 import {HIDE_LEGAL_HOLD_MODAL} from '../view_model/content/LegalHoldModalViewModel';
 import {BackendEvent} from '../event/Backend';
 import {ROLE as TEAM_ROLE} from '../user/UserPermission';
+import {EphemeralStatusType} from '../message/EphemeralStatusType';
 
 export class Conversation {
   static get TIMESTAMP_TYPE() {
@@ -297,10 +298,10 @@ export class Conversation {
 
     this.messages_visible = ko
       .pureComputed(() => {
-        // console.log('--sss--', this.messages_unordered().length);
         return !this.id
           ? []
           : this.messages().filter((messageEntity, index, array) => {
+              //check1
               const previous = index >= 1 ? array[index - 1] : undefined;
               if (previous && previous.primary_key === messageEntity.primary_key) {
                 return false;
@@ -383,6 +384,9 @@ export class Conversation {
       return !!lastMessage && lastMessage.timestamp() > this.last_read_timestamp();
     };
 
+    this.visible_timed_messages = ko.pureComputed(() => {
+      return this.messages_visible().filter(et => et.ephemeral_status() === EphemeralStatusType.ACTIVE);
+    });
     /**
      * Display name strategy:
      *
@@ -451,14 +455,9 @@ export class Conversation {
           }
         });
       }
-
-      if (this.isSuperGroup()) {
-        this.hasSettingPermission(false);
-      } else if (this.messageTimer()) {
-        this.hasSettingPermission(this.messageTimer());
-      } else if (this.selfUser().teamRole() === TEAM_ROLE.OWNER || this.selfUser().teamRole() === TEAM_ROLE.ADMIN) {
-        this.hasSettingPermission(false);
-      }
+      this.hasSettingPermission(
+        this.selfUser().teamRole() === TEAM_ROLE.OWNER || this.selfUser().teamRole() === TEAM_ROLE.ADMIN,
+      );
       return true;
     });
 
