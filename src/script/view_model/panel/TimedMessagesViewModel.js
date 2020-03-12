@@ -69,7 +69,8 @@ export class TimedMessagesViewModel extends BasePanelViewModel {
       const timer = parseInt(event.target.value, 10);
       const finalTimer = timer === 0 ? null : timer;
       const hasGlobalTimer = this.activeConversation().hasGlobalMessageTimer();
-      if (hasGlobalTimer) {
+      const hasSettingPermission = this.activeConversation().hasSettingPermission();
+      if (hasGlobalTimer || hasSettingPermission) {
         this.activeConversation().globalMessageTimer(finalTimer);
         this.conversationRepository.updateConversationMessageTimer(this.activeConversation(), finalTimer);
       } else {
