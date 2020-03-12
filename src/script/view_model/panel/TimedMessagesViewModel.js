@@ -68,8 +68,13 @@ export class TimedMessagesViewModel extends BasePanelViewModel {
     if (this.activeConversation()) {
       const timer = parseInt(event.target.value, 10);
       const finalTimer = timer === 0 ? null : timer;
-      this.activeConversation().globalMessageTimer(finalTimer);
-      this.conversationRepository.updateConversationMessageTimer(this.activeConversation(), finalTimer);
+      const hasGlobalTimer = this.activeConversation().hasGlobalMessageTimer();
+      if (hasGlobalTimer) {
+        this.activeConversation().globalMessageTimer(finalTimer);
+        this.conversationRepository.updateConversationMessageTimer(this.activeConversation(), finalTimer);
+      } else {
+        this.activeConversation().localMessageTimer(finalTimer);
+      }
     }
   }
 

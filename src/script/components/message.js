@@ -433,11 +433,7 @@ const normalTemplate = `
       <!-- /ko -->
     <!-- /ko -->
     
-    <div id="message-body-like-preview" class="message-body-like" data-bind="css: {'message-body-like-self-special': !shouldShowAvatar}">
-      <span class="message-body-like-icon like-button message-show-on-hover" data-bind="attr: {'data-ui-value': message.is_liked()}, css: {'like-button-liked': message.is_liked()}, style: {opacity: message.is_liked() ? 1 : ''}, click: () => onLike(message)">
-        <span class="icon-like-small"></span>
-        <span class="icon-liked-small"></span>
-      </span>
+    <div id="message-body-like-preview" class="message-body-like" data-bind="css: {'message-body-like-self-special': !shouldShowAvatar}, click: () => onLike(message)">
       <!-- ko if: shouldShowAvatar -->
         <div class="text_content_bubble_left">
           <img class="text_content_bubble_left" width="12px" height="18px" src="data:img/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAeCAQAAAAIwb+cAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0QAAKqNIzIAAAAJcEhZcwAAFiUAABYlAUlSJPAAAAAHdElNRQfiCQ8QKQcEL8s2AAACVElEQVQ4y52VS2vUUBTHfye5ed0k9mEfjE5fKm2tMNbC2IJ1obSdoogoFYuKogiuDAgiiH6EWc3aD+HGbyL4BVwIiuBWOxMXuZmO7TTNeC6BkJzzO4+b3L80+S8TIM1uVbFncuhJS5AuIiU9FtEXYGMhQJsOHVJrYIDCxUfj4bxYe7kDAyAMwCMkJkLvXvY+cXGARlqChcJDE+IiNxYnPjDEbGmEAfhoImKczZWzTTRIWURLsA0gJkY3rs+/FRegVBVmDxwDiAjvPqo+Q8zrSuKqEgCFQ0BIROTG91+PNHocrPZUMSIfYYAmJpypbr7XtQMup1RBeDaBbA8iwvV67Z06echtUh0JsLDNRxQSWuGdx6efYPfx7FtFnt8lyABz1WtvovoRySZUn/Asv2cAenv7XGLFRzb8TxUCWNg4uPgEhOiF2SuvotXCiXeryLJbKJM/QA8NNx5O7kpAsY2qnuIVDl4GUGHjxsxzNcHxNqy6w3Pw8AkI3HBja/qpO10i3CDy/n0Cgsr4+s74PVUpGQ6g1X4bt6+O7wYb4g0QDoC9hRmk/eO7/7X9pfNN/lix+Q/LmCfN/VFmy0ahVmaqS/F5veDO25PHIH5JU7qt9F42KoOdGVtcHqnpmnfBCvsifkoTMMd6DsuBOUqhUI5bX6jUTlzyl5y57mkB8FkOSFEvrBdlasLBmRpdXh1b03U72/aPUqBmvai8wQyjENo3p6duuQ/SRIoFMQFaeWUWgm2WkLLHb/Zolzh+k5RMP9stYc/MSoBOpmYDCWKSktJp5ZpqhPkvjptXLfZHihwAAAAASUVORK5CYII=">
