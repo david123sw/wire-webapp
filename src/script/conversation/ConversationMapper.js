@@ -322,11 +322,13 @@ export class ConversationMapper {
       creator,
       forumid,
       id,
+      invite_code,
       has_announcement_shown,
       manager,
       mediumPictureResource,
       memberjoin_confirm,
       members,
+      memsum,
       message_timer,
       msg_only_to_manager,
       name,
@@ -346,6 +348,7 @@ export class ConversationMapper {
     conversationEntity.name(name ? name : '');
 
     //secret
+    conversationEntity.invite_code(invite_code);
     conversationEntity.url_invite(url_invite);
     conversationEntity.confirm(confirm);
     conversationEntity.member_join_confirm(memberjoin_confirm);
@@ -363,6 +366,7 @@ export class ConversationMapper {
     conversationEntity.members(members);
     conversationEntity.globalMessageTimer(message_timer);
     conversationEntity.localMessageTimer(message_timer);
+    conversationEntity.memsum(memsum);
 
     const selfState = members ? members.self : conversationData;
     conversationEntity = this.updateSelfStatus(conversationEntity, selfState);
@@ -446,6 +450,7 @@ export class ConversationMapper {
         creator,
         manager,
         members,
+        memsum,
         message_timer,
         name,
         orator,
@@ -480,6 +485,7 @@ export class ConversationMapper {
         mediumPictureResource: assets[1],
         memberjoin_confirm,
         members: members,
+        memsum,
         message_timer,
         msg_only_to_manager,
         name,

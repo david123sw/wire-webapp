@@ -86,6 +86,8 @@ export class Conversation {
     this.block_time = ko.observable(0); //禁言
     this.advisory = ko.observable(''); //公告
 
+    this.memsum = ko.observable(0); //人数
+
     this.orator = ko.observable([]); //演讲者
     this.managers = ko.observable([]); //管理员
 
@@ -100,8 +102,9 @@ export class Conversation {
     this.selfUser = ko.observable();
 
     //ranjun
-    this.isRequestingUsers = false;
-    this.tempUsers = ko.observableArray([]);
+    this.is_request_members = false;
+    this.has_more = true;
+    this.temp_users = ko.observableArray([]);
     this.participating_user_aliasnames = ko.observableArray([]);
     this.aliasnames = ko.observableArray([]);
     this.alias_name = ko.observable(false);
@@ -284,7 +287,7 @@ export class Conversation {
       const msgs = this.messages_unordered().sort((message_a, message_b) => {
         return message_a.timestamp() - message_b.timestamp();
       });
-      if (msgs[msgs.length - 1]) {
+      if (msgs.length > 0) {
         this.last_message(msgs[msgs.length - 1]);
       }
       return msgs;
@@ -410,7 +413,7 @@ export class Conversation {
 
       if (this.isGroup()) {
         if (this.name()) {
-          return this.name();
+          return `${this.name()}(${this.memsum()})`;
         }
 
         const hasUserEntities = !!this.participating_user_ets().length;
@@ -422,12 +425,12 @@ export class Conversation {
             .join(', ');
 
           const maxLength = ConversationRepository.CONFIG.GROUP.MAX_NAME_LENGTH;
-          return truncate(joinedNames, maxLength, false);
+          return `${truncate(joinedNames, maxLength, false)}(${this.memsum()})`;
         }
 
         const hasUserIds = !!this.participating_user_ids().length;
         if (!hasUserIds) {
-          return t('conversationsEmptyConversation');
+          return `${t('conversationsEmptyConversation')}(${this.memsum()})`;
         }
       }
 
@@ -889,13 +892,20 @@ export class Conversation {
 
   serialize() {
     return {
+      add_friend: this.add_friend(),
+      add_right: this.add_right(),
+      advisory: this.advisory(),
       archived_state: this.archivedState(),
       archived_timestamp: this.archivedTimestamp(),
+      block_time: this.block_time(),
       cleared_timestamp: this.cleared_timestamp(),
+      confirm: this.confirm(),
       ephemeral_timer: this.localMessageTimer(),
+      forumid: this.forumid(),
       global_message_timer: this.globalMessageTimer(),
       has_announcement_shown: this.has_announcement_shown(),
       id: this.id,
+      invite_code: this.invite_code(),
       is_guest: this.isGuest(),
       is_managed: this.isManaged,
       last_event_timestamp: this.last_event_timestamp(),
@@ -903,18 +913,26 @@ export class Conversation {
       last_server_timestamp: this.last_server_timestamp(),
       legal_hold_status: this.legalHoldStatus(),
       mediumPictureResource: this.mediumPictureResource(),
+      member_join_confirm: this.member_join_confirm(),
       members: this.members(),
+      memsum: this.memsum(),
+      msg_only_to_manager: this.msg_only_to_manager(),
       muted_state: this.mutedState(),
       muted_timestamp: this.mutedTimestamp(),
       name: this.name(),
+      orator: this.orator(),
       others: this.participating_user_ids(),
       place_top: this.place_top(),
       previewPictureResource: this.previewPictureResource(),
       receipt_mode: this.receiptMode(),
+      show_invitor_list: this.show_invitor_list(),
       status: this.status(),
       team_id: this.team_id,
       type: this.type(),
+      url_invite: this.url_invite(),
       verification_state: this.verification_state(),
+      view_chg_mem_notify: this.view_chg_mem_notify(),
+      view_mem: this.view_mem(),
     };
   }
 }

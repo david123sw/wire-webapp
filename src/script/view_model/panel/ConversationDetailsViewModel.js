@@ -41,14 +41,15 @@ import {ParticipantAvatar} from 'Components/participantAvatar';
 import {modals, ModalsViewModel} from '../ModalsViewModel';
 import {validateProfileImageResolution} from 'Util/util';
 import {ROLE as TEAM_ROLE} from '../../user/UserPermission';
+import {ConversationType} from '../../conversation/ConversationType';
 
 export class ConversationDetailsViewModel extends BasePanelViewModel {
   static get CONFIG() {
     return {
       AVATAR_IMG_SIZE: 32,
       AVATAR_IMG_TYPES: ['image/bmp', 'image/jpeg', 'image/jpg', 'image/png', '.jpg-large'],
-      MAX_USERS_VISIBLE: 7,
-      REDUCED_USERS_COUNT: 5,
+      MAX_USERS_VISIBLE: 6,
+      REDUCED_USERS_COUNT: 4,
     };
   }
 
@@ -100,32 +101,42 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
         this.serviceParticipants.removeAll();
         this.userParticipants.removeAll();
         let groupCreatorEntity = undefined;
-
-        this.activeConversation()
-          .participating_user_ets()
-          .map(userEntity => {
-            if (userEntity.isService) {
-              return this.serviceParticipants.push(userEntity);
-            }
-            if (userEntity.id !== this.activeConversation().creator) {
-              this.userParticipants.push(userEntity);
-            } else {
-              groupCreatorEntity = userEntity;
-            }
+        if (this.activeConversation().type() === ConversationType.SUPER_GROUP) {
+          this.conversationRepository.getBigGroupUser(this.activeConversation(), 4).then(users => {
+            this.userParticipants(users);
+            this.userParticipants.unshift(this.activeConversation().selfUser());
+            this.userParticipants().map(userEntity => {
+              userEntity.is_creator = userEntity.id === this.activeConversation().creator;
+            });
+            this.showAllUsersCount(this.activeConversation().memsum());
           });
-        if (groupCreatorEntity) {
-          this.userParticipants.unshift(groupCreatorEntity);
+        } else {
+          this.activeConversation()
+            .participating_user_ets()
+            .map(userEntity => {
+              if (userEntity.isService) {
+                return this.serviceParticipants.push(userEntity);
+              }
+              if (userEntity.id !== this.activeConversation().creator) {
+                this.userParticipants.push(userEntity);
+              } else {
+                groupCreatorEntity = userEntity;
+              }
+            });
+          if (groupCreatorEntity) {
+            this.userParticipants.unshift(groupCreatorEntity);
+          }
+          this.userParticipants.unshift(this.activeConversation().selfUser());
+          this.userParticipants().map(userEntity => {
+            userEntity.is_creator = userEntity.id === this.activeConversation().creator;
+          });
+          const userCount = this.userParticipants().length;
+          const exceedsMaxUserCount = userCount > ConversationDetailsViewModel.CONFIG.MAX_USERS_VISIBLE;
+          if (exceedsMaxUserCount) {
+            this.userParticipants.splice(ConversationDetailsViewModel.CONFIG.REDUCED_USERS_COUNT);
+          }
+          this.showAllUsersCount(this.activeConversation().memsum());
         }
-        this.userParticipants.unshift(this.activeConversation().selfUser());
-        this.userParticipants().map(userEntity => {
-          userEntity.is_creator = userEntity.id === this.activeConversation().creator;
-        });
-        const userCount = this.userParticipants().length;
-        const exceedsMaxUserCount = userCount > ConversationDetailsViewModel.CONFIG.MAX_USERS_VISIBLE;
-        if (exceedsMaxUserCount) {
-          this.userParticipants.splice(ConversationDetailsViewModel.CONFIG.REDUCED_USERS_COUNT);
-        }
-        this.showAllUsersCount(exceedsMaxUserCount ? userCount : 0);
       }
     });
 
@@ -187,21 +198,7 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
       if (!this.activeConversation().isGroup()) {
         return false;
       }
-      const inviteCode = this.activeConversation().invite_code();
-      if (!inviteCode && !this.activeConversation().is_request_invite) {
-        const activeConversation = this.activeConversation();
-        activeConversation.is_request_invite = true;
-        this.conversationRepository.conversation_service.getInviteUrl(activeConversation.id).then(res => {
-          if (res.code === 200 && res.data) {
-            activeConversation.invite_code(res.data.inviteurl);
-          } else {
-            activeConversation.is_request_invite = false;
-          }
-        });
-      } else if (inviteCode) {
-        return true;
-      }
-      return false;
+      return this.conversationRepository.getInviteUrl(this.activeConversation());
     });
 
     this.isEditingName = ko.observable(false);

@@ -19,6 +19,7 @@
 
 import {BasePanelViewModel} from './BasePanelViewModel';
 import {MotionDuration} from '../../motion/MotionDuration';
+import {ConversationType} from '../../conversation/ConversationType';
 
 export class ConversationParticipantsViewModel extends BasePanelViewModel {
   static get STATE() {
@@ -40,54 +41,13 @@ export class ConversationParticipantsViewModel extends BasePanelViewModel {
     this.onGoBack = params.onGoBack;
     this.alreadyExist = ko.observable('');
 
-    this.participants = ko.pureComputed(() => {
-      if (this.activeConversation()) {
-        const userParticipants = [];
-        let groupCreatorEntity = undefined;
-
-        this.activeConversation()
-          .participating_user_ets()
-          .map(userEntity => {
-            if (userEntity.id !== this.activeConversation().creator) {
-              userParticipants.push(userEntity);
-            } else {
-              groupCreatorEntity = userEntity;
-            }
-            if (this.alreadyExist()) {
-              userEntity.isAlready =
-                this.alreadyExist().findIndex(userId => {
-                  return userId === userEntity.id;
-                }) !== -1;
-            } else {
-              userEntity.isAlready = false;
-            }
-          });
-
-        if (groupCreatorEntity) {
-          userParticipants.unshift(groupCreatorEntity);
-        }
-        const selfUser = this.activeConversation().selfUser();
-        if (this.alreadyExist()) {
-          selfUser.isAlready =
-            this.alreadyExist().findIndex(userId => {
-              return userId === selfUser.id;
-            }) !== -1;
-        } else {
-          selfUser.isAlready = false;
-        }
-        userParticipants.unshift(selfUser);
-        userParticipants.map(userEntity => {
-          userEntity.is_creator = userEntity.id === this.activeConversation().creator;
-        });
-        return userParticipants;
-      }
-      return [];
-    });
+    this.participants = ko.observableArray([]);
 
     this.highlightedUsers = ko.observable([]);
 
     this.searchInput = ko.observable('');
     this.MotionDuration = MotionDuration;
+    this.lastId = null;
   }
 
   getElementId() {
@@ -148,6 +108,72 @@ export class ConversationParticipantsViewModel extends BasePanelViewModel {
     }
   }
 
+  onPushMore() {
+    this.updateMembers(true);
+  }
+  onScrollInit() {}
+
+  updateMembers(isMore = false) {
+    if (this.activeConversation()) {
+      if (this.activeConversation().type() === ConversationType.SUPER_GROUP) {
+        this.conversationRepository.getBigGroupUser(this.activeConversation(), 30, this.lastId).then(users => {
+          if (users.length > 0) {
+            this.lastId = users[users.length - 1].id;
+          }
+          users.map(userEntity => {
+            if (this.alreadyExist()) {
+              userEntity.isAlready =
+                this.alreadyExist().findIndex(userId => {
+                  return userId === userEntity.id;
+                }) !== -1;
+            } else {
+              userEntity.isAlready = false;
+            }
+            if (userEntity.id !== this.activeConversation().creator) {
+              userEntity.is_creator = false;
+              this.participants.push(userEntity);
+            } else {
+              userEntity.is_creator = true;
+              this.participants.unshift(userEntity);
+            }
+          });
+        });
+      } else if (!isMore) {
+        this.activeConversation()
+          .participating_user_ets()
+          .map(userEntity => {
+            if (this.alreadyExist()) {
+              userEntity.isAlready =
+                this.alreadyExist().findIndex(userId => {
+                  return userId === userEntity.id;
+                }) !== -1;
+            } else {
+              userEntity.isAlready = false;
+            }
+            if (userEntity.id !== this.activeConversation().creator) {
+              userEntity.is_creator = false;
+              this.participants.push(userEntity);
+            } else {
+              userEntity.is_creator = true;
+              this.participants.unshift(userEntity);
+            }
+          });
+        const selfUser = this.activeConversation().selfUser();
+        if (this.alreadyExist()) {
+          selfUser.isAlready =
+            this.alreadyExist().findIndex(userId => {
+              return userId === selfUser.id;
+            }) !== -1;
+        } else {
+          selfUser.isAlready = false;
+        }
+        this.participants.unshift(selfUser);
+      }
+    } else {
+      this.participants.removeAll();
+    }
+  }
+
   initView(params) {
     this.searchInput('');
     this.highlightedUsers(params && params.highlightedUsers ? params.highlightedUsers : []);
@@ -158,5 +184,8 @@ export class ConversationParticipantsViewModel extends BasePanelViewModel {
       this.mode = ConversationParticipantsViewModel.STATE.DEFAULT;
       this.alreadyExist(null);
     }
+    this.lastId = null;
+    this.participants.removeAll();
+    this.updateMembers();
   }
 }

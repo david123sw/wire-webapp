@@ -1357,7 +1357,6 @@ export class ConversationRepository {
    */
   updateParticipatingUserEntities(conversationEntity, offline = false, updateGuests = false) {
     if (conversationEntity.type() === ConversationType.SUPER_GROUP) {
-      this.upadateCurGroupTempUsers(conversationEntity);
       return new Promise((resolve, reject) => {
         const conversationEt = this.updateUserExtraInfo(conversationEntity);
         resolve(conversationEt);
@@ -1376,6 +1375,7 @@ export class ConversationRepository {
         return conversationEntity;
       });
   }
+
   updateUserExtraInfo(conversationEntity) {
     if (conversationEntity.isGroup()) {
       const us = conversationEntity.participating_user_aliasnames();
@@ -1388,38 +1388,6 @@ export class ConversationRepository {
       conversationEntity.aliasnames(user_extras);
     }
     return conversationEntity;
-  }
-  upadateCurGroupTempUsers(conversationEntity, isRequest = false) {
-    return;
-    if (conversationEntity.type() === ConversationType.SUPER_GROUP) {
-      if (!isRequest && conversationEntity.tempUsers().length > 0) {
-        return;
-      }
-      if (!conversationEntity.isRequestingUsers) {
-        conversationEntity.isRequestingUsers = true;
-        this.conversation_service
-          .get_converstation_members(conversationEntity.id, 4)
-          .then(infos => {
-            conversationEntity.tempUsers.removeAll();
-            const members = infos.conversations;
-            for (let i = 0; i < members.length; ++i) {
-              const user = new User();
-              const info = members[i];
-              user.id = info.id;
-              user.name(info.alias_name_ref ? info.alias_name_ref : info.name);
-              if (info.asset) {
-                const assetRemoteData = AssetRemoteData.v3(info.asset, true);
-                user.previewPictureResource(assetRemoteData);
-              }
-              conversationEntity.tempUsers.push(user);
-            }
-            conversationEntity.isRequestingUsers = false;
-          })
-          .catch(() => {
-            conversationEntity.isRequestingUsers = false;
-          });
-      }
-    }
   }
 
   //##############################################################################
@@ -1441,7 +1409,6 @@ export class ConversationRepository {
       .then(response => {
         if (response) {
           this.eventRepository.injectEvent(response, EventRepository.SOURCE.BACKEND_RESPONSE);
-          this.upadateCurGroupTempUsers(conversationEntity, true);
         }
       })
       .catch(error => this._handleAddToConversationError(error, conversationEntity, userIds));
@@ -1593,18 +1560,6 @@ export class ConversationRepository {
       this.eventRepository.injectEvent(event, EventRepository.SOURCE.BACKEND_RESPONSE);
       return event;
     });
-  }
-
-  removeMemberFromTempUser(conversation_et, userId) {
-    if (conversation_et.type() === ConversationType.SUPER_GROUP) {
-      const tempUsers = conversation_et.tempUsers();
-      for (let i = 0; i < tempUsers.length; ++i) {
-        if (tempUsers[i].id === userId) {
-          this.upadateCurGroupTempUsers(conversation_et, true);
-          break;
-        }
-      }
-    }
   }
 
   /**
@@ -4527,6 +4482,7 @@ export class ConversationRepository {
         return {conversationEntity, removeUserId};
       });
   }
+
   removeOratorFromConversation(conversationEntity, removeUserId) {
     const orators = [];
     conversationEntity.orator().map(userId => {
@@ -4542,5 +4498,77 @@ export class ConversationRepository {
         conversationEntity.orator(orators);
         return {conversationEntity, removeUserId};
       });
+  }
+
+  getInviteUrl(conversationEntity) {
+    if (!conversationEntity.invite_code() && !conversationEntity.is_request_invite) {
+      conversationEntity.is_request_invite = true;
+      this.conversation_service.getInviteUrl(conversationEntity.id).then(res => {
+        if (res.code === 200 && res.data) {
+          conversationEntity.invite_code(res.data.inviteurl);
+          this.save_conversation_state_in_db(conversationEntity);
+        } else {
+          conversationEntity.is_request_invite = false;
+        }
+      });
+      return false;
+    }
+    return !!conversationEntity.invite_code();
+  }
+
+  getBigGroupUser(conversationEntity, size = 4, start = null) {
+    if (!conversationEntity.is_request_members) {
+      const tempUsers = conversationEntity.temp_users();
+      if (start) {
+        const idx = tempUsers.findIndex(user => user.id === start);
+        if (idx !== -1) {
+          if (!conversationEntity.has_more || tempUsers.length - 1 - idx > size) {
+            const users = tempUsers.slice(idx + 1, idx + 1 + size);
+            return Promise.resolve(users);
+          }
+        } else {
+          return Promise.resolve([]);
+        }
+      } else if (tempUsers.length >= size) {
+        const users = tempUsers.slice(0, size);
+        return Promise.resolve(users);
+      }
+
+      if (conversationEntity.has_more) {
+        conversationEntity.is_request_members = true;
+        const startIdx = tempUsers.length > 0 ? tempUsers[tempUsers.length - 1].id : null;
+        return this.conversation_service
+          .get_converstation_members(conversationEntity.id, size, startIdx)
+          .then(result => {
+            conversationEntity.is_request_members = false;
+            conversationEntity.has_more = result.has_more;
+            const members = result.conversations;
+            const users = [];
+            for (let i = 0; i < members.length; ++i) {
+              const user = new User();
+              const info = members[i];
+              user.id = info.id;
+              user.name(info.alias_name_ref ? info.alias_name_ref : info.name);
+              user.is_creator = user.id === conversationEntity.creator;
+              if (info.asset) {
+                const assetRemoteData = AssetRemoteData.v3(info.asset, true);
+                user.previewPictureResource(assetRemoteData);
+              }
+              users.push(user);
+            }
+            conversationEntity.temp_users(conversationEntity.temp_users().concat(users));
+            const allUsers = conversationEntity.temp_users();
+            if (start) {
+              const idx = allUsers.findIndex(user => user.id === start);
+              if (idx !== -1) {
+                return Promise.resolve(allUsers.slice(idx + 1, idx + 1 + size));
+              }
+            } else {
+              return allUsers.slice(0, size);
+            }
+          });
+      }
+      return Promise.resolve([]);
+    }
   }
 }

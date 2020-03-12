@@ -92,10 +92,9 @@ ko.bindingHandlers.infinite_scroll = {
       const scrollEnd = element.offsetHeight + scrollPosition;
       const hitTop = scrollPosition <= 0;
       const hitBottom = scrollEnd >= element.scrollHeight;
-
-      if (hitTop) {
+      if (hitTop && onHitTop) {
         onHitTop();
-      } else if (hitBottom) {
+      } else if (hitBottom && onHitBottom) {
         onHitBottom();
       }
     };
@@ -107,10 +106,12 @@ ko.bindingHandlers.infinite_scroll = {
         return true;
       }
       const isScrollingUp = event.deltaY > 0;
-      if (isScrollingUp) {
+      if (isScrollingUp && onHitTop) {
         return onHitTop();
       }
-      return onHitBottom();
+      if (onHitBottom) {
+        return onHitBottom();
+      }
     };
 
     scrollingElement.addEventListener('scroll', onScroll);

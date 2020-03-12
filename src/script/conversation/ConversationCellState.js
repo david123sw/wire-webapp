@@ -396,6 +396,7 @@ export const generateCellState = conversationEntity => {
 
 export const generateCellStateEx = conversationEntity => {
   const messageEntity = conversationEntity.getLastMessage();
+  // console.log('-----generateCellStateEx----', messageEntity, conversationEntity.display_name())
   if (!messageEntity) {
     return '';
   }
