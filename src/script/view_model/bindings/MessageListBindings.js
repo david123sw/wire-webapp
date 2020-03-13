@@ -96,7 +96,7 @@ ko.bindingHandlers.infinite_scroll = {
         onHitTop();
       } else if (hitBottom && onHitBottom) {
         onHitBottom();
-      } else {
+      } else if (onScrolling) {
         onScrolling(scrollEnd);
       }
     };
