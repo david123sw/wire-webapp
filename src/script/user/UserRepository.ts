@@ -307,6 +307,7 @@ export class UserRepository {
    */
   updateUsersFromConnections(connectionEntities: ConnectionEntity[]): Promise<User[]> {
     const userIds = connectionEntities.map(connectionEntity => connectionEntity.userId);
+
     return this.get_users_by_id(userIds).then(userEntities => {
       userEntities.forEach(userEntity => {
         const connectionEntity = connectionEntities.find(({userId}) => userId === userEntity.id);
@@ -610,7 +611,6 @@ export class UserRepository {
     if (!user_ids.length) {
       return Promise.resolve([]);
     }
-
     const _find_user = (user_id: string) => {
       return this.findUserById(user_id) || user_id;
     };

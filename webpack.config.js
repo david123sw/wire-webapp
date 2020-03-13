@@ -25,6 +25,7 @@ module.exports = Object.assign({}, commonConfig, {
   mode: 'development',
   optimization: {
     ...commonConfig.optimization,
+    minimize: true,
     minimizer: [
       new TerserJSPlugin({
         /* Dexie has issues with UglifyJS */
