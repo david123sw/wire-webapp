@@ -237,7 +237,7 @@ export const config = {
   MAXIMUM_USERS_PER_REQUEST: 200,
 
   // number of messages that will be pulled
-  MESSAGES_FETCH_LIMIT: 30,
+  MESSAGES_FETCH_LIMIT: 20,
 
   MINIMUM_PASSWORD_LENGTH: 8,
 
