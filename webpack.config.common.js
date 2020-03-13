@@ -26,7 +26,7 @@ const auth = path.resolve(SRC_PATH, 'script', 'auth');
 const srcScript = path.resolve(SRC_PATH, 'script');
 
 module.exports = {
-  devtool: 'source-map',
+  devtool: 'nosources-source-map',
   entry: {
     app: path.resolve(srcScript, 'main/app.js'),
     auth: path.resolve(auth, 'main.tsx'),
