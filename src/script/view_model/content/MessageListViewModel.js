@@ -31,6 +31,7 @@ import {ModalsViewModel} from '../ModalsViewModel';
 import {WebAppEvents} from '../../event/WebApp';
 import {MessageCategory} from '../../message/MessageCategory';
 import {MotionDuration} from '../../motion/MotionDuration';
+import {MessageBackground} from './MessageBackground';
 
 /*
  * Message list rendering view model.
@@ -172,7 +173,6 @@ class MessageListViewModel {
     if (this.conversation()) {
       this.release_conversation(this.conversation());
     }
-
     // Update new conversation
     this.conversation(conversationEntity);
 
@@ -244,6 +244,11 @@ class MessageListViewModel {
           } else {
             scrollToBottom(messages_container);
           }
+        }
+
+        const message_bg = $('.messages-background');
+        if (message_bg && message_bg[0]) {
+          new MessageBackground(message_bg[0]);
         }
 
         window.addEventListener('resize', this._adjustScroll);
