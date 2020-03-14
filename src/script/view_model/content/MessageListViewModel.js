@@ -21,7 +21,7 @@ import $ from 'jquery';
 import {groupBy} from 'underscore';
 
 import {getLogger} from 'Util/Logger';
-import {scrollEnd, scrollToBottom, scrollBy} from 'Util/scroll-helpers';
+import {scrollEnd, scrollToBottom, scrollBy, isScrollable} from 'Util/scroll-helpers';
 import {t} from 'Util/LocalizerUtil';
 import {safeWindowOpen, safeMailOpen} from 'Util/SanitizationUtil';
 import {isSameDay, differenceInMinutes} from 'Util/TimeUtil';
@@ -180,10 +180,9 @@ class MessageListViewModel {
     if (this.conversation().unreadState().allEvents.length) {
       this.conversation_last_read_timestamp = this.conversation().last_read_timestamp();
     }
-
-    // if (conversationEntity.is_loaded()) {
-    //   return this._renderConversation(conversationEntity);
-    // }
+    if (conversationEntity.is_loaded()) {
+      return this._renderConversation(conversationEntity);
+    }
     return this.conversation_repository
       .updateParticipatingUserEntities(conversationEntity, false, true)
       .then(_conversationEntity => {
@@ -234,16 +233,22 @@ class MessageListViewModel {
         // Reset scroll position
         messages_container.scrollTop = 0;
 
-        if (messageEntity) {
-          this.focusMessage(messageEntity.id);
-        } else {
-          const unread_message = $('.message-timestamp-unread');
-          if (unread_message.length) {
-            const unreadMarkerPosition = unread_message.parents('.message').position();
-            scrollBy(messages_container, unreadMarkerPosition.top);
+        if (isScrollable(messages_container)) {
+          if (messageEntity) {
+            this.focusMessage(messageEntity.id);
           } else {
-            scrollToBottom(messages_container);
+            const unread_message = $('.message-timestamp-unread');
+            if (unread_message.length) {
+              const unreadMarkerPosition = unread_message
+                .parent()
+                .parent()
+                .position();
+              scrollBy(messages_container, unreadMarkerPosition.top);
+            } else {
+              scrollToBottom(messages_container);
+            }
           }
+        } else {
         }
 
         const message_bg = $('.messages-background');
@@ -251,7 +256,7 @@ class MessageListViewModel {
           new MessageBackground(message_bg[0]);
         }
 
-        window.addEventListener('resize', this._adjustScroll);
+        // window.addEventListener('resize', this._adjustScroll);
 
         $('.conversation').css({opacity: 1});
         // Subscribe for incoming messages

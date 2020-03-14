@@ -600,7 +600,6 @@ export class ConversationRepository {
    */
   getPrecedingMessages(conversationEntity) {
     conversationEntity.is_pending(true);
-
     const firstMessageEntity = conversationEntity.getFirstMessage();
     const upperBound =
       firstMessageEntity && firstMessageEntity.timestamp()
@@ -696,6 +695,7 @@ export class ConversationRepository {
     const messageDate = new Date(messageEntity.timestamp());
     const conversationId = conversationEntity.id;
     conversationEntity.is_pending(true);
+
     return Promise.all([
       this.eventService.loadPrecedingEvents(conversationId, new Date(0), messageDate, padding),
       this.eventService.loadFollowingEvents(conversationEntity.id, messageDate, padding),

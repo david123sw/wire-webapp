@@ -36,7 +36,7 @@ import 'Components/panel/panelActions';
 
 import {mapProfileAssets, updateUserEntityAssets} from '../../assets/AssetMapper';
 import {User} from '../../entity/User';
-import {createRandomUuid} from 'Util/util';
+import {createRandomUuid, koArrayPushAll} from 'Util/util';
 import {ParticipantAvatar} from 'Components/participantAvatar';
 import {modals, ModalsViewModel} from '../ModalsViewModel';
 import {validateProfileImageResolution} from 'Util/util';
@@ -94,51 +94,6 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
         return true;
       }
     });
-
-    ko.computed(() => {
-      if (this.activeConversation()) {
-        this.serviceParticipants.removeAll();
-        this.userParticipants.removeAll();
-        let groupCreatorEntity = undefined;
-        if (this.activeConversation().type() === ConversationType.SUPER_GROUP) {
-          this.conversationRepository.getBigGroupUser(this.activeConversation(), 4).then(users => {
-            this.userParticipants(users);
-            this.userParticipants.unshift(this.activeConversation().selfUser());
-            this.userParticipants().map(userEntity => {
-              userEntity.is_creator = userEntity.id === this.activeConversation().creator;
-            });
-            this.showAllUsersCount(this.activeConversation().memsum());
-          });
-        } else {
-          this.activeConversation()
-            .participating_user_ets()
-            .map(userEntity => {
-              if (userEntity.isService) {
-                return this.serviceParticipants.push(userEntity);
-              }
-              if (userEntity.id !== this.activeConversation().creator) {
-                this.userParticipants.push(userEntity);
-              } else {
-                groupCreatorEntity = userEntity;
-              }
-            });
-          if (groupCreatorEntity) {
-            this.userParticipants.unshift(groupCreatorEntity);
-          }
-          this.userParticipants.unshift(this.activeConversation().selfUser());
-          this.userParticipants().map(userEntity => {
-            userEntity.is_creator = userEntity.id === this.activeConversation().creator;
-          });
-          const userCount = this.userParticipants().length;
-          const exceedsMaxUserCount = userCount > ConversationDetailsViewModel.CONFIG.MAX_USERS_VISIBLE;
-          if (exceedsMaxUserCount) {
-            this.userParticipants.splice(ConversationDetailsViewModel.CONFIG.REDUCED_USERS_COUNT);
-          }
-          this.showAllUsersCount(this.activeConversation().memsum());
-        }
-      }
-    });
-
     this.firstParticipant = ko.pureComputed(() => {
       return this.activeConversation() && this.activeConversation().firstUserEntity();
     });
@@ -547,5 +502,51 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
 
   updateConversationReceiptMode(conversationEntity, receiptMode) {
     this.conversationRepository.updateConversationReceiptMode(conversationEntity, receiptMode);
+  }
+  initView() {
+    if (this.activeConversation()) {
+      this.serviceParticipants.removeAll();
+      this.userParticipants.removeAll();
+      let userParticipants = [];
+      let groupCreatorEntity = undefined;
+      if (this.activeConversation().type() === ConversationType.SUPER_GROUP) {
+        this.conversationRepository.getBigGroupUser(this.activeConversation(), 4).then(users => {
+          userParticipants = userParticipants.concat(users);
+          userParticipants.unshift(this.activeConversation().selfUser());
+          userParticipants.map(userEntity => {
+            userEntity.is_creator = userEntity.id === this.activeConversation().creator;
+          });
+          koArrayPushAll(this.userParticipants, userParticipants);
+          this.showAllUsersCount(this.activeConversation().memsum());
+        });
+      } else {
+        this.activeConversation()
+          .participating_user_ets()
+          .map(userEntity => {
+            if (userEntity.isService) {
+              return this.serviceParticipants.push(userEntity);
+            }
+            if (userEntity.id !== this.activeConversation().creator) {
+              userParticipants.push(userEntity);
+            } else {
+              groupCreatorEntity = userEntity;
+            }
+          });
+        if (groupCreatorEntity) {
+          userParticipants.unshift(groupCreatorEntity);
+        }
+        userParticipants.unshift(this.activeConversation().selfUser());
+        userParticipants.map(userEntity => {
+          userEntity.is_creator = userEntity.id === this.activeConversation().creator;
+        });
+        const userCount = userParticipants.length;
+        const exceedsMaxUserCount = userCount > ConversationDetailsViewModel.CONFIG.MAX_USERS_VISIBLE;
+        if (exceedsMaxUserCount) {
+          userParticipants.splice(ConversationDetailsViewModel.CONFIG.REDUCED_USERS_COUNT);
+        }
+        koArrayPushAll(this.userParticipants, userParticipants);
+        this.showAllUsersCount(this.activeConversation().memsum());
+      }
+    }
   }
 }
