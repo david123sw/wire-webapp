@@ -19,15 +19,6 @@ export class ConversationAdminViewModel extends BasePanelViewModel {
       return false;
     });
     this.participants = ko.observableArray([]);
-    ko.computed(() => {
-      if (this.activeConversation()) {
-        const managers = this.activeConversation().managers();
-        this.user_repository.get_users_by_id(managers).then(users => {
-          this.participants.removeAll();
-          koArrayPushAll(this.participants, users);
-        });
-      }
-    });
   }
   clickOnShowUser(userEntity) {
     this.navigateTo(z.viewModel.PanelViewModel.STATE.GROUP_PARTICIPANT_USER, {
@@ -44,5 +35,14 @@ export class ConversationAdminViewModel extends BasePanelViewModel {
       highlightedUsers: [],
       mode: ConversationParticipantsViewModel.STATE.MODIFY_ADMIN,
     });
+  }
+  initView() {
+    if (this.activeConversation()) {
+      const managers = this.activeConversation().managers();
+      this.user_repository.get_users_by_id(managers).then(users => {
+        this.participants.removeAll();
+        koArrayPushAll(this.participants, users);
+      });
+    }
   }
 }

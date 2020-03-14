@@ -13,15 +13,6 @@ export class ConversationOratorViewModel extends BasePanelViewModel {
     this.user_repository = repositories.user;
 
     this.participants = ko.observableArray([]);
-    ko.computed(() => {
-      if (this.activeConversation()) {
-        const orators = this.activeConversation().orator();
-        this.user_repository.get_users_by_id(orators).then(users => {
-          this.participants.removeAll();
-          koArrayPushAll(this.participants, users);
-        });
-      }
-    });
   }
   clickOnShowUser(userEntity) {
     this.navigateTo(z.viewModel.PanelViewModel.STATE.GROUP_PARTICIPANT_USER, {
@@ -38,5 +29,14 @@ export class ConversationOratorViewModel extends BasePanelViewModel {
       highlightedUsers: [],
       mode: ConversationParticipantsViewModel.STATE.MODIFY_ORATOR,
     });
+  }
+  initView() {
+    if (this.activeConversation()) {
+      const orators = this.activeConversation().orator();
+      this.participants.removeAll();
+      this.user_repository.get_users_by_id(orators).then(users => {
+        koArrayPushAll(this.participants, users);
+      });
+    }
   }
 }
