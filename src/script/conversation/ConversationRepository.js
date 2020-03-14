@@ -622,6 +622,9 @@ export class ConversationRepository {
    * @returns {Promise} Resolves with the messages
    */
   getPrecedingMessagesAsLast(conversationEntity) {
+    if (conversationEntity.last_message()) {
+      Promise.resolve(conversationEntity.last_message());
+    }
     conversationEntity.is_pending(true);
     const firstMessageEntity = conversationEntity.getFirstMessage();
     const upperBound = firstMessageEntity

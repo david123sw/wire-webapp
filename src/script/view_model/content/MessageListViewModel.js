@@ -180,9 +180,10 @@ class MessageListViewModel {
     if (this.conversation().unreadState().allEvents.length) {
       this.conversation_last_read_timestamp = this.conversation().last_read_timestamp();
     }
-    if (conversationEntity.is_loaded()) {
-      return this._renderConversation(conversationEntity);
-    }
+    // if (conversationEntity.is_loaded()) {
+    //   return this._renderConversation(conversationEntity);
+    // }
+
     return this.conversation_repository
       .updateParticipatingUserEntities(conversationEntity, false, true)
       .then(_conversationEntity => {
