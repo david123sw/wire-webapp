@@ -1,5 +1,6 @@
 import {BasePanelViewModel} from './BasePanelViewModel';
 import {ConversationParticipantsViewModel} from './ConversationParticipantsViewModel';
+import {koArrayPushAll} from 'Util/util';
 
 export class ConversationAdminViewModel extends BasePanelViewModel {
   constructor(params) {
@@ -9,29 +10,23 @@ export class ConversationAdminViewModel extends BasePanelViewModel {
     this.searchRepository = repositories.search;
     this.teamRepository = repositories.team;
     this.conversationRepository = repositories.conversation;
+    this.user_repository = repositories.user;
+
     this.isShowAdd = ko.pureComputed(() => {
       if (this.activeConversation()) {
         return this.activeConversation().managers().length < 3;
       }
       return false;
     });
-    this.participants = ko.pureComputed(() => {
+    this.participants = ko.observableArray([]);
+    ko.computed(() => {
       if (this.activeConversation()) {
-        const userParticipants = [];
         const managers = this.activeConversation().managers();
-        for (let i = 0; i < managers.length; ++i) {
-          const userId = managers[i];
-          this.activeConversation()
-            .participating_user_ets()
-            .map(userEntity => {
-              if (userEntity.id === userId) {
-                userParticipants.push(userEntity);
-              }
-            });
-        }
-        return userParticipants;
+        this.user_repository.get_users_by_id(managers).then(users => {
+          this.participants.removeAll();
+          koArrayPushAll(this.participants, users);
+        });
       }
-      return [];
     });
   }
   clickOnShowUser(userEntity) {

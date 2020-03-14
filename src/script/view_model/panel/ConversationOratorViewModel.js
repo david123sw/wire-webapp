@@ -1,5 +1,6 @@
 import {BasePanelViewModel} from './BasePanelViewModel';
 import {ConversationParticipantsViewModel} from './ConversationParticipantsViewModel';
+import {koArrayPushAll} from 'Util/util';
 
 export class ConversationOratorViewModel extends BasePanelViewModel {
   constructor(params) {
@@ -9,24 +10,17 @@ export class ConversationOratorViewModel extends BasePanelViewModel {
     this.searchRepository = repositories.search;
     this.teamRepository = repositories.team;
     this.conversationRepository = repositories.conversation;
+    this.user_repository = repositories.user;
 
-    this.participants = ko.pureComputed(() => {
+    this.participants = ko.observableArray([]);
+    ko.computed(() => {
       if (this.activeConversation()) {
-        const userParticipants = [];
         const orators = this.activeConversation().orator();
-        for (let i = 0; i < orators.length; ++i) {
-          const userId = orators[i];
-          this.activeConversation()
-            .participating_user_ets()
-            .map(userEntity => {
-              if (userEntity.id === userId) {
-                userParticipants.push(userEntity);
-              }
-            });
-        }
-        return userParticipants;
+        this.user_repository.get_users_by_id(orators).then(users => {
+          this.participants.removeAll();
+          koArrayPushAll(this.participants, users);
+        });
       }
-      return [];
     });
   }
   clickOnShowUser(userEntity) {
