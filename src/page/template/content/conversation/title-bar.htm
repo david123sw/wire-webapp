@@ -14,7 +14,7 @@
       <!-- ko if: conversationEntity().verification_state() === ConversationVerificationState.VERIFIED -->
         <verified-icon class="conversation-title-bar-name--verified"></verified-icon>
       <!-- /ko -->
-      <span class="conversation-title-bar-name-label" data-bind="text: conversationEntity().display_name()" data-uie-name="status-conversation-title-bar-label"></span>
+      <span class="conversation-title-bar-name-label" data-bind="text: conversationEntity().display_chat_name()" data-uie-name="status-conversation-title-bar-label"></span>
     </div>
 
     <div class="conversation-title-bar-icons">

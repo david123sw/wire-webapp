@@ -417,6 +417,43 @@ export class Conversation {
 
       if (this.isGroup()) {
         if (this.name()) {
+          return `${this.name()}`;
+        }
+
+        const hasUserEntities = !!this.participating_user_ets().length;
+        if (hasUserEntities) {
+          const isJustServices = this.participating_user_ets().every(userEntity => userEntity.isService);
+          const joinedNames = this.participating_user_ets()
+            .filter(userEntity => isJustServices || !userEntity.isService)
+            .map(userEntity => userEntity.first_name())
+            .join(', ');
+
+          const maxLength = ConversationRepository.CONFIG.GROUP.MAX_NAME_LENGTH;
+          return `${truncate(joinedNames, maxLength, false)}`;
+        }
+
+        const hasUserIds = !!this.participating_user_ids().length;
+        if (!hasUserIds) {
+          return `${t('conversationsEmptyConversation')}`;
+        }
+      }
+
+      return '…';
+    });
+
+    this.display_chat_name = ko.pureComputed(() => {
+      if (this.isRequest() || this.is1to1()) {
+        const [userEntity] = this.participating_user_ets();
+        const userName = userEntity && userEntity.name();
+        const remark = userEntity && userEntity.remark();
+        if (remark) {
+          return remark;
+        }
+        return userName ? userName : '…';
+      }
+
+      if (this.isGroup()) {
+        if (this.name()) {
           return `${this.name()}(${this.memsum()})`;
         }
 
