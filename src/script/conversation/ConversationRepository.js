@@ -1353,10 +1353,7 @@ export class ConversationRepository {
    */
   updateParticipatingUserEntities(conversationEntity, offline = false, updateGuests = false) {
     if (conversationEntity.type() === ConversationType.SUPER_GROUP) {
-      return new Promise((resolve, reject) => {
-        const conversationEt = this.updateUserExtraInfo(conversationEntity);
-        resolve(conversationEt);
-      });
+      return Promise.resolve(conversationEntity);
     }
     return this.user_repository
       .get_users_by_id(conversationEntity.participating_user_ids(), offline)
@@ -4216,10 +4213,10 @@ export class ConversationRepository {
    */
   _updateMessageUserEntities(messageEntity, isSupperGroup = false) {
     if (isSupperGroup) {
-      const userEt = this.user_repository.findUserById(messageEntity.id);
-      if (userEt) {
-        messageEntity.user(userEt);
-      }
+      // const userEt = this.user_repository.findUserById(messageEntity.id);
+      // if (userEt) {
+      //   messageEntity.user(userEt);
+      // }
       return Promise.resolve(messageEntity);
     }
 
