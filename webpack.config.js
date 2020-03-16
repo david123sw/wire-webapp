@@ -30,7 +30,7 @@ module.exports = Object.assign({}, commonConfig, {
       new TerserJSPlugin({
         /* Dexie has issues with UglifyJS */
         exclude: /dexie/g,
-        sourceMap: true,
+        sourceMap: false,
       }),
     ],
   },
