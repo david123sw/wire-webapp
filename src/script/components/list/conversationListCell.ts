@@ -22,15 +22,13 @@ import ko from 'knockout';
 import {createRandomUuid, noop} from 'Util/util';
 
 import {ParticipantAvatar} from 'Components/participantAvatar';
-import {generateCellState, transDesc} from '../../conversation/ConversationCellState';
+import {generateCellState} from '../../conversation/ConversationCellState';
 import {ConversationStatusIcon} from '../../conversation/ConversationStatusIcon';
 import {Conversation} from '../../entity/Conversation';
 import {MediaType} from '../../media/MediaType';
 import {viewportObserver} from '../../ui/viewportObserver';
 
 import 'Components/availabilityState';
-import {BackendEvent} from '../../event/Backend';
-import {ClientEvent} from '../../event/Client';
 
 import {t} from 'Util/LocalizerUtil';
 import {mapProfileAssets, updateUserEntityAssets} from '../../assets/AssetMapper';
@@ -180,90 +178,90 @@ class ConversationListCell {
           this.refresh_lock = true;
         }
 
-        if (!this.refresh_lock) {
-          window.wire.app.repository.conversation.getPrecedingMessagesAsLast(this.conversation).then((events: any) => {
-            const last = events[0];
-            if (last) {
-              let prefix = '';
-              if (this.conversation.isGroup()) {
-                const user_from = this.conversation.allUserEntities.filter(userEntity => {
-                  return userEntity.id === last.from;
-                });
-                if (0 < user_from.length) {
-                  prefix =
-                    this.conversation.selfUser().id === user_from[0].id
-                      ? `${t('extra_special_message_type_4_to_1')}: `
-                      : `${user_from[0].remark() ? user_from[0].remark() : user_from[0].name()}: `;
-                }
-              }
-
-              if (ClientEvent.CONVERSATION.MESSAGE_ADD === last.type) {
-                this.cell_state({
-                  description: last.data.content
-                    ? last.data.previews.length > 0
-                      ? `${prefix}${t('notificationSharedLink')}`
-                      : `${prefix}${last.data.content}`
-                    : '',
-                  icon: this.cell_state().icon,
-                });
-              } else if (BackendEvent.CONVERSATION.MEMBER_LEAVE === last.type) {
-                const desc = last.data.user_names
-                  ? transDesc('conversationsSecondaryLinePersonLeft', last.data.user_names.join(','))
-                  : '';
-                this.cell_state({icon: this.cell_state().icon, description: desc});
-              } else if (BackendEvent.CONVERSATION.MEMBER_JOIN === last.type) {
-                const add_id = last.from;
-                const added_ids = last.data.user_ids.slice(0);
-                added_ids.unshift(add_id);
-                const added_names: string[] = [];
-                for (let i = 0; i < added_ids.length; ++i) {
-                  this.conversation.allUserEntities.map(userEntity => {
-                    if (userEntity.id === added_ids[i]) {
-                      if (this.conversation.selfUser().id === added_ids[i]) {
-                        added_names.push(t('extra_special_message_type_4_to_1'));
-                      } else {
-                        added_names.push(userEntity.remark() ? userEntity.remark() : userEntity.name());
-                      }
-                    }
-                  });
-                }
-                //系统消息单独处理，暂不显示
-                const desc =
-                  add_id === BackendEvent.NOTIFY.SYSTEM_SECRET_ID
-                    ? ''
-                    : added_names[0] + t('conversationsSecondaryLinePersonAdded', added_names.slice(1).join(','));
-                this.cell_state({
-                  description: desc,
-                  icon: this.cell_state().icon,
-                });
-              } else if (
-                ClientEvent.CONVERSATION.VOICE_CHANNEL_ACTIVATE === last.type ||
-                ClientEvent.CONVERSATION.VOICE_CHANNEL_DEACTIVATE === last.type
-              ) {
-                this.cell_state({
-                  description: `${prefix}${t('conversationVoiceChannelDeactivate')}`,
-                  icon: this.cell_state().icon,
-                });
-              } else if (ClientEvent.CONVERSATION.ASSET_ADD === last.type) {
-                let asset = '';
-                if (last.data.content_type.startsWith('image')) {
-                  asset = t('notificationAssetAdd');
-                } else if (last.data.content_type.startsWith('video')) {
-                  asset = t('notificationSharedVideo');
-                } else if (last.data.content_type.startsWith('audio')) {
-                  asset = t('notificationSharedAudio');
-                } else {
-                  asset = t('notificationSharedFile');
-                }
-                this.cell_state({
-                  description: `${prefix}${asset}`,
-                  icon: this.cell_state().icon,
-                });
-              }
-              this.refresh_lock = true;
-            }
-          });
-        }
+        // if (!this.refresh_lock) {
+        //   window.wire.app.repository.conversation.getPrecedingMessagesAsLast(this.conversation).then((events: any) => {
+        //     const last = events[0];
+        //     if (last) {
+        //       let prefix = '';
+        //       if (this.conversation.isGroup()) {
+        //         const user_from = this.conversation.allUserEntities.filter(userEntity => {
+        //           return userEntity.id === last.from;
+        //         });
+        //         if (0 < user_from.length) {
+        //           prefix =
+        //             this.conversation.selfUser().id === user_from[0].id
+        //               ? `${t('extra_special_message_type_4_to_1')}: `
+        //               : `${user_from[0].remark() ? user_from[0].remark() : user_from[0].name()}: `;
+        //         }
+        //       }
+        //
+        //       if (ClientEvent.CONVERSATION.MESSAGE_ADD === last.type) {
+        //         this.cell_state({
+        //           description: last.data.content
+        //             ? last.data.previews.length > 0
+        //               ? `${prefix}${t('notificationSharedLink')}`
+        //               : `${prefix}${last.data.content}`
+        //             : '',
+        //           icon: this.cell_state().icon,
+        //         });
+        //       } else if (BackendEvent.CONVERSATION.MEMBER_LEAVE === last.type) {
+        //         const desc = last.data.user_names
+        //           ? transDesc('conversationsSecondaryLinePersonLeft', last.data.user_names.join(','))
+        //           : '';
+        //         this.cell_state({icon: this.cell_state().icon, description: desc});
+        //       } else if (BackendEvent.CONVERSATION.MEMBER_JOIN === last.type) {
+        //         const add_id = last.from;
+        //         const added_ids = last.data.user_ids.slice(0);
+        //         added_ids.unshift(add_id);
+        //         const added_names: string[] = [];
+        //         for (let i = 0; i < added_ids.length; ++i) {
+        //           this.conversation.allUserEntities.map(userEntity => {
+        //             if (userEntity.id === added_ids[i]) {
+        //               if (this.conversation.selfUser().id === added_ids[i]) {
+        //                 added_names.push(t('extra_special_message_type_4_to_1'));
+        //               } else {
+        //                 added_names.push(userEntity.remark() ? userEntity.remark() : userEntity.name());
+        //               }
+        //             }
+        //           });
+        //         }
+        //         //系统消息单独处理，暂不显示
+        //         const desc =
+        //           add_id === BackendEvent.NOTIFY.SYSTEM_SECRET_ID
+        //             ? ''
+        //             : added_names[0] + t('conversationsSecondaryLinePersonAdded', added_names.slice(1).join(','));
+        //         this.cell_state({
+        //           description: desc,
+        //           icon: this.cell_state().icon,
+        //         });
+        //       } else if (
+        //         ClientEvent.CONVERSATION.VOICE_CHANNEL_ACTIVATE === last.type ||
+        //         ClientEvent.CONVERSATION.VOICE_CHANNEL_DEACTIVATE === last.type
+        //       ) {
+        //         this.cell_state({
+        //           description: `${prefix}${t('conversationVoiceChannelDeactivate')}`,
+        //           icon: this.cell_state().icon,
+        //         });
+        //       } else if (ClientEvent.CONVERSATION.ASSET_ADD === last.type) {
+        //         let asset = '';
+        //         if (last.data.content_type.startsWith('image')) {
+        //           asset = t('notificationAssetAdd');
+        //         } else if (last.data.content_type.startsWith('video')) {
+        //           asset = t('notificationSharedVideo');
+        //         } else if (last.data.content_type.startsWith('audio')) {
+        //           asset = t('notificationSharedAudio');
+        //         } else {
+        //           asset = t('notificationSharedFile');
+        //         }
+        //         this.cell_state({
+        //           description: `${prefix}${asset}`,
+        //           icon: this.cell_state().icon,
+        //         });
+        //       }
+        //       this.refresh_lock = true;
+        //     }
+        //   });
+        // }
       })
       .extend({rateLimit: 500});
 
