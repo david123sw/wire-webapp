@@ -698,7 +698,6 @@ export class ConversationRepository {
     const messageDate = new Date(messageEntity.timestamp());
     const conversationId = conversationEntity.id;
     conversationEntity.is_pending(true);
-
     return Promise.all([
       this.eventService.loadPrecedingEvents(conversationId, new Date(0), messageDate, padding),
       this.eventService.loadFollowingEvents(conversationEntity.id, messageDate, padding),
@@ -759,7 +758,6 @@ export class ConversationRepository {
     if (!conversationEntity || !query.length) {
       return Promise.resolve({});
     }
-
     return this.conversation_service
       .search_in_conversation(conversationEntity.id, query)
       .then(events => this.event_mapper.mapJsonEvents(events, conversationEntity))
@@ -3718,7 +3716,6 @@ export class ConversationRepository {
       }
     }
   }
-
   _onGroupCreation(conversationEntity, eventJson) {
     return this.event_mapper
       .mapJsonEvent(eventJson, conversationEntity)
@@ -3731,7 +3728,6 @@ export class ConversationRepository {
         if (!creatorIsParticipant) {
           messageEntity.memberMessageType = SystemMessageType.CONVERSATION_RESUME;
         }
-
         return this._updateMessageUserEntities(
           messageEntity,
           conversationEntity.type() === ConversationType.SUPER_GROUP,

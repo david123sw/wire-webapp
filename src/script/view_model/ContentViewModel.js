@@ -202,7 +202,6 @@ export class ContentViewModel {
    */
   showConversation = (conversation, options = {}) => {
     const {openNotificationSettings = false} = options;
-
     if (!conversation) {
       return this.switchContent(ContentViewModel.STATE.CONNECTION_REQUESTS);
     }

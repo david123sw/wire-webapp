@@ -100,10 +100,10 @@ z.conversation.EventBuilder = {
       type: ClientEvent.CONVERSATION.DELETE_EVERYWHERE,
     };
   },
-  buildGroupCreation(conversationEntity, isTemporaryGuest = false, timestamp) {
+  buildGroupCreation(conversationEntity, isTemporaryGuest = false, timestamp = 0) {
     const {creator: creatorId, id} = conversationEntity;
     const selfUserId = conversationEntity.selfUser().id;
-    const isoDate = new Date(timestamp || 0).toISOString();
+    const isoDate = new Date(timestamp).toISOString();
 
     const userIds = conversationEntity.participating_user_ids().slice();
     const createdBySelf = creatorId === selfUserId || isTemporaryGuest;

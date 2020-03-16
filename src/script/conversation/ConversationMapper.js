@@ -209,18 +209,17 @@ export class ConversationMapper {
         verification_state,
       } = selfState;
 
-      if (archived_timestamp) {
-        conversationEntity.setTimestamp(archived_timestamp, Conversation.TIMESTAMP_TYPE.ARCHIVED);
-        conversationEntity.archivedState(selfState.archived_state);
-      }
-
       if (place_top !== undefined) {
         conversationEntity.place_top(place_top);
       }
-
       if (mediumPictureResource !== undefined && previewPictureResource !== undefined) {
         conversationEntity.mediumPictureResource(mediumPictureResource);
         conversationEntity.previewPictureResource(previewPictureResource);
+      }
+
+      if (archived_timestamp) {
+        conversationEntity.setTimestamp(archived_timestamp, Conversation.TIMESTAMP_TYPE.ARCHIVED);
+        conversationEntity.archivedState(selfState.archived_state);
       }
 
       if (cleared_timestamp !== undefined) {
@@ -230,15 +229,6 @@ export class ConversationMapper {
       if (ephemeral_timer !== undefined) {
         conversationEntity.localMessageTimer(ephemeral_timer);
       }
-
-      if (message_timer !== undefined) {
-        conversationEntity.globalMessageTimer(message_timer);
-      }
-
-      if (receipt_mode !== undefined) {
-        conversationEntity.receiptMode(receipt_mode);
-      }
-
       if (last_event_timestamp) {
         conversationEntity.setTimestamp(last_event_timestamp, Conversation.TIMESTAMP_TYPE.LAST_EVENT);
       }
@@ -254,6 +244,14 @@ export class ConversationMapper {
       if (muted_timestamp) {
         conversationEntity.setTimestamp(muted_timestamp, Conversation.TIMESTAMP_TYPE.MUTED);
         conversationEntity.mutedState(selfState.muted_state);
+      }
+
+      if (message_timer !== undefined) {
+        conversationEntity.globalMessageTimer(message_timer);
+      }
+
+      if (receipt_mode !== undefined) {
+        conversationEntity.receiptMode(receipt_mode);
       }
 
       if (status !== undefined) {
@@ -317,6 +315,8 @@ export class ConversationMapper {
       addright,
       add_friend,
       advisory,
+      alias_name,
+      alias_name_ref,
       block_time,
       confirm,
       creator,
@@ -348,6 +348,9 @@ export class ConversationMapper {
     conversationEntity.type(type);
     conversationEntity.name(name ? name : '');
     //secret
+    conversationEntity.alias_name(alias_name ? alias_name : '');
+    conversationEntity.alias_name_ref(alias_name_ref ? alias_name_ref : '');
+
     conversationEntity.invite_code(invite_code);
     conversationEntity.url_invite(url_invite);
     conversationEntity.confirm(confirm);
@@ -368,8 +371,13 @@ export class ConversationMapper {
     conversationEntity.globalMessageTimer(message_timer);
     conversationEntity.localMessageTimer(ephemeral_timer);
 
-    const selfState = members ? members.self : conversationData;
-    conversationEntity = this.updateSelfStatus(conversationEntity, selfState);
+    // const selfState = members ? members.self : conversationData;
+    conversationEntity = this.updateSelfStatus(conversationEntity, conversationData);
+
+    if (!conversationEntity.last_event_timestamp() && initialTimestamp) {
+      conversationEntity.last_event_timestamp(initialTimestamp);
+      conversationEntity.last_server_timestamp(initialTimestamp);
+    }
 
     if (has_announcement_shown !== undefined) {
       conversationEntity.has_announcement_shown(has_announcement_shown);
@@ -378,11 +386,6 @@ export class ConversationMapper {
     if (mediumPictureResource !== undefined && previewPictureResource !== undefined) {
       conversationEntity.mediumPictureResource(mediumPictureResource);
       conversationEntity.previewPictureResource(previewPictureResource);
-    }
-
-    if (!conversationEntity.last_event_timestamp() && initialTimestamp) {
-      conversationEntity.last_event_timestamp(initialTimestamp);
-      conversationEntity.last_server_timestamp(initialTimestamp);
     }
 
     // Active participants from database or backend payload

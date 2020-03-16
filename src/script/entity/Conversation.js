@@ -570,14 +570,12 @@ export class Conversation {
     if (typeof timestamp === 'string') {
       timestamp = window.parseInt(timestamp, 10);
     }
-
     const entityTimestamp = this[type];
     if (!entityTimestamp) {
       throw new z.error.ConversationError(z.error.ConversationError.TYPE.INVALID_PARAMETER);
     }
 
     const updatedTimestamp = forceUpdate ? timestamp : this._incrementTimeOnly(entityTimestamp(), timestamp);
-
     if (updatedTimestamp !== false) {
       entityTimestamp(updatedTimestamp);
     }

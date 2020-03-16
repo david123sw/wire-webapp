@@ -395,7 +395,7 @@ class App {
         this.logger.info('App pre-loading completed');
         return this._handleUrlParams();
       })
-      .then(() => this.repository.conversation.updateConversationsOnAppInit())
+      .then(() => this.repository.conversation.updateUnarchivedConversations())
       .then(() => this.repository.conversation.conversationLabelRepository.loadLabels())
       .then(() => {
         telemetry.time_step(AppInitTimingsStep.APP_LOADED);
