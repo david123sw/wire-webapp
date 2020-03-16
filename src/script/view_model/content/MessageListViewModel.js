@@ -177,7 +177,7 @@ class MessageListViewModel {
     this.conversation(conversationEntity);
 
     // Keep last read timestamp to render unread when entering conversation
-    if (this.conversation().unreadState().allEvents.length) {
+    if (this.conversation().unread_event_count()) {
       this.conversation_last_read_timestamp = this.conversation().last_read_timestamp();
     }
     // if (conversationEntity.is_loaded()) {
@@ -230,8 +230,13 @@ class MessageListViewModel {
     }
     $('.conversation').css({opacity: 0});
     return new Promise(resolve => {
-      window.setTimeout(() => {
+      if (window.renderMessageHandler) {
+        clearTimeout(window.renderMessageHandler);
+        window.renderMessageHandler = null;
+      }
+      window.renderMessageHandler = window.setTimeout(() => {
         // Reset scroll position
+        window.renderMessageHandler = null;
         messages_container.scrollTop = 0;
 
         if (isScrollable(messages_container)) {

@@ -321,7 +321,7 @@ export class Conversation {
             });
       })
       .extend({trackArrayChanges: true});
-
+    this.unread_event_count = ko.pureComputed(() => this.messages().length);
     // Calling
     this.unreadState = ko.pureComputed(() => {
       const unreadState = {
