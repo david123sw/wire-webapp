@@ -28,7 +28,8 @@
 
   .preview-left-sidebar-column {
     position: relative;
-    width: @conversation-list-width * 0.2;
+    z-index: 20;
+    width: @conversation-left-width;
     height: 100%;
     flex: 0 0 auto;
     flex-direction: column;
@@ -41,7 +42,7 @@
     z-index: 20;
     top: 0;
     bottom: 0;
-    left: 0;
+    left: @conversation-left-width;
     width: @conversation-list-width;
     height: 100%;
     flex: 0 0 auto;
@@ -63,7 +64,7 @@
     top: 0;
     right: 0;
     bottom: 0;
-    left: @conversation-list-width;
+    left: @conversation-list-width + @conversation-left-width;
     flex: 1 1 auto;
     &__overlay {
       position: absolute;
@@ -82,7 +83,10 @@
   }
 
   .right-column {
+    position: absolute;
     z-index: @z-index-panel;
+    top: 0;
+    right: 0;
     overflow: hidden;
     width: 0;
     height: 100vh;
@@ -92,7 +96,7 @@
     transform: scale(1, 1);
   }
 
-  @media (min-width: 1000px) {
+  @media (min-width: 2000px) {
     .right-column {
       box-shadow: -1px 0 0 var(--sidebar-box-shadow);
     }
@@ -104,12 +108,10 @@
     }
 
     .right-column {
-      position: absolute;
-      right: 0;
       width: @right-width;
     }
 
-    @media (min-width: 1000px) {
+    @media (min-width: 2000px) {
       .right-column {
         //position: relative;
         position: absolute;

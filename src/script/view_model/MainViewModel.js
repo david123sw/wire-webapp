@@ -31,7 +31,7 @@ export class MainViewModel {
   static get CONFIG() {
     return {
       PANEL: {
-        BREAKPOINT: 1000,
+        BREAKPOINT: 10000,
         WIDTH: 304,
       },
     };
