@@ -183,7 +183,7 @@ class MessageListViewModel {
     // if (conversationEntity.is_loaded()) {
     //   return this._renderConversation(conversationEntity);
     // }
-    conversationEntity.is_loaded(true);
+
     return this.conversation_repository
       .updateParticipatingUserEntities(conversationEntity, false, true)
       .then(_conversationEntity => {
@@ -192,6 +192,7 @@ class MessageListViewModel {
           : this.conversation_repository.getPrecedingMessages(_conversationEntity);
       })
       .then(() => {
+        conversationEntity.is_loaded(true);
         return this._renderConversation(conversationEntity, messageEntity);
       });
   }

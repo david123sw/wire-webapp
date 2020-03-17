@@ -4142,7 +4142,6 @@ export class ConversationRepository {
    * @returns {Promise} Resolves with an array of mapped messages
    */
   _addEventsToConversation(events, conversationEntity, prepend = true) {
-    // console.log('----_addEventsToConversation----', events);
     return this.event_mapper
       .mapJsonEvents(events, conversationEntity, true)
       .then(messageEntities =>
