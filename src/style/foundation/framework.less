@@ -27,8 +27,13 @@
   transition: filter 0.3s;
 
   .left-column {
-    position: relative;
+    position: absolute;
+    z-index: 20;
+    top: 0;
+    bottom: 0;
+    left: 0;
     width: @conversation-list-width;
+    height: 100%;
     flex: 0 0 auto;
     color: @conversation-list-color;
     fill: @conversation-list-color;
@@ -44,9 +49,12 @@
   }
 
   .center-column {
-    position: relative;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: @conversation-list-width;
     flex: 1 1 auto;
-
     &__overlay {
       position: absolute;
       top: 0;
@@ -93,7 +101,8 @@
 
     @media (min-width: 1000px) {
       .right-column {
-        position: relative;
+        //position: relative;
+        position: absolute;
       }
 
       .center-column__overlay {

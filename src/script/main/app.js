@@ -393,7 +393,7 @@ class App {
 
         this.repository.user.self().devices(clientEntities);
         this.logger.info('App pre-loading completed');
-        return this._handleUrlParams();
+        return ''; //this._handleUrlParams();
       })
       .then(() => this.repository.conversation.updateUnarchivedConversations())
       .then(() => this.repository.conversation.conversationLabelRepository.loadLabels())

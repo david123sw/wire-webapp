@@ -575,6 +575,8 @@ export class Conversation {
       throw new z.error.ConversationError(z.error.ConversationError.TYPE.INVALID_PARAMETER);
     }
 
+    // console.log('-----timestamp---', timestamp, type);
+
     const updatedTimestamp = forceUpdate ? timestamp : this._incrementTimeOnly(entityTimestamp(), timestamp);
     if (updatedTimestamp !== false) {
       entityTimestamp(updatedTimestamp);
