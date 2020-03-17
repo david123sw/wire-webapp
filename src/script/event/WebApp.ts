@@ -184,6 +184,9 @@ export const WebAppEvents = {
     },
     UPDATED: 'wire.webapp.properties.updated',
   },
+  RIGHT_NAVIGATE: {
+    OPEN_NEAREST_LIST: 'right_navigate_update',
+  },
   SEARCH: {
     HIDE: 'wire.webapp.search.hide',
     SHOW: 'wire.webapp.search.show',

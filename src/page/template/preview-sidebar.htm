@@ -1,5 +1,18 @@
 <div id="preview-sidebar" class="preview-sidebar">
-    <people-icon class="button-icon-large" data-bind="attr: {title: startTooltip}, click: clickOnPeopleButton" data-uie-name="go-people"></people-icon>
-    <conversations-recent-icon class="button-icon-large" data-uie-name="go-recent-view" data-bind="attr: {title: conversationsTooltip, 'data-uie-status': showRecentConversations() ? 'active' : 'inactive'}, css: {'accent-fill': showRecentConversations()}, click: () => showRecentConversations(true)"></conversations-recent-icon>
-    <settings-icon class="conversations-settings button-icon-large accent-text" data-bind="clickOrDrag: clickOnPreferencesButton, attr: {title: t('tooltipConversationsPreferences')}, css: {'conversations-settings--badge': showBadge()}" data-uie-name="go-preferences"></settings-icon>
+  <div class="left-item-container">
+    <div class="left-item-avatar">
+      <participant-avatar params="participant: selfUser(), size: 'avatar-m'"></participant-avatar>
+    </div>
+
+
+    <span class="button-icon-size icon-right-chat-new"
+          data-bind="css:{'active': rightType() === z.viewModel.PreviewSidebarViewModel.LType.OPEN_NEAREST_LIST}, click: () => changeTag(z.viewModel.PreviewSidebarViewModel.LType.OPEN_NEAREST_LIST)"
+          data-uie-name="go-near"></span>
+
+    <span class="button-icon-size icon-right-people-new"
+          data-bind="css:{'active': rightType() === z.viewModel.PreviewSidebarViewModel.LType.OPEN_PEOPLE}, click: ()=> changeTag(z.viewModel.PreviewSidebarViewModel.LType.OPEN_PEOPLE)"></span>
+
+    <span class="conversations-settings button-icon-size icon-right-set-new"
+          data-bind="css:{'active': rightType() === z.viewModel.PreviewSidebarViewModel.LType.OPEN_SETTING}, click: ()=> changeTag(z.viewModel.PreviewSidebarViewModel.LType.OPEN_SETTING)"></span>
+  </div>
 </div>

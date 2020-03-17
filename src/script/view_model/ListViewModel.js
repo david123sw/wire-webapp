@@ -90,7 +90,6 @@ z.viewModel.ListViewModel = class ListViewModel {
     this.lastUpdate = ko.observable();
     this.modal = ko.observable();
     this.webappLoaded = ko.observable(false);
-
     this.selfUserPicture = ko.pureComputed(() => {
       if (this.webappLoaded() && this.selfUser()) {
         return this.selfUser().mediumPictureResource();
@@ -118,10 +117,10 @@ z.viewModel.ListViewModel = class ListViewModel {
       const states = hasConnectRequests ? [ContentViewModel.STATE.CONNECTION_REQUESTS] : [];
       return states.concat(this.conversationRepository.conversations_unarchived());
     });
-
     // Nested view models
     this.archive = new ArchiveViewModel(this, repositories.conversation, this.answerCall);
     this.conversations = new ConversationListViewModel(mainViewModel, this, repositories, this.answerCall);
+    this.sidebar = new z.viewModel.PreviewSidebarViewModel(this, repositories);
     this.preferences = new PreferencesListViewModel(
       this.contentViewModel,
       this,
@@ -135,6 +134,10 @@ z.viewModel.ListViewModel = class ListViewModel {
     this._initSubscriptions();
 
     ko.applyBindings(this, document.getElementById(this.elementId));
+  }
+
+  openNearList() {
+    this.start.clickOnClose();
   }
 
   _initSubscriptions() {

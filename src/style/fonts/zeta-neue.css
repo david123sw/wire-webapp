@@ -220,3 +220,28 @@
 .icon-contacts:before {
   content: "\e602";
 }
+
+.icon-right-chat-new:before {
+  content: "\606f";
+}
+
+.icon-right-people-new:before {
+  content: "\901a";
+}
+
+.icon-right-set-new:before {
+  content: "\8bbe";
+}
+
+.icon-right-chat-s:before {
+  content: "\6d88";
+}
+
+.icon-right-people-s:before {
+  content: "\8baf";
+}
+
+.icon-right-set-s:before {
+  content: "\8baf";
+}
+

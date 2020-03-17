@@ -91,7 +91,6 @@ export class MainViewModel {
       this.multitasking,
     );
     this.content = new ContentViewModel(this, repositories);
-    this.sidebar = new z.viewModel.PreviewSidebarViewModel(this, repositories);
     this.list = new z.viewModel.ListViewModel(this, repositories);
 
     this.lightbox = new z.viewModel.ImageDetailViewViewModel(this, repositories);
