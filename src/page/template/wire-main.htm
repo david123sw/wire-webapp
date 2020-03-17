@@ -5,6 +5,11 @@
      data-uie-value="is-loading">
   <!-- ko stopBinding: true -->
     <div id="app" class="app">
+      <div id="preview-left-sidebar-column" class="preview-left-sidebar-column">
+        <!-- ko if: webappLoaded -->
+          #include('preview-sidebar.htm')
+        <!-- /ko -->
+      </div>
       <div id="left-column" class="left-column" data-bind="css: {'left-column--light-theme': !isActivatedAccount()}">
         <!-- ko if: webappLoaded -->
           #include('list/background.htm')

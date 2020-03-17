@@ -54,6 +54,7 @@ import PreferencesDevicesViewModelGlobal from '../view_model/content/Preferences
 import PreferencesOptionsViewModelGlobal from '../view_model/content/PreferencesOptionsViewModel.js';
 import TitleBarViewModelGlobal from '../view_model/content/TitleBarViewModel.js';
 import PushBarViewModelGlobal from '../view_model/content/PushBarViewModel.js';
+import PreviewSidebarViewModelGlobal from '../view_model/content/PreviewSidebarViewModel.js';
 import PanelViewModelGlobal from '../view_model/PanelViewModel.js';
 import ListViewModelGlobal from '../view_model/ListViewModel.js';
 import accentColorPickerGlobal from 'Components/accentColorPicker.js';

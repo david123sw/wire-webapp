@@ -45,7 +45,6 @@ import {Shortcut} from '../../ui/Shortcut';
 import {ShortcutType} from '../../ui/ShortcutType';
 import {Config} from '../../auth/config';
 import {ConversationType} from '../../conversation/ConversationType';
-// import {Conversation} from "../../entity/Conversation";
 
 window.z = window.z || {};
 window.z.viewModel = z.viewModel || {};

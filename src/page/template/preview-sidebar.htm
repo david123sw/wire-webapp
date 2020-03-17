@@ -1,0 +1,5 @@
+<div id="preview-sidebar" class="preview-sidebar">
+    <people-icon class="button-icon-large" data-bind="attr: {title: startTooltip}, click: clickOnPeopleButton" data-uie-name="go-people"></people-icon>
+    <conversations-recent-icon class="button-icon-large" data-uie-name="go-recent-view" data-bind="attr: {title: conversationsTooltip, 'data-uie-status': showRecentConversations() ? 'active' : 'inactive'}, css: {'accent-fill': showRecentConversations()}, click: () => showRecentConversations(true)"></conversations-recent-icon>
+    <settings-icon class="conversations-settings button-icon-large accent-text" data-bind="clickOrDrag: clickOnPreferencesButton, attr: {title: t('tooltipConversationsPreferences')}, css: {'conversations-settings--badge': showBadge()}" data-uie-name="go-preferences"></settings-icon>
+</div>
