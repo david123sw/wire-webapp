@@ -83,7 +83,9 @@ ko.bindingHandlers.showAllTimestamps = {
 ko.bindingHandlers.infinite_scroll = {
   init(scrollingElement, params) {
     const {onScrolling, onHitTop, onHitBottom, onInit} = params();
-    onInit(scrollingElement);
+    if (onInit) {
+      onInit(scrollingElement);
+    }
 
     const onScroll = ({target: element}) => {
       // On some HiDPI screens scrollTop returns a floating point number instead of an integer

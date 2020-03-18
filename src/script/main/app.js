@@ -152,7 +152,7 @@ class App {
 
     this._subscribeToEvents();
     this.initApp();
-    // this.initServiceWorker();
+    this.initServiceWorker();
   }
 
   //##############################################################################
@@ -427,11 +427,11 @@ class App {
    * @returns {undefined} No return value
    */
   initServiceWorker() {
-    // if (navigator.serviceWorker) {
-    //   navigator.serviceWorker
-    //     .register(`/sw.js?${Environment.version(false)}`)
-    //     .then(({scope}) => this.logger.info(`ServiceWorker registration successful with scope: ${scope}`));
-    // }
+    if (navigator.serviceWorker) {
+      navigator.serviceWorker
+        .register(`/sw.js?${Environment.version(false)}`)
+        .then(({scope}) => this.logger.info(`ServiceWorker registration successful with scope: ${scope}`));
+    }
   }
 
   /**

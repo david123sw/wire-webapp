@@ -212,7 +212,7 @@ class MessageListViewModel {
   }
 
   getMessagesContainer() {
-    return this.messagesContainer;
+    return $('.messages-wrap')[0];
   }
 
   /**
