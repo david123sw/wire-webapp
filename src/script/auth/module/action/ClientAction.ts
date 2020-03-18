@@ -75,7 +75,7 @@ export class ClientAction {
     }
     const deviceLabel = `${Runtime.getOsFamily()}${Runtime.getOs().version ? ` ${Runtime.getOs().version}` : ''}`;
     let deviceModel = StringUtil.capitalize(Runtime.getBrowserName());
-    //TODO:need to be verified
+    //todo:need to be verified
     if (Runtime.isElectron()) {
       if (Runtime.isMacOS()) {
         deviceModel = 'Secret macOS';

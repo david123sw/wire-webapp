@@ -95,8 +95,7 @@ ko.components.register('device-card', {
     this.clickable = !detailed && click;
 
     this.dataUieName = `device-card${current ? '-current' : ''}`;
-
-    this.timestamp = formatTimestamp(clientEntity.time);
+    this.timestamp = clientEntity.isSelfClient ? formatTimestamp(clientEntity.time) : '';
     this.isVerified = meta.isVerified;
     this.showVerified = showVerified;
     this.showLegalHoldIcon = showIcon && deviceClass === ClientClassification.LEGAL_HOLD;

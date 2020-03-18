@@ -171,7 +171,6 @@ ko.components.register('user-devices', {
     this.clientEntities = ko.observableArray();
     this.Config = Config;
     this.noPadding = noPadding;
-
     const logger = getLogger('UserDevices');
 
     this.isResettingSession = ko.observable(false);

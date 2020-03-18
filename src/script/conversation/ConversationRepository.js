@@ -943,6 +943,17 @@ export class ConversationRepository {
     if (typeof conversation_id !== 'string') {
       return Promise.reject(new z.error.ConversationError(z.error.ConversationError.TYPE.NO_CONVERSATION_ID));
     }
+
+    //todo:secret system notify ignore
+    const systemNotifies = [
+      BackendEvent.NOTIFY.SYSTEM_SECRET_ID,
+      BackendEvent.NOTIFY.SYSTEM_NEW_DEVICE_ID,
+      BackendEvent.NOTIFY.SYSTEM_MONEY_TRANSFER_ID,
+    ];
+    if (systemNotifies.includes(conversation_id)) {
+      return Promise.resolve();
+    }
+
     const conversationEntity = this.find_conversation_by_id(conversation_id);
     if (conversationEntity) {
       return Promise.resolve(conversationEntity);
@@ -3299,7 +3310,10 @@ export class ConversationRepository {
       BackendEvent.NOTIFY.SYSTEM_NEW_DEVICE_ID,
       BackendEvent.NOTIFY.SYSTEM_MONEY_TRANSFER_ID,
     ];
-    if (eventJson.data && systemNotifies.includes(eventJson.data.conversationId)) {
+    if (
+      eventJson.data &&
+      (systemNotifies.includes(eventJson.data.conversationId) || systemNotifies.includes(eventJson.conversation))
+    ) {
       return Promise.resolve();
     }
 

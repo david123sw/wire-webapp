@@ -465,7 +465,6 @@ export class CryptographyRepository {
    */
   _decryptEvent(event) {
     const {data: eventData, from: userId} = event;
-
     const isUnencryptEvent = event.type === BackendEvent.CONVERSATION.BGP_MESSAGE_ADD;
     if (isUnencryptEvent) {
       return new Promise((resolve, reject) => {

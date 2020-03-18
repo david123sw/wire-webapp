@@ -52,7 +52,6 @@ export function hasURLParameter(parameterName: string): boolean {
 }
 
 export function openTab(url: string): Window {
-  //TODODAV 后续修改为Secret的
   const newWindow = window.open(url);
   if (newWindow) {
     newWindow.opener = null;
