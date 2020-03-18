@@ -83,9 +83,6 @@ class ConversationListCell {
     this.refresh_lock = false;
     this.isSelected = ko.computed(() => {
       const status = is_selected(conversation);
-      if (status) {
-        conversation.check_users_permissions();
-      }
       return status;
     });
 

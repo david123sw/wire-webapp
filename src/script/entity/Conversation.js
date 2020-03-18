@@ -512,7 +512,7 @@ export class Conversation {
       this.hasSettingPermission(
         this.selfUser().teamRole() === TEAM_ROLE.OWNER || this.selfUser().teamRole() === TEAM_ROLE.ADMIN,
       );
-      return true;
+      return this.hasSettingPermission();
     });
 
     this._initSubscriptions();
@@ -529,7 +529,7 @@ export class Conversation {
       this.archivedTimestamp,
       this.cleared_timestamp,
       this.members,
-      this.messageTimer,
+      // this.messageTimer,
       this.isGuest,
       this.has_announcement_shown,
       this.last_event_timestamp,

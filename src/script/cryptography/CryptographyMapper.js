@@ -89,26 +89,37 @@ export class CryptographyMapper {
       }
 
       case EXTRA_SPECIAL_MESSAGE_TYPE.OPEN_RED_PACKET: {
-        if (
-          availability_details.msgData.receiveUserId === availability_details.msgData.sendUserId &&
-          window.wire.app.repository.user.self().id === availability_details.msgData.sendUserId
-        ) {
-          rawMessage.availability.content = t(EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.OPEN_RED_PACKET);
-          rawMessage.availability.content = rawMessage.availability.content.replace(
-            '$from',
-            t('extra_special_message_type_4_to_1'),
-          );
-          rawMessage.availability.content = rawMessage.availability.content.replace(
-            '$to',
-            t('extra_special_message_type_4_to_1'),
-          );
+        let shouldFetchUserDetails = false;
+        if (availability_details.msgData.receiveUserId === availability_details.msgData.sendUserId) {
+          if (window.wire.app.repository.user.self().id === availability_details.msgData.sendUserId) {
+            rawMessage.availability.content = t(EXTRA_SPECIAL_MESSAGE_TYPE_REMINDER.OPEN_RED_PACKET);
+            rawMessage.availability.content = rawMessage.availability.content.replace(
+              '$from',
+              t('extra_special_message_type_4_to_1'),
+            );
+            rawMessage.availability.content = rawMessage.availability.content.replace(
+              '$to',
+              t('extra_special_message_type_4_to_1'),
+            );
+          } else {
+            shouldFetchUserDetails = true;
+          }
         } else {
+          shouldFetchUserDetails = true;
+        }
+
+        if (shouldFetchUserDetails) {
           await window.wire.app.repository.user.user_service
             .getUsers([availability_details.msgData.receiveUserId, availability_details.msgData.sendUserId])
             .then(response => {
               const myself = window.wire.app.repository.user.self();
-              let from = response[0].name;
-              let to = myself.id === response[1].id ? t('extra_special_message_type_4_to_1') : response[1].name;
+              let from = response[1].remark ? response[1].remark : response[1].name;
+              let to =
+                myself.id === response[0].id
+                  ? t('extra_special_message_type_4_to_1')
+                  : response[0].remark
+                  ? response[0].remark
+                  : response[0].name;
               if (availability_details.msgData.sendUserId !== myself.id) {
                 const tmp = to;
                 to = from;
@@ -137,8 +148,13 @@ export class CryptographyMapper {
           .getUsers([availability_details.msgData.receiveUserId, availability_details.msgData.sendUserId])
           .then(response => {
             const myself = window.wire.app.repository.user.self();
-            let from = response[0].name;
-            let to = myself.id === response[1].id ? t('extra_special_message_type_4_to_1') : response[1].name;
+            let from = response[1].remark ? response[1].remark : response[1].name;
+            let to =
+              myself.id === response[0].id
+                ? t('extra_special_message_type_4_to_1')
+                : response[0].remark
+                ? response[0].remark
+                : response[0].name;
             if (availability_details.msgData.sendUserId !== myself.id) {
               const tmp = to;
               to = from;

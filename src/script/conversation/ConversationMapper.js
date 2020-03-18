@@ -415,7 +415,6 @@ export class ConversationMapper {
     }
 
     conversationEntity.receiptMode(conversationData.receipt_mode);
-
     return conversationEntity;
   }
 
@@ -512,9 +511,8 @@ export class ConversationMapper {
         updates.receipt_mode = localConversationData.receipt_mode;
       }
 
-      if (typeof localConversationData.ephemeral_timer === 'number') {
-        updates.ephemeral_timer = localConversationData.ephemeral_timer;
-      }
+      updates.ephemeral_timer =
+        typeof localConversationData.ephemeral_timer === 'number' ? localConversationData.ephemeral_timer : 0;
 
       const mergedConversation = Object.assign({}, localConversationData, updates);
 
