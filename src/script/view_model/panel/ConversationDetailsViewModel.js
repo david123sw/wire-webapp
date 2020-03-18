@@ -99,7 +99,7 @@ export class ConversationDetailsViewModel extends BasePanelViewModel {
     });
 
     this.has_modify_permissions = ko.pureComputed(() => {
-      return this.activeConversation() && this.activeConversation().hasSettingPermission();
+      return this.activeConversation() && this.activeConversation().check_users_permissions();
     });
 
     this.isSingleUserMode = conversationEntity => {
