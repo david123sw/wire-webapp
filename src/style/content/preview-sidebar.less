@@ -29,3 +29,51 @@
   color: #fff;
   fill: #fff;
 }
+
+.left-item-container {
+  position: absolute;
+  left: 0;
+  display: flex;
+  width: @conversation-left-width;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgb(38, 38, 38);
+
+  .left-item-avatar {
+    .flex-center;
+    width: 46px;
+    margin-top: 73px;
+    margin-bottom: 20px;
+    color: #323639;
+  }
+
+  .left-item-name {
+    .ellipsis;
+    width: 50px;
+    margin-top: 5px;
+    margin-bottom: 22px;
+    color: #333333;
+    font-family: PingFangSC-Medium;
+    font-size: 12px;
+  }
+
+  .button-icon-size {
+    padding: 10px 0;
+    cursor: pointer;
+    font-size: 26px;
+  }
+
+  .active {
+    color: #bb372b;
+  }
+  .icon-right-chat-new.active:before {
+    content: '\6d88';
+  }
+  .icon-right-people-new.active:before {
+    content: '\8baf';
+  }
+  .icon-right-set-new.active:before {
+    content: '\8baf';
+  }
+}

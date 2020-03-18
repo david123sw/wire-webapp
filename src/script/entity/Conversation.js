@@ -294,6 +294,23 @@ export class Conversation {
       return msgs;
     });
 
+    this.unread_events = ko.pureComputed(() => {
+      const unread_event = [];
+      const messages = this.messages();
+
+      for (let index = messages.length - 1; index >= 0; index--) {
+        const message_et = messages[index];
+        if (message_et.visible()) {
+          if (message_et.timestamp() <= this.last_read_timestamp() || message_et.user().is_me) {
+            break;
+          }
+          unread_event.push(message_et);
+        }
+      }
+
+      return unread_event;
+    });
+
     this.hasAdditionalMessages = ko.observable(true);
 
     this.messages_visible = ko
@@ -551,7 +568,7 @@ export class Conversation {
    * @returns {undefined} No return value
    */
   release() {
-    if (!this.unreadState().allEvents.length) {
+    if (!this.unread_events().length) {
       this.remove_messages();
       this.is_loaded(false);
       this.hasAdditionalMessages(true);
@@ -574,6 +591,8 @@ export class Conversation {
     if (!entityTimestamp) {
       throw new z.error.ConversationError(z.error.ConversationError.TYPE.INVALID_PARAMETER);
     }
+
+    // console.log('-----timestamp---', timestamp, type);
 
     const updatedTimestamp = forceUpdate ? timestamp : this._incrementTimeOnly(entityTimestamp(), timestamp);
     if (updatedTimestamp !== false) {

@@ -18,10 +18,7 @@
  */
 
 import {getLogger} from 'Util/Logger';
-import {t} from 'Util/LocalizerUtil';
 import {WebAppEvents} from '../../event/WebApp';
-import {Shortcut} from '../../ui/Shortcut';
-import {ShortcutType} from '../../ui/ShortcutType';
 
 window.z = window.z || {};
 window.z.viewModel = z.viewModel || {};
@@ -32,50 +29,48 @@ z.viewModel.PreviewSidebarViewModel = class PreviewSidebarViewModel {
    * @param {MainViewModel} mainViewModel - Main view model
    * @param {Object} repositories - Object containing all the repositories
    */
-  constructor(mainViewModel, repositories) {
-    // this.switchList = this.switchList.bind(this);
-    // this.onContextMenu = this.onContextMenu.bind(this);
+
+  static get LType() {
+    return {
+      OPEN_NEAREST_LIST: 'open_nearest_list',
+      OPEN_PEOPLE: 'open_people',
+      OPEN_SETTING: 'open_setting',
+    };
+  }
+
+  constructor(listViewModel, repositories) {
     this.logger = getLogger('z.viewModel.content.PreviewSidebarViewModel');
 
-    this.elementId = 'sidebar-column';
+    this.elementId = 'preview-left-sidebar-column';
     this.conversationRepository = repositories.conversation;
-    this.callingRepository = repositories.calling;
-    this.teamRepository = repositories.team;
     this.userRepository = repositories.user;
-    this.preferenceNotificationRepository = repositories.preferenceNotification;
+    this.listViewModel = listViewModel;
 
-    this.actionsViewModel = mainViewModel.actions;
-    this.contentViewModel = mainViewModel.content;
-    this.panelViewModel = mainViewModel.panel;
-
-    this.isActivatedAccount = this.userRepository.isActivatedAccount;
-    this.isProAccount = this.teamRepository.isTeam;
     this.selfUser = this.userRepository.self;
 
-    const startShortcut = Shortcut.getShortcutTooltip(ShortcutType.START);
-    this.startTooltip = t('tooltipConversationsStart', startShortcut);
-    this.conversationsTooltip = t('conversationViewTooltip');
-    this.foldersTooltip = t('folderViewTooltip');
+    this.rightType = ko.observable(z.viewModel.PreviewSidebarViewModel.LType.OPEN_NEAREST_LIST);
 
-    this.showRecentConversations = ko.observable(true);
-    this.showRecentConversations.subscribe(() => {
-      const conversationList = document.querySelector('.conversation-list');
-      if (conversationList) {
-        conversationList.scrollTop = 0;
+    this.webappLoaded = ko.observable(false);
+    amplify.subscribe(WebAppEvents.LIFECYCLE.LOADED, () => this.webappLoaded(true));
+
+    amplify.subscribe(WebAppEvents.RIGHT_NAVIGATE.OPEN_NEAREST_LIST, this.changeTag.bind(this));
+
+    ko.applyBindings(this, document.getElementById(this.elementId));
+  }
+  changeTag(type) {
+    if (this.rightType() !== type) {
+      this.rightType(type);
+      switch (type) {
+        case z.viewModel.PreviewSidebarViewModel.LType.OPEN_NEAREST_LIST:
+          this.listViewModel.openNearList();
+          break;
+        case z.viewModel.PreviewSidebarViewModel.LType.OPEN_PEOPLE:
+          this.listViewModel.switchList(z.viewModel.ListViewModel.STATE.START_UI);
+          break;
+        case z.viewModel.PreviewSidebarViewModel.LType.OPEN_SETTING:
+          amplify.publish(WebAppEvents.PREFERENCES.MANAGE_ACCOUNT);
+          break;
       }
-    });
-    this.showBadge = ko.pureComputed(() => {
-      return this.preferenceNotificationRepository.notifications().length > 0;
-    });
-  }
-
-  clickOnPreferencesButton() {
-    amplify.publish(WebAppEvents.PREFERENCES.MANAGE_ACCOUNT);
-  }
-
-  clickOnPeopleButton() {
-    if (this.isActivatedAccount()) {
-      // this.listViewModel.switchList(z.viewModel.ListViewModel.STATE.START_UI);
     }
   }
 };

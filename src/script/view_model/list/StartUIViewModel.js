@@ -186,6 +186,10 @@ class StartUIViewModel {
   }
 
   async clickOnContact(userEntity) {
+    amplify.publish(
+      WebAppEvents.RIGHT_NAVIGATE.OPEN_NEAREST_LIST,
+      z.viewModel.PreviewSidebarViewModel.LType.OPEN_NEAREST_LIST,
+    );
     if (this.alreadyClickedOnContact[userEntity.id] === true) {
       return;
     }

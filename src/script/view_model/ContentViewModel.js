@@ -235,7 +235,7 @@ export class ContentViewModel {
         this._releaseContent(this.state());
 
         this.state(ContentViewModel.STATE.CONVERSATION);
-        // this.mainViewModel.list.openConversations();
+        this.mainViewModel.list.openConversations();
 
         if (!isActiveConversation) {
           this.conversationRepository.active_conversation(conversationEntity);

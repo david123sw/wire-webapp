@@ -152,7 +152,7 @@ class App {
 
     this._subscribeToEvents();
     this.initApp();
-    this.initServiceWorker();
+    // this.initServiceWorker();
   }
 
   //##############################################################################
@@ -393,7 +393,7 @@ class App {
 
         this.repository.user.self().devices(clientEntities);
         this.logger.info('App pre-loading completed');
-        return this._handleUrlParams();
+        return ''; //this._handleUrlParams();
       })
       .then(() => this.repository.conversation.updateUnarchivedConversations())
       .then(() => this.repository.conversation.conversationLabelRepository.loadLabels())
@@ -427,11 +427,11 @@ class App {
    * @returns {undefined} No return value
    */
   initServiceWorker() {
-    if (navigator.serviceWorker) {
-      navigator.serviceWorker
-        .register(`/sw.js?${Environment.version(false)}`)
-        .then(({scope}) => this.logger.info(`ServiceWorker registration successful with scope: ${scope}`));
-    }
+    // if (navigator.serviceWorker) {
+    //   navigator.serviceWorker
+    //     .register(`/sw.js?${Environment.version(false)}`)
+    //     .then(({scope}) => this.logger.info(`ServiceWorker registration successful with scope: ${scope}`));
+    // }
   }
 
   /**
