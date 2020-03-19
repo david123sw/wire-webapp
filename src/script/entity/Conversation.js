@@ -570,6 +570,7 @@ export class Conversation {
   release() {
     if (!this.unread_events().length) {
       this.remove_messages();
+      this.participating_user_ets.removeAll();
       this.is_loaded(false);
       this.hasAdditionalMessages(true);
     }
