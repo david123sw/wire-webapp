@@ -184,7 +184,8 @@ export class EventService {
     } else if (fromDate.getTime() > toDate.getTime()) {
       throw new Error(`Lower bound (${fromDate.getTime()}) cannot be greater than upper bound (${toDate.getTime()}).`);
     }
-    return this.storageService.db[this.EVENT_STORE_NAME]
+    return this.storageService.db
+      .table(this.EVENT_STORE_NAME)
       .where('[conversation+time]')
       .between([conversationId, fromDate.toISOString()], [conversationId, toDate.toISOString()], true, false)
       .reverse()
@@ -212,7 +213,8 @@ export class EventService {
       throw new Error(`Upper bound (${typeof fromDate}) must be of type 'Date'.`);
     }
 
-    return this.storageService.db[this.EVENT_STORE_NAME]
+    return this.storageService.db
+      .table(this.EVENT_STORE_NAME)
       .where('[conversation+time]')
       .between([conversationId, fromDate.toISOString()], [conversationId, new Date().toISOString()], includeFrom, true)
       .limit(limit)
