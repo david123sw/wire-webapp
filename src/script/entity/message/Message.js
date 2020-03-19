@@ -55,7 +55,7 @@ export class Message {
     this.ephemeral_remaining = ko.observable(0);
     this.ephemeral_expires = ko.observable(false);
     this.ephemeral_started = ko.observable('0');
-    this.ephemeral_status = ko.computed(() => {
+    this.ephemeral_status = ko.pureComputed(() => {
       const isExpired = this.ephemeral_expires() === true;
       if (isExpired) {
         return EphemeralStatusType.TIMED_OUT;

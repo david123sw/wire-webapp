@@ -52,7 +52,7 @@ ko.components.register('modal', {
     this.large = large;
     this.onBgClick = () => ko.unwrap(onBgClick)();
     this.displayNone = ko.observable(!ko.unwrap(isShown));
-    this.hasVisibleClass = ko.computed(() => isShown() && !this.displayNone()).extend({rateLimit: 20});
+    this.hasVisibleClass = ko.pureComputed(() => isShown() && !this.displayNone()).extend({rateLimit: 20});
     this.showLoading = showLoading;
     let timeoutId = 0;
     const isShownSubscription = isShown.subscribe(visible => {

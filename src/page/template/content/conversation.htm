@@ -1,5 +1,6 @@
 
 <div id="conversation" class="conversation" data-bind="drop_file: $root.inputBar.onDropFiles">
+  <div class="messages-background"></div>
   <!-- ko if: $root.conversationRepository.active_conversation() -->
     <!-- ko if: $root.conversationRepository.active_conversation().is_loaded() -->
       #include('content/conversation/title-bar.htm')
@@ -8,6 +9,7 @@
       <!-- /ko -->
       #include('content/conversation/message-list.htm')
       #include('content/conversation/input-bar.htm')
+      #include('modal/giphy.htm')
     <!-- /ko -->
     <!-- ko if: !$root.conversationRepository.active_conversation().is_loaded() -->
       <div class="conversation-loading" >
@@ -15,5 +17,5 @@
       </div>
     <!-- /ko -->
   <!-- /ko -->
-  #include('modal/giphy.htm')
+
 </div>

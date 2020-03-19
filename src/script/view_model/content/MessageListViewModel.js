@@ -258,7 +258,7 @@ class MessageListViewModel {
         }
 
         const message_bg = $('.messages-background');
-        if (message_bg && message_bg[0]) {
+        if (message_bg && message_bg[0] && message_bg.children().length === 0) {
           new MessageBackground(message_bg[0]);
         }
 

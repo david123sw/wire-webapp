@@ -1,6 +1,5 @@
-<div id="message-list" class="message-list" data-bind="style:{'background-color':'#e1dfdb'}">
-  <div class="messages-background"></div>
-  <div class="messages-wrap" data-bind="with: $root.messageList, infinite_scroll: {onScrolling: (height) => $root.messageList.getCurrentMessageListScrollHeight(height), onHitBottom: () => $root.messageList.loadFollowingMessages(), onHitTop: () => $root.messageList.loadPrecedingMessages()}">
+<div id="message-list" class="message-list" data-bind="with: $root.messageList">
+  <div class="messages-wrap" data-bind="infinite_scroll: {onScrolling: (height) => $root.messageList.getCurrentMessageListScrollHeight(height), onHitBottom: () => $root.messageList.loadFollowingMessages(), onHitTop: () => $root.messageList.loadPrecedingMessages()}">
     <div class="messages"
          data-bind="css: {'flex-center': verticallyCenterMessage},
                    foreach: {data: conversation().messages_visible, as: 'message', noChildContext: true}">

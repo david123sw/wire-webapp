@@ -117,7 +117,7 @@ class Message {
       return false;
     });
 
-    this.is_last_ephemeral_message = ko.computed(() => {
+    this.is_last_ephemeral_message = ko.pureComputed(() => {
       const conversation_ref = 'function' === typeof this.conversation ? this.conversation() : this.conversation;
       const messages = conversation_ref.visible_timed_messages();
       return 0 === messages.length ? false : this.message.id === messages[messages.length - 1].id;
