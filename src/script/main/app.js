@@ -106,6 +106,8 @@ import {MessageSender} from '../message/MessageSender';
 import {StorageService} from '../storage';
 import {BackupService} from '../backup/BackupService';
 
+// const hamsters = require('hamsters.js');
+
 class App {
   static get CONFIG() {
     return {
@@ -130,6 +132,29 @@ class App {
    * @param {Element} appContainer - DOM element that will hold the app
    */
   constructor(backendClient, appContainer) {
+    // hamsters.init({
+    //   maxThreads: 20,
+    //   cache: true,
+    //   persistence: true,
+    //   Worker: Worker
+    // });
+    // const coThreadParams = [1, 3, 5];
+    // const coThreadFunc = function(data) {
+    //   console.log('dav333 rocket thread', data.concat([2, 4, 6]));
+    //   console.log('dav333 rocket thread2', Date.now());
+    //   setTimeout(() => {
+    //     console.log('dav333 test timer', Date.now());
+    //   }, 5000);
+    // };
+    // const coWorker = RocketWorker.getInstance().spawnWorker(coThreadParams, coThreadFunc, (e) => {
+    //   console.log('dav333 rocket worker finish', e.data);
+    // }, (e) => {
+    //   console.log('dav333 rocket worker abort', e.data);
+    // }, (e) => {
+    //   console.log('dav333 rocket worker error', e.data);
+    // });
+    // coWorker.postMessage({cmd: 'begin', id: coWorker.id, generator: RocketWorker.getInstance()});
+
     this.backendClient = backendClient;
     this.logger = getLogger('App');
     this.appContainer = appContainer;
@@ -151,8 +176,14 @@ class App {
     this.singleInstanceHandler = new SingleInstanceHandler(onExtraInstanceStarted);
 
     this._subscribeToEvents();
-    this.initApp();
     this.initServiceWorker();
+    this.initApp();
+    // console.log('dav333 waht-->', hamsters);
+    // hamsters.run({array: []}, function() {
+    //   console.log('dav333 test_name_is');
+    // }, function(result) {
+    //   console.log('dav333 finish', result);
+    // });
   }
 
   //##############################################################################
@@ -428,9 +459,11 @@ class App {
    */
   initServiceWorker() {
     if (navigator.serviceWorker) {
-      navigator.serviceWorker
-        .register(`/sw.js?${Environment.version(false)}`)
-        .then(({scope}) => this.logger.info(`ServiceWorker registration successful with scope: ${scope}`));
+      window.addEventListener('load', () => {
+        navigator.serviceWorker
+          .register(`/sw.js?${Environment.version(false)}`)
+          .then(({scope}) => this.logger.info(`ServiceWorker registration successful with scope: ${scope}`));
+      });
     }
   }
 

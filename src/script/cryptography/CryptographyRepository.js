@@ -464,6 +464,83 @@ export class CryptographyRepository {
    * @returns {Promise} Resolves with the decrypted message in ProtocolBuffer format
    */
   _decryptEvent(event) {
+    // console.log('dav333 _decryptEvent now', event);
+
+    // // const params = {event: event};
+    // // window.wire.app.hamsters.run(params, function() {
+    // //   const {data: eventData, from: userId} = params.event;
+    // //   const isUnencryptEvent = params.event.type === 'conversation.bgp-message-add';
+    // //   if (isUnencryptEvent) {
+    // //     const promise = new Promise((resolve, reject) => {
+    // //       const result = GenericMessage.decode(base64ToArray(eventData.text));
+    // //       resolve(result);
+    // //     });
+    // //     rtn.data.push(promise);
+    // //   }
+    // //
+    // //   const cipherText = base64ToArray(eventData.text || eventData.key).buffer;
+    // //   const sessionId = this._constructSessionId(userId, eventData.sender);
+    // //   return this.cryptobox.decrypt(sessionId, cipherText).then(plaintext => GenericMessage.decode(plaintext));
+    // // }, function(result) {
+    // //   console.log('dav333 result', result);
+    // //   return result[0];
+    // // }, 1);
+    //
+    // const {data: eventData, from: userId} = event;
+    // const isUnencryptEvent = event.type === BackendEvent.CONVERSATION.BGP_MESSAGE_ADD;
+    // if (isUnencryptEvent) {
+    //   const params = {event: event, GenericMessage: GenericMessage, base64ToArray: base64ToArray};
+    //   console.log('dav333 SuperGroup');
+    //   return window.wire.app.hamsters
+    //     .promise(params, () => {
+    //       const result = params.GenericMessage.decode(params.base64ToArray(params.event.data.text));
+    //       rtn.data.push(result);
+    //     })
+    //     .then(result => {
+    //       console.log('dav333 result', result);
+    //       return result[0];
+    //     })
+    //     .catch(error => {
+    //       console.log('dav333 error', error);
+    //     });
+    // }
+    //
+    // const cipherText = base64ToArray(eventData.text || eventData.key).buffer;
+    // const sessionId = this._constructSessionId(userId, eventData.sender);
+    // const params_ = {
+    //   cryptobox: this.cryptobox,
+    //   sessionId: sessionId,
+    //   cipherText: cipherText,
+    //   GenericMessage: GenericMessage,
+    // };
+    // console.log('dav333 1to1 Group');
+    // // return window.wire.app.hamsters.promise(params_, function() {
+    // //   console.log('dav333 1to1 Group params_.cryptobox', params_.cryptobox);
+    // //   const result = params_.cryptobox.decrypt(params_.sessionId, params_.cipherText).then(plaintext => params_.GenericMessage.decode(plaintext));
+    // //   rtn.data.push(result);
+    // // }).then(function(result) {
+    // //   console.log('dav333 result22222', result);
+    // //   return result[0];
+    // // }).catch(function(error) {
+    // //   console.log('dav333 error222222', error);
+    // // });
+    //
+    // return window.wire.app.hamsters.run(
+    //   params_,
+    //   () => {
+    //     console.log('dav333 1to1 Group params_.cryptobox', params_.cryptobox);
+    //     const result = params_.cryptobox
+    //       .decrypt(params_.sessionId, params_.cipherText)
+    //       .then(plaintext => params_.GenericMessage.decode(plaintext));
+    //     rtn.data.push(result);
+    //   },
+    //   result => {
+    //     console.log('dav333 result', result);
+    //     return result[0];
+    //   },
+    //   1,
+    // );
+
     const {data: eventData, from: userId} = event;
     const isUnencryptEvent = event.type === BackendEvent.CONVERSATION.BGP_MESSAGE_ADD;
     if (isUnencryptEvent) {
