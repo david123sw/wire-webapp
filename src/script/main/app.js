@@ -138,22 +138,7 @@ class App {
     //   persistence: true,
     //   Worker: Worker
     // });
-    // const coThreadParams = [1, 3, 5];
-    // const coThreadFunc = function(data) {
-    //   console.log('dav333 rocket thread', data.concat([2, 4, 6]));
-    //   console.log('dav333 rocket thread2', Date.now());
-    //   setTimeout(() => {
-    //     console.log('dav333 test timer', Date.now());
-    //   }, 5000);
-    // };
-    // const coWorker = RocketWorker.getInstance().spawnWorker(coThreadParams, coThreadFunc, (e) => {
-    //   console.log('dav333 rocket worker finish', e.data);
-    // }, (e) => {
-    //   console.log('dav333 rocket worker abort', e.data);
-    // }, (e) => {
-    //   console.log('dav333 rocket worker error', e.data);
-    // });
-    // coWorker.postMessage({cmd: 'begin', id: coWorker.id, generator: RocketWorker.getInstance()});
+    // this.hamsters = hamsters;
 
     this.backendClient = backendClient;
     this.logger = getLogger('App');
@@ -178,11 +163,14 @@ class App {
     this._subscribeToEvents();
     this.initServiceWorker();
     this.initApp();
-    // console.log('dav333 waht-->', hamsters);
-    // hamsters.run({array: []}, function() {
-    //   console.log('dav333 test_name_is');
+
+    // console.log('dav333 what13-->', hamsters);
+    // this.params = {array:['what', 'is']};
+    // this.hamsters.run(this.params, function() {
+    //   console.log('dav333 test_name_is,', this.params.array);
+    //   rtn.data.push('dav');
     // }, function(result) {
-    //   console.log('dav333 finish', result);
+    //   console.log('dav333 finish', result.data[0]);
     // });
   }
 
@@ -536,27 +524,27 @@ class App {
     }
 
     if (navigator.onLine) {
-      switch (type) {
-        case z.error.AccessTokenError.TYPE.NOT_FOUND_IN_CACHE:
-        case z.error.AccessTokenError.TYPE.RETRIES_EXCEEDED:
-        case z.error.AccessTokenError.TYPE.REQUEST_FORBIDDEN: {
-          this.logger.warn(`Redirecting to login: ${error.message}`, error);
-          return this._redirectToLogin(SIGN_OUT_REASON.NOT_SIGNED_IN);
-        }
-
-        default: {
-          this.logger.error(`Caused by: ${(error ? error.message : undefined) || error}`, error);
-
-          const isAccessTokenError = error instanceof z.error.AccessTokenError;
-          if (isAccessTokenError) {
-            this.logger.error(`Could not get access token: ${error.message}. Logging out user.`, error);
-          } else {
-            Raygun.send(error);
-          }
-
-          return this.logout(SIGN_OUT_REASON.APP_INIT);
-        }
-      }
+      // switch (type) {
+      //   case z.error.AccessTokenError.TYPE.NOT_FOUND_IN_CACHE:
+      //   case z.error.AccessTokenError.TYPE.RETRIES_EXCEEDED:
+      //   case z.error.AccessTokenError.TYPE.REQUEST_FORBIDDEN: {
+      //     this.logger.warn(`Redirecting to login: ${error.message}`, error);
+      //     return this._redirectToLogin(SIGN_OUT_REASON.NOT_SIGNED_IN);
+      //   }
+      //
+      //   default: {
+      //     this.logger.error(`Caused by: ${(error ? error.message : undefined) || error}`, error);
+      //
+      //     const isAccessTokenError = error instanceof z.error.AccessTokenError;
+      //     if (isAccessTokenError) {
+      //       this.logger.error(`Could not get access token: ${error.message}. Logging out user.`, error);
+      //     } else {
+      //       Raygun.send(error);
+      //     }
+      //
+      //     return this.logout(SIGN_OUT_REASON.APP_INIT);
+      //   }
+      // }
     }
 
     this.logger.warn('No connectivity. Trigger reload on regained connectivity.', error);

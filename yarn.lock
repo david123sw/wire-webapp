@@ -6247,6 +6247,19 @@ jsbn@~0.1.0:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/jsbn/-/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
 
+jsclass-logger@^0.1.4:
+  version "0.1.7"
+  resolved "https://registry.npmjs.org/jsclass-logger/-/jsclass-logger-0.1.7.tgz#c7e2dedc51785c546fc72aa05d7cb30a6ae551c0"
+  integrity sha512-cqnbn0KKtAEwrf16Frp5tP+f+ww5v88u8zeMcL6jOYeLFxbIgdKWRP/bn6bJmkd6L7X6QBJ/sqWv0Zm9CRr1QQ==
+
+jsclass-serializer@0.2.5:
+  version "0.2.5"
+  resolved "https://registry.npmjs.org/jsclass-serializer/-/jsclass-serializer-0.2.5.tgz#360ff0f5b152388090e9b301cc1d694c7ad21c4b"
+  integrity sha512-c1EwnoxWeZ4Uc+kET2KZy6LsoLZ5nsuFY9+WlS8NCVXeIJ38AhtzHX0T7cuK0S5LmU7uhO12ciWijeStGyI/OA==
+  dependencies:
+    jsclass-logger "^0.1.4"
+    uuid "^3.3.2"
+
 jsdoctypeparser@^5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/jsdoctypeparser/-/jsdoctypeparser-5.1.1.tgz#99c57412fe736c70024bf54204ed1bb93cf4a49f"
@@ -7426,6 +7439,11 @@ node-sass@4.13.0:
     sass-graph "^2.2.4"
     stdout-stream "^1.4.0"
     "true-case-path" "^1.0.2"
+
+node-serialize@0.0.4:
+  version "0.0.4"
+  resolved "https://registry.npmjs.org/node-serialize/-/node-serialize-0.0.4.tgz#b73a49e1353306657103a5e49f7f05279ba97f7f"
+  integrity sha1-tzpJ4TUzBmVxA6Xkn38FJ5upf38=
 
 nomnom@1.8.1:
   version "1.8.1"
@@ -9736,6 +9754,11 @@ semver@^6.0.0, semver@^6.1.2, semver@^6.3.0:
 semver@~5.3.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.3.0.tgz#9b2ce5d3de02d17c6012ad326aa6b4d0cf54f94f"
+
+seri@0.0.8:
+  version "0.0.8"
+  resolved "https://registry.npmjs.org/seri/-/seri-0.0.8.tgz#fb21cfe30e615e3b4b3907cb61a46de3f06174d5"
+  integrity sha1-+yHP4w5hXjtLOQfLYaRt4/BhdNU=
 
 serialize-javascript@^1.7.0:
   version "1.9.1"
